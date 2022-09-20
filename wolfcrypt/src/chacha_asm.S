@@ -30,18 +30,9 @@
 #define HAVE_INTEL_AVX2
 #endif /* NO_AVX2_SUPPORT */
 
-#ifndef __APPLE__
-.text
-.globl	chacha_encrypt_x64
-.type	chacha_encrypt_x64,@function
-.align	16
-chacha_encrypt_x64:
-#else
-.section	__TEXT,__text
-.globl	_chacha_encrypt_x64
-.p2align	4
-_chacha_encrypt_x64:
-#endif /* __APPLE__ */
+#include "asminc.S"
+
+FUNCTION(chacha_encrypt_x64)
         pushq	%rbx
         pushq	%rbp
         pushq	%r12
@@ -456,9 +447,8 @@ L_chacha_x64_done:
         popq	%rbp
         popq	%rbx
         repz retq
-#ifndef __APPLE__
-.size	chacha_encrypt_x64,.-chacha_encrypt_x64
-#endif /* __APPLE__ */
+FUNCTION_END(chacha_encrypt_x64)
+
 #ifdef HAVE_INTEL_AVX1
 #ifndef __APPLE__
 .data
@@ -508,18 +498,8 @@ L_chacha20_avx1_add:
 #endif /* __APPLE__ */
 L_chacha20_avx1_four:
 .quad	0x400000004, 0x400000004
-#ifndef __APPLE__
-.text
-.globl	chacha_encrypt_avx1
-.type	chacha_encrypt_avx1,@function
-.align	16
-chacha_encrypt_avx1:
-#else
-.section	__TEXT,__text
-.globl	_chacha_encrypt_avx1
-.p2align	4
-_chacha_encrypt_avx1:
-#endif /* __APPLE__ */
+
+FUNCTION(chacha_encrypt_avx1)
         subq	$0x190, %rsp
         movq	%rsp, %r9
         leaq	256(%rsp), %r10
@@ -1009,9 +989,8 @@ L_chacha20_avx1_partial_end64:
 L_chacha20_avx1_partial_done:
         addq	$0x190, %rsp
         repz retq
-#ifndef __APPLE__
-.size	chacha_encrypt_avx1,.-chacha_encrypt_avx1
-#endif /* __APPLE__ */
+FUNCTION_END(chacha_encrypt_avx1)
+
 #endif /* HAVE_INTEL_AVX1 */
 #ifdef HAVE_INTEL_AVX2
 #ifndef __APPLE__
@@ -1066,18 +1045,8 @@ L_chacha20_avx2_add:
 L_chacha20_avx2_eight:
 .quad	0x800000008, 0x800000008
 .quad	0x800000008, 0x800000008
-#ifndef __APPLE__
-.text
-.globl	chacha_encrypt_avx2
-.type	chacha_encrypt_avx2,@function
-.align	16
-chacha_encrypt_avx2:
-#else
-.section	__TEXT,__text
-.globl	_chacha_encrypt_avx2
-.p2align	4
-_chacha_encrypt_avx2:
-#endif /* __APPLE__ */
+
+FUNCTION(chacha_encrypt_avx2)
         subq	$0x310, %rsp
         movq	%rsp, %r9
         leaq	512(%rsp), %r10
@@ -1419,16 +1388,11 @@ L_chacha20_avx2_done256:
         shl	$3, %eax
         addl	%eax, 48(%rdi)
 L_chacha20_avx2_end256:
-#ifndef __APPLE__
-        callq	chacha_encrypt_avx1@plt
-#else
-        callq	_chacha_encrypt_avx1
-#endif /* __APPLE__ */
+        CALL(chacha_encrypt_avx1)
         addq	$0x310, %rsp
         repz retq
-#ifndef __APPLE__
-.size	chacha_encrypt_avx2,.-chacha_encrypt_avx2
-#endif /* __APPLE__ */
+FUNCTION_END(chacha_encrypt_avx2)
+
 #endif /* HAVE_INTEL_AVX2 */
 
 #if defined(__linux__) && defined(__ELF__)

@@ -1663,6 +1663,7 @@ static int _SaveDerAndPem(const byte* der, int derSz,
 
     derFile = XFOPEN(fileDer, "wb");
     if (!derFile) {
+        fprintf(stderr, "%s: %s\n", fileDer, strerror(errno));
         return errBase + 0;
     }
     ret = (int)XFWRITE(der, 1, derSz, derFile);
@@ -1698,6 +1699,7 @@ static int _SaveDerAndPem(const byte* der, int derSz,
     #if !defined(NO_FILESYSTEM) && !defined(NO_WRITE_TEMP_FILES)
         pemFile = XFOPEN(filePem, "wb");
         if (!pemFile) {
+            fprintf(stderr, "%s: %s\n", filePem, strerror(errno));
             XFREE(pem, HEAP_HINT, DYNAMIC_TYPE_TMP_BUFFER);
             return errBase + 3;
         }
@@ -12798,6 +12800,8 @@ WOLFSSL_TEST_SUBROUTINE int memory_test(void)
     #define CERT_PATH_SEP "\\"
 #endif
 
+#undef CERT_PREFIX
+#undef CERT_WRITE_TEMP_DIR
 #ifndef CERT_PREFIX
     #define CERT_PREFIX "./"
 #endif
@@ -14676,6 +14680,7 @@ WOLFSSL_TEST_SUBROUTINE int rsa_no_pad_test(void)
 #elif !defined(NO_FILESYSTEM)
     file = XFOPEN(clientKey, "rb");
     if (!file) {
+        fprintf(stderr, "%s: %s\n", clientKey, strerror(errno));
         err_sys("can't open clientKey, Please run from wolfSSL home dir", -40);
         ERROR_OUT(-7801, exit_rsa_nopadding);
     }
@@ -14899,6 +14904,7 @@ static int rsa_even_mod_test(WC_RNG* rng, RsaKey* key)
 #elif !defined(NO_FILESYSTEM)
     file = XFOPEN(clientKey, "rb");
     if (!file) {
+        fprintf(stderr, "%s: %s\n", clientKey, strerror(errno));
         err_sys("can't open ./certs/client-key.der, "
                 "Please run from wolfSSL home dir", -40);
         ERROR_OUT(-7801, exit_rsa_even_mod);
@@ -16127,6 +16133,7 @@ WOLFSSL_TEST_SUBROUTINE int rsa_test(void)
 #elif !defined(NO_FILESYSTEM)
     file = XFOPEN(clientKey, "rb");
     if (!file) {
+        fprintf(stderr, "%s: %s\n", clientKey, strerror(errno));
         err_sys("can't open ./certs/client-key.der, "
                 "Please run from wolfSSL home dir", -40);
         ERROR_OUT(-7901, exit_rsa);
@@ -16464,6 +16471,7 @@ WOLFSSL_TEST_SUBROUTINE int rsa_test(void)
 #else
     file = XFOPEN(clientKeyPub, "rb");
     if (!file) {
+        fprintf(stderr, "%s: %s\n", clientKeyPub, strerror(errno));
         err_sys("can't open ./certs/client-keyPub.der, "
                 "Please run from wolfSSL home dir", -40);
         ERROR_OUT(-7945, exit_rsa);
@@ -20580,6 +20588,7 @@ WOLFSSL_TEST_SUBROUTINE int openssl_pkey1_test(void)
         f = XFOPEN(clientKey, "rb");
 
         if (!f) {
+            fprintf(stderr, "%s: %s\n", clientKey, strerror(errno));
             err_sys("can't open ./certs/client-key.der, "
                     "Please run from wolfSSL home dir", -41);
             ret = -9000;
@@ -37038,7 +37047,10 @@ static int pkcs7_load_certs_keys(
 #else
     keyFile = XFOPEN(clientKey, "rb");
     if (!keyFile)
+    {
+        fprintf(stderr, "%s: %s\n", clientKey, strerror(errno));
         return -12125;
+	}
 
     *rsaClientPrivKeyBufSz = (word32)XFREAD(rsaClientPrivKeyBuf, 1,
                                            *rsaClientPrivKeyBufSz, keyFile);
@@ -37095,7 +37107,10 @@ static int pkcs7_load_certs_keys(
 #else
     keyFile = XFOPEN(eccClientKey, "rb");
     if (!keyFile)
+    {
+        fprintf(stderr, "%s: %s\n", eccClientKey, strerror(errno));
         return -12131;
+	}
 
     *eccClientPrivKeyBufSz = (word32)XFREAD(eccClientPrivKeyBuf, 1,
                                            *eccClientPrivKeyBufSz, keyFile);
@@ -44228,6 +44243,7 @@ static int rsa_onlycb_test(myCryptoDevCtx *ctx)
 #elif !defined(NO_FILESYSTEM)
     file = XFOPEN(clientKey, "rb");
     if (!file) {
+        fprintf(stderr, "%s: %s\n", clientKey, strerror(errno));
         err_sys("can't open ./certs/client-key.der, "
                 "Please run from wolfSSL home dir", -40);
         ERROR_OUT(-8001, exit_onlycb);

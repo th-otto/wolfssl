@@ -30,6 +30,8 @@
 #define HAVE_INTEL_AVX2
 #endif /* NO_AVX2_SUPPORT */
 
+#include "asminc.S"
+
 #ifndef __APPLE__
 .data
 #else
@@ -148,19 +150,10 @@ L_sha3_x4_avx2_r:
 .quad	0x80000001,0x80000001
 .quad	0x8000000080008008,0x8000000080008008
 .quad	0x8000000080008008,0x8000000080008008
+
+
 #ifdef HAVE_INTEL_AVX2
-#ifndef __APPLE__
-.text
-.globl	sha3_block_bmi2
-.type	sha3_block_bmi2,@function
-.align	16
-sha3_block_bmi2:
-#else
-.section	__TEXT,__text
-.globl	_sha3_block_bmi2
-.p2align	4
-_sha3_block_bmi2:
-#endif /* __APPLE__ */
+FUNCTION(sha3_block_bmi2)
         pushq	%r12
         pushq	%r13
         pushq	%r14
@@ -4588,21 +4581,9 @@ _sha3_block_bmi2:
         popq	%r13
         popq	%r12
         repz retq
-#ifndef __APPLE__
-.size	sha3_block_bmi2,.-sha3_block_bmi2
-#endif /* __APPLE__ */
-#ifndef __APPLE__
-.text
-.globl	sha3_block_n_bmi2
-.type	sha3_block_n_bmi2,@function
-.align	16
-sha3_block_n_bmi2:
-#else
-.section	__TEXT,__text
-.globl	_sha3_block_n_bmi2
-.p2align	4
-_sha3_block_n_bmi2:
-#endif /* __APPLE__ */
+FUNCTION_END(sha3_block_bmi2)
+
+FUNCTION(sha3_block_n_bmi2)
         pushq	%r12
         pushq	%r13
         pushq	%r14
@@ -9288,9 +9269,8 @@ L_sha3_block_n_bmi2_rounds:
         popq	%r13
         popq	%r12
         repz retq
-#ifndef __APPLE__
-.size	sha3_block_n_bmi2,.-sha3_block_n_bmi2
-#endif /* __APPLE__ */
+FUNCTION_END(sha3_block_n_bmi2)
+
 #ifndef __APPLE__
 .data
 #else
@@ -9337,18 +9317,9 @@ L_sha3_block_avx2_rotr:
 .quad	0x17,0x2e
 .quad	0x3e,0x3
 .quad	0x8,0x32
-#ifndef __APPLE__
-.text
-.globl	sha3_block_avx2
-.type	sha3_block_avx2,@function
-.align	16
-sha3_block_avx2:
-#else
-.section	__TEXT,__text
-.globl	_sha3_block_avx2
-.p2align	4
-_sha3_block_avx2:
-#endif /* __APPLE__ */
+
+
+FUNCTION(sha3_block_avx2)
         leaq	L_sha3_avx2_r(%rip), %rdx
         leaq	L_sha3_block_avx2_rotl(%rip), %rax
         addq	$0x40, %rax
@@ -9500,21 +9471,9 @@ L_sha3_block_avx2_start:
         vmovdqu	%ymm6, 168(%rdi)
         vzeroupper
         repz retq
-#ifndef __APPLE__
-.size	sha3_block_avx2,.-sha3_block_avx2
-#endif /* __APPLE__ */
-#ifndef __APPLE__
-.text
-.globl	kyber_sha3_blocksx4_avx2
-.type	kyber_sha3_blocksx4_avx2,@function
-.align	16
-kyber_sha3_blocksx4_avx2:
-#else
-.section	__TEXT,__text
-.globl	_kyber_sha3_blocksx4_avx2
-.p2align	4
-_kyber_sha3_blocksx4_avx2:
-#endif /* __APPLE__ */
+FUNCTION_END(sha3_block_avx2)
+
+FUNCTION(kyber_sha3_blocksx4_avx2)
         leaq	L_sha3_x4_avx2_r(%rip), %rdx
         vmovdqu	(%rdi), %ymm15
         movq	%rdi, %rax
@@ -14858,9 +14817,8 @@ _kyber_sha3_blocksx4_avx2:
         vmovdqu	%ymm15, (%rdi)
         vzeroupper
         repz retq
-#ifndef __APPLE__
-.size	kyber_sha3_blocksx4_avx2,.-kyber_sha3_blocksx4_avx2
-#endif /* __APPLE__ */
+FUNCTION_END(kyber_sha3_blocksx4_avx2)
+
 #endif /* HAVE_INTEL_AVX2 */
 
 #if defined(__linux__) && defined(__ELF__)

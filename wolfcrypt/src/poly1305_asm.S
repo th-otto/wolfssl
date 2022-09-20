@@ -30,19 +30,10 @@
 #define HAVE_INTEL_AVX2
 #endif /* NO_AVX2_SUPPORT */
 
+#include "asminc.S"
+
 #ifdef HAVE_INTEL_AVX1
-#ifndef __APPLE__
-.text
-.globl	poly1305_setkey_avx
-.type	poly1305_setkey_avx,@function
-.align	16
-poly1305_setkey_avx:
-#else
-.section	__TEXT,__text
-.globl	_poly1305_setkey_avx
-.p2align	4
-_poly1305_setkey_avx:
-#endif /* __APPLE__ */
+FUNCTION(poly1305_setkey_avx)
         movabsq	$0xffffffc0fffffff, %r10
         movabsq	$0xffffffc0ffffffc, %r11
         movq	(%rsi), %rdx
@@ -88,21 +79,9 @@ _poly1305_setkey_avx:
         movq	%r9, 608(%rdi)
         movb	$0x01, 616(%rdi)
         repz retq
-#ifndef __APPLE__
-.size	poly1305_setkey_avx,.-poly1305_setkey_avx
-#endif /* __APPLE__ */
-#ifndef __APPLE__
-.text
-.globl	poly1305_block_avx
-.type	poly1305_block_avx,@function
-.align	16
-poly1305_block_avx:
-#else
-.section	__TEXT,__text
-.globl	_poly1305_block_avx
-.p2align	4
-_poly1305_block_avx:
-#endif /* __APPLE__ */
+FUNCTION_END(poly1305_setkey_avx)
+
+FUNCTION(poly1305_block_avx)
         pushq	%r15
         pushq	%rbx
         pushq	%r12
@@ -172,21 +151,9 @@ _poly1305_block_avx:
         popq	%rbx
         popq	%r15
         repz retq
-#ifndef __APPLE__
-.size	poly1305_block_avx,.-poly1305_block_avx
-#endif /* __APPLE__ */
-#ifndef __APPLE__
-.text
-.globl	poly1305_blocks_avx
-.type	poly1305_blocks_avx,@function
-.align	16
-poly1305_blocks_avx:
-#else
-.section	__TEXT,__text
-.globl	_poly1305_blocks_avx
-.p2align	4
-_poly1305_blocks_avx:
-#endif /* __APPLE__ */
+FUNCTION_END(poly1305_block_avx)
+
+FUNCTION(poly1305_blocks_avx)
         pushq	%r15
         pushq	%rbx
         pushq	%r12
@@ -260,21 +227,9 @@ L_poly1305_avx_blocks_start:
         popq	%rbx
         popq	%r15
         repz retq
-#ifndef __APPLE__
-.size	poly1305_blocks_avx,.-poly1305_blocks_avx
-#endif /* __APPLE__ */
-#ifndef __APPLE__
-.text
-.globl	poly1305_final_avx
-.type	poly1305_final_avx,@function
-.align	16
-poly1305_final_avx:
-#else
-.section	__TEXT,__text
-.globl	_poly1305_final_avx
-.p2align	4
-_poly1305_final_avx:
-#endif /* __APPLE__ */
+FUNCTION_END(poly1305_blocks_avx)
+
+FUNCTION(poly1305_final_avx)
         pushq	%rbx
         pushq	%r12
         movq	%rsi, %rbx
@@ -291,11 +246,7 @@ L_poly1305_avx_final_cmp_rem:
         jl	L_poly1305_avx_final_zero_rem
         movb	$0x00, 616(%rdi)
         leaq	480(%rdi), %rsi
-#ifndef __APPLE__
-        callq	poly1305_block_avx@plt
-#else
-        callq	_poly1305_block_avx
-#endif /* __APPLE__ */
+        CALL(poly1305_block_avx)
 L_poly1305_avx_final_no_more:
         movq	24(%rdi), %rax
         movq	32(%rdi), %rdx
@@ -341,23 +292,11 @@ L_poly1305_avx_final_no_more:
         popq	%r12
         popq	%rbx
         repz retq
-#ifndef __APPLE__
-.size	poly1305_final_avx,.-poly1305_final_avx
-#endif /* __APPLE__ */
+FUNCTION_END(poly1305_final_avx)
+
 #endif /* HAVE_INTEL_AVX1 */
 #ifdef HAVE_INTEL_AVX2
-#ifndef __APPLE__
-.text
-.globl	poly1305_calc_powers_avx2
-.type	poly1305_calc_powers_avx2,@function
-.align	16
-poly1305_calc_powers_avx2:
-#else
-.section	__TEXT,__text
-.globl	_poly1305_calc_powers_avx2
-.p2align	4
-_poly1305_calc_powers_avx2:
-#endif /* __APPLE__ */
+FUNCTION(poly1305_calc_powers_avx2)
         pushq	%r12
         pushq	%r13
         pushq	%r14
@@ -611,26 +550,10 @@ _poly1305_calc_powers_avx2:
         popq	%r13
         popq	%r12
         repz retq
-#ifndef __APPLE__
-.size	poly1305_calc_powers_avx2,.-poly1305_calc_powers_avx2
-#endif /* __APPLE__ */
-#ifndef __APPLE__
-.text
-.globl	poly1305_setkey_avx2
-.type	poly1305_setkey_avx2,@function
-.align	16
-poly1305_setkey_avx2:
-#else
-.section	__TEXT,__text
-.globl	_poly1305_setkey_avx2
-.p2align	4
-_poly1305_setkey_avx2:
-#endif /* __APPLE__ */
-#ifndef __APPLE__
-        callq	poly1305_setkey_avx@plt
-#else
-        callq	_poly1305_setkey_avx
-#endif /* __APPLE__ */
+FUNCTION_END(poly1305_calc_powers_avx2)
+
+FUNCTION(poly1305_setkey_avx2)
+        CALL(poly1305_setkey_avx)
         vpxor	%ymm0, %ymm0, %ymm0
         vmovdqu	%ymm0, 64(%rdi)
         vmovdqu	%ymm0, 96(%rdi)
@@ -640,9 +563,8 @@ _poly1305_setkey_avx2:
         movq	$0x00, 608(%rdi)
         movw	$0x00, 616(%rdi)
         repz retq
-#ifndef __APPLE__
-.size	poly1305_setkey_avx2,.-poly1305_setkey_avx2
-#endif /* __APPLE__ */
+FUNCTION_END(poly1305_setkey_avx2)
+
 #ifndef __APPLE__
 .data
 #else
@@ -669,18 +591,8 @@ L_poly1305_avx2_blocks_mask:
 L_poly1305_avx2_blocks_hibit:
 .quad	0x1000000, 0x1000000
 .quad	0x1000000, 0x1000000
-#ifndef __APPLE__
-.text
-.globl	poly1305_blocks_avx2
-.type	poly1305_blocks_avx2,@function
-.align	16
-poly1305_blocks_avx2:
-#else
-.section	__TEXT,__text
-.globl	_poly1305_blocks_avx2
-.p2align	4
-_poly1305_blocks_avx2:
-#endif /* __APPLE__ */
+
+FUNCTION(poly1305_blocks_avx2)
         pushq	%r12
         pushq	%rbx
         subq	$0x140, %rsp
@@ -1026,21 +938,9 @@ L_poly1305_avx2_blocks_complete:
         popq	%rbx
         popq	%r12
         repz retq
-#ifndef __APPLE__
-.size	poly1305_blocks_avx2,.-poly1305_blocks_avx2
-#endif /* __APPLE__ */
-#ifndef __APPLE__
-.text
-.globl	poly1305_final_avx2
-.type	poly1305_final_avx2,@function
-.align	16
-poly1305_final_avx2:
-#else
-.section	__TEXT,__text
-.globl	_poly1305_final_avx2
-.p2align	4
-_poly1305_final_avx2:
-#endif /* __APPLE__ */
+FUNCTION_END(poly1305_blocks_avx2)
+
+FUNCTION(poly1305_final_avx2)
         movb	$0x01, 616(%rdi)
         movb	617(%rdi), %cl
         cmpb	$0x00, %cl
@@ -1048,11 +948,7 @@ _poly1305_final_avx2:
         pushq	%rsi
         movq	$0x40, %rdx
         xorq	%rsi, %rsi
-#ifndef __APPLE__
-        callq	poly1305_blocks_avx2@plt
-#else
-        callq	_poly1305_blocks_avx2
-#endif /* __APPLE__ */
+        CALL(poly1305_blocks_avx2)
         popq	%rsi
 L_poly1305_avx2_final_done_blocks_X4:
         movq	608(%rdi), %rax
@@ -1065,11 +961,7 @@ L_poly1305_avx2_final_done_blocks_X4:
         pushq	%rsi
         movq	%rcx, %rdx
         leaq	480(%rdi), %rsi
-#ifndef __APPLE__
-        callq	poly1305_blocks_avx@plt
-#else
-        callq	_poly1305_blocks_avx
-#endif /* __APPLE__ */
+        CALL(poly1305_blocks_avx)
         popq	%rsi
         popq	%rax
         popq	%rcx
@@ -1085,11 +977,7 @@ L_poly1305_avx2_final_start_copy:
 L_poly1305_avx2_final_cmp_copy:
         cmp	%rcx, %rax
         jne	L_poly1305_avx2_final_start_copy
-#ifndef __APPLE__
-        callq	poly1305_final_avx@plt
-#else
-        callq	_poly1305_final_avx
-#endif /* __APPLE__ */
+        CALL(poly1305_final_avx)
         vpxor	%ymm0, %ymm0, %ymm0
         vmovdqu	%ymm0, 64(%rdi)
         vmovdqu	%ymm0, 96(%rdi)
@@ -1103,11 +991,11 @@ L_poly1305_avx2_final_cmp_copy:
         movq	$0x00, 608(%rdi)
         movw	$0x00, 616(%rdi)
         repz retq
-#ifndef __APPLE__
-.size	poly1305_final_avx2,.-poly1305_final_avx2
-#endif /* __APPLE__ */
+FUNCTION_END(poly1305_final_avx2)
+
 #endif /* HAVE_INTEL_AVX2 */
 
 #if defined(__linux__) && defined(__ELF__)
 .section	.note.GNU-stack,"",%progbits
 #endif
+

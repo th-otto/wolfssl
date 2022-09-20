@@ -1857,7 +1857,9 @@ extern void uITRON4_free(void *p) ;
    requirement here.  The record header of SSL/TLS will prevent easy alignment.
    This hint tries to help as much as possible.  */
 #ifndef WOLFSSL_GENERAL_ALIGNMENT
-    #ifdef WOLFSSL_AESNI
+    #if defined(__MINT__)
+        #define WOLFSSL_GENERAL_ALIGNMENT 0
+    #elif defined(WOLFSSL_AESNI)
         #define WOLFSSL_GENERAL_ALIGNMENT 16
     #elif defined(XSTREAM_ALIGN)
         #define WOLFSSL_GENERAL_ALIGNMENT  4

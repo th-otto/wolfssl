@@ -309,7 +309,7 @@ typedef struct w64wrapper {
         #if defined(_MSC_VER)
             #define THREAD_LS_T __declspec(thread)
         /* Thread local storage only in FreeRTOS v8.2.1 and higher */
-        #elif defined(FREERTOS) || defined(FREERTOS_TCP) || \
+        #elif defined(FREERTOS) || defined(FREERTOS_TCP) || defined(__MINT__) || \
                                                          defined(WOLFSSL_ZEPHYR)
             #define THREAD_LS_T
         #else
@@ -830,9 +830,9 @@ typedef struct w64wrapper {
             #define XTOUPPER(c)     toupper((c))
         #endif
         #if defined(OPENSSL_ALL) || defined(OPENSSL_EXTRA) || defined(OPENSSL_EXTRA_X509_SMALL)
-        #define XISALNUM(c)     isalnum((c))
-        #define XISASCII(c)     isascii((c))
-        #define XISSPACE(c)     isspace((c))
+        #define XISALNUM(c)     isalnum((unsigned char)(c))
+        #define XISASCII(c)     isascii((unsigned char)(c))
+        #define XISSPACE(c)     isspace((unsigned char)(c))
         #endif
         /* needed by wolfSSL_check_domain_name() */
         #define XTOLOWER(c)      tolower((c))
@@ -1155,7 +1155,9 @@ typedef struct w64wrapper {
         #endif /* !ALIGN16 */
 
         #if !defined (ALIGN32)
-            #if defined(__IAR_SYSTEMS_ICC__) || defined(__GNUC__) || \
+            #if defined(__MINT__)
+                #define ALIGN32
+            #elif defined(__IAR_SYSTEMS_ICC__) || defined(__GNUC__) || \
                 defined(__llvm__)
                 #define ALIGN32 __attribute__ ( (aligned (32)))
             #elif defined(_MSC_VER)
@@ -1168,7 +1170,9 @@ typedef struct w64wrapper {
         #endif /* !ALIGN32 */
 
         #if !defined(ALIGN64)
-            #if defined(__IAR_SYSTEMS_ICC__) || defined(__GNUC__) || \
+            #if defined(__MINT__)
+                #define ALIGN64
+            #elif defined(__IAR_SYSTEMS_ICC__) || defined(__GNUC__) || \
                 defined(__llvm__)
                 #define ALIGN64 __attribute__ ( (aligned (64)))
             #elif defined(_MSC_VER)
@@ -1180,7 +1184,9 @@ typedef struct w64wrapper {
             #endif
         #endif /* !ALIGN64 */
 
-        #if defined(__IAR_SYSTEMS_ICC__) || defined(__GNUC__) || \
+        #if defined(__MINT__)
+            #define ALIGN128
+        #elif defined(__IAR_SYSTEMS_ICC__) || defined(__GNUC__) || \
             defined(__llvm__)
             #define ALIGN128 __attribute__ ( (aligned (128)))
         #elif defined(_MSC_VER)
@@ -1191,7 +1197,9 @@ typedef struct w64wrapper {
             #define ALIGN128
         #endif
 
-        #if defined(__IAR_SYSTEMS_ICC__) || defined(__GNUC__)  || \
+        #if defined(__MINT__)
+            #define ALIGN256
+        #elif defined(__IAR_SYSTEMS_ICC__) || defined(__GNUC__)  || \
             defined(__llvm__)
             #define ALIGN256 __attribute__ ( (aligned (256)))
         #elif defined(_MSC_VER)

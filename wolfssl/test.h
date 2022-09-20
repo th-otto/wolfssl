@@ -157,7 +157,9 @@
     #include <sys/ioctl.h>
     #include <sys/time.h>
     #include <sys/socket.h>
+#ifndef SINGLE_THREADED
     #include <pthread.h>
+#endif
     #include <fcntl.h>
     #ifdef TEST_IPV6
         #include <netdb.h>
@@ -552,7 +554,7 @@ typedef struct tcp_ready {
     word16 ready;              /* predicate */
     word16 port;
     char*  srfName;     /* server ready file name */
-#if defined(_POSIX_THREADS) && !defined(__MINGW32__)
+#if defined(_POSIX_THREADS) && !defined(__MINGW32__) && !defined(SINGLE_THREADED)
     pthread_mutex_t mutex;
     pthread_cond_t  cond;
 #endif
@@ -2095,7 +2097,7 @@ static WC_INLINE void udp_accept(SOCKET_T* sockfd, SOCKET_T* clientfd,
     #endif
 
     if (args != NULL && args->signal != NULL) {
-#if defined(_POSIX_THREADS) && !defined(__MINGW32__)
+#if defined(_POSIX_THREADS) && !defined(__MINGW32__) && !defined(SINGLE_THREADED)
         /* signal ready to accept data */
         tcp_ready* ready = args->signal;
         PTHREAD_CHECK_RET(pthread_mutex_lock(&ready->mutex));
@@ -2142,7 +2144,7 @@ static WC_INLINE void tcp_accept(SOCKET_T* sockfd, SOCKET_T* clientfd,
     if(do_listen) {
         tcp_listen(sockfd, &port, useAnyAddr, udp, sctp);
 
-    #if defined(_POSIX_THREADS) && defined(NO_MAIN_DRIVER) && !defined(__MINGW32__)
+    #if defined(_POSIX_THREADS) && defined(NO_MAIN_DRIVER) && !defined(__MINGW32__) && !defined(SINGLE_THREADED)
         /* signal ready to tcp_accept */
         if (args)
             ready = args->signal;
