@@ -29,6 +29,12 @@
 
 #include <wolfssl/wolfcrypt/types.h>
 
+#ifdef USE_INTEL_SPEEDUP
+#define FE_SYSVABI WOLF_CRYPT_SYSVABI
+#else
+#define FE_SYSVABI
+#endif
+
 #if defined(USE_INTEL_SPEEDUP) && !defined(NO_CURVED25519_X64)
     #define CURVED25519_X64
 #elif defined(HAVE___UINT128_T) && !defined(NO_CURVED25519_128BIT)
@@ -73,9 +79,9 @@ Bounds on each t[i] vary depending on context.
 
 
 #if !defined(FREESCALE_LTC_ECC)
-WOLFSSL_LOCAL void fe_init(void);
+WOLFSSL_LOCAL FE_SYSVABI void fe_init(void);
 
-WOLFSSL_LOCAL int  curve25519(byte * q, const byte * n, const byte * p);
+WOLFSSL_LOCAL FE_SYSVABI int  curve25519(byte * q, const byte * n, const byte * p);
 #endif
 
 /* default to be faster but take more memory */
@@ -91,58 +97,58 @@ WOLFSSL_LOCAL int  curve25519(byte * q, const byte * n, const byte * p);
     typedef sword32  fe[10];
 #endif
 
-WOLFSSL_LOCAL void fe_copy(fe h,const fe f);
-WOLFSSL_LOCAL void fe_add(fe h,const fe f,const fe g);
-WOLFSSL_LOCAL void fe_neg(fe h,const fe f);
-WOLFSSL_LOCAL void fe_sub(fe h,const fe f,const fe g);
-WOLFSSL_LOCAL void fe_invert(fe out,const fe z);
-WOLFSSL_LOCAL void fe_mul(fe h,const fe f,const fe g);
+WOLFSSL_LOCAL FE_SYSVABI void fe_copy(fe h,const fe f);
+WOLFSSL_LOCAL FE_SYSVABI void fe_add(fe h,const fe f,const fe g);
+WOLFSSL_LOCAL FE_SYSVABI void fe_neg(fe h,const fe f);
+WOLFSSL_LOCAL FE_SYSVABI void fe_sub(fe h,const fe f,const fe g);
+WOLFSSL_LOCAL FE_SYSVABI void fe_invert(fe out,const fe z);
+WOLFSSL_LOCAL FE_SYSVABI void fe_mul(fe h,const fe f,const fe g);
 
 
 /* Based On Daniel J Bernstein's curve25519 and ed25519 Public Domain ref10
    work. */
 
-WOLFSSL_LOCAL void fe_0(fe h);
-WOLFSSL_LOCAL void fe_1(fe h);
-WOLFSSL_LOCAL int  fe_isnonzero(const fe f);
-WOLFSSL_LOCAL int  fe_isnegative(const fe f);
-WOLFSSL_LOCAL void fe_tobytes(unsigned char *s,const fe h);
-WOLFSSL_LOCAL void fe_sq(fe h,const fe f);
-WOLFSSL_LOCAL void fe_sq2(fe h,const fe f);
-WOLFSSL_LOCAL void fe_frombytes(fe h,const unsigned char *s);
+WOLFSSL_LOCAL FE_SYSVABI void fe_0(fe h);
+WOLFSSL_LOCAL FE_SYSVABI void fe_1(fe h);
+WOLFSSL_LOCAL FE_SYSVABI int  fe_isnonzero(const fe f);
+WOLFSSL_LOCAL FE_SYSVABI int  fe_isnegative(const fe f);
+WOLFSSL_LOCAL FE_SYSVABI void fe_tobytes(unsigned char *s,const fe h);
+WOLFSSL_LOCAL FE_SYSVABI void fe_sq(fe h,const fe f);
+WOLFSSL_LOCAL FE_SYSVABI void fe_sq2(fe h,const fe f);
+WOLFSSL_LOCAL FE_SYSVABI void fe_frombytes(fe h,const unsigned char *s);
 WOLFSSL_LOCAL void fe_cswap(fe f, fe g, int b);
-WOLFSSL_LOCAL void fe_mul121666(fe h,fe f);
-WOLFSSL_LOCAL void fe_cmov(fe f, const fe g, int b);
-WOLFSSL_LOCAL void fe_pow22523(fe out,const fe z);
+WOLFSSL_LOCAL FE_SYSVABI void fe_mul121666(fe h,fe f);
+WOLFSSL_LOCAL FE_SYSVABI void fe_cmov(fe f, const fe g, int b);
+WOLFSSL_LOCAL FE_SYSVABI void fe_pow22523(fe out,const fe z);
 
 /* 64 type needed for SHA512 */
 WOLFSSL_LOCAL word64 load_3(const unsigned char *in);
 WOLFSSL_LOCAL word64 load_4(const unsigned char *in);
 
 #ifdef CURVED25519_ASM
-WOLFSSL_LOCAL void fe_ge_to_p2(fe rx, fe ry, fe rz, const fe px, const fe py,
+WOLFSSL_LOCAL FE_SYSVABI void fe_ge_to_p2(fe rx, fe ry, fe rz, const fe px, const fe py,
                                const fe pz, const fe pt);
-WOLFSSL_LOCAL void fe_ge_to_p3(fe rx, fe ry, fe rz, fe rt, const fe px,
+WOLFSSL_LOCAL FE_SYSVABI void fe_ge_to_p3(fe rx, fe ry, fe rz, fe rt, const fe px,
                                const fe py, const fe pz, const fe pt);
-WOLFSSL_LOCAL void fe_ge_dbl(fe rx, fe ry, fe rz, fe rt, const fe px,
+WOLFSSL_LOCAL FE_SYSVABI void fe_ge_dbl(fe rx, fe ry, fe rz, fe rt, const fe px,
                              const fe py, const fe pz);
-WOLFSSL_LOCAL void fe_ge_madd(fe rx, fe ry, fe rz, fe rt, const fe px,
+WOLFSSL_LOCAL FE_SYSVABI void fe_ge_madd(fe rx, fe ry, fe rz, fe rt, const fe px,
                               const fe py, const fe pz, const fe pt,
                               const fe qxy2d, const fe qyplusx,
                               const fe qyminusx);
-WOLFSSL_LOCAL void fe_ge_msub(fe rx, fe ry, fe rz, fe rt, const fe px,
+WOLFSSL_LOCAL FE_SYSVABI void fe_ge_msub(fe rx, fe ry, fe rz, fe rt, const fe px,
                               const fe py, const fe pz, const fe pt,
                               const fe qxy2d, const fe qyplusx,
                               const fe qyminusx);
-WOLFSSL_LOCAL void fe_ge_add(fe rx, fe ry, fe rz, fe rt, const fe px,
+WOLFSSL_LOCAL FE_SYSVABI void fe_ge_add(fe rx, fe ry, fe rz, fe rt, const fe px,
                              const fe py, const fe pz, const fe pt, const fe qz,
                              const fe qt2d, const fe qyplusx,
                              const fe qyminusx);
-WOLFSSL_LOCAL void fe_ge_sub(fe rx, fe ry, fe rz, fe rt, const fe px,
+WOLFSSL_LOCAL FE_SYSVABI void fe_ge_sub(fe rx, fe ry, fe rz, fe rt, const fe px,
                              const fe py, const fe pz, const fe pt, const fe qz,
                              const fe qt2d, const fe qyplusx,
                              const fe qyminusx);
-WOLFSSL_LOCAL void fe_cmov_table(fe* r, fe* base, signed char b);
+WOLFSSL_LOCAL FE_SYSVABI void fe_cmov_table(fe* r, fe* base, signed char b);
 #endif /* CURVED25519_ASM */
 #endif /* !CURVE25519_SMALL || !ED25519_SMALL */
 

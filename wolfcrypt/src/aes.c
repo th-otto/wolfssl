@@ -732,24 +732,24 @@ block cipher mechanism that uses n-bit binary string parameter key with 128-bits
     /* tell C compiler these are asm functions in case any mix up of ABI underscore
        prefix between clang/gcc/llvm etc */
     #ifdef HAVE_AES_CBC
-        void AES_CBC_encrypt(const unsigned char* in, unsigned char* out,
+        WOLF_CRYPT_SYSVABI void AES_CBC_encrypt(const unsigned char* in, unsigned char* out,
                              unsigned char* ivec, unsigned long length,
                              const unsigned char* KS, int nr)
                              XASM_LINK("AES_CBC_encrypt");
 
         #ifdef HAVE_AES_DECRYPT
             #if defined(WOLFSSL_AESNI_BY4)
-                void AES_CBC_decrypt_by4(const unsigned char* in, unsigned char* out,
+                WOLF_CRYPT_SYSVABI void AES_CBC_decrypt_by4(const unsigned char* in, unsigned char* out,
                                          unsigned char* ivec, unsigned long length,
                                          const unsigned char* KS, int nr)
                                          XASM_LINK("AES_CBC_decrypt_by4");
             #elif defined(WOLFSSL_AESNI_BY6)
-                void AES_CBC_decrypt_by6(const unsigned char* in, unsigned char* out,
+                WOLF_CRYPT_SYSVABI void AES_CBC_decrypt_by6(const unsigned char* in, unsigned char* out,
                                          unsigned char* ivec, unsigned long length,
                                          const unsigned char* KS, int nr)
                                          XASM_LINK("AES_CBC_decrypt_by6");
             #else /* WOLFSSL_AESNI_BYx */
-                void AES_CBC_decrypt_by8(const unsigned char* in, unsigned char* out,
+                WOLF_CRYPT_SYSVABI void AES_CBC_decrypt_by8(const unsigned char* in, unsigned char* out,
                                          unsigned char* ivec, unsigned long length,
                                          const unsigned char* KS, int nr)
                                          XASM_LINK("AES_CBC_decrypt_by8");
@@ -757,25 +757,25 @@ block cipher mechanism that uses n-bit binary string parameter key with 128-bits
         #endif /* HAVE_AES_DECRYPT */
     #endif /* HAVE_AES_CBC */
 
-    void AES_ECB_encrypt(const unsigned char* in, unsigned char* out,
+    WOLF_CRYPT_SYSVABI void AES_ECB_encrypt(const unsigned char* in, unsigned char* out,
                          unsigned long length, const unsigned char* KS, int nr)
                          XASM_LINK("AES_ECB_encrypt");
 
     #ifdef HAVE_AES_DECRYPT
-        void AES_ECB_decrypt(const unsigned char* in, unsigned char* out,
+        WOLF_CRYPT_SYSVABI void AES_ECB_decrypt(const unsigned char* in, unsigned char* out,
                              unsigned long length, const unsigned char* KS, int nr)
                              XASM_LINK("AES_ECB_decrypt");
     #endif
 
-    void AES_128_Key_Expansion(const unsigned char* userkey,
+    WOLF_CRYPT_SYSVABI void AES_128_Key_Expansion(const unsigned char* userkey,
                                unsigned char* key_schedule)
                                XASM_LINK("AES_128_Key_Expansion");
 
-    void AES_192_Key_Expansion(const unsigned char* userkey,
+    WOLF_CRYPT_SYSVABI void AES_192_Key_Expansion(const unsigned char* userkey,
                                unsigned char* key_schedule)
                                XASM_LINK("AES_192_Key_Expansion");
 
-    void AES_256_Key_Expansion(const unsigned char* userkey,
+    WOLF_CRYPT_SYSVABI void AES_256_Key_Expansion(const unsigned char* userkey,
                                unsigned char* key_schedule)
                                XASM_LINK("AES_256_Key_Expansion");
 
@@ -4848,14 +4848,14 @@ int wc_AesGcmSetKey(Aes* aes, const byte* key, word32 len)
 
 #ifndef _MSC_VER
 
-void AES_GCM_encrypt(const unsigned char *in, unsigned char *out,
+WOLF_CRYPT_SYSVABI void AES_GCM_encrypt(const unsigned char *in, unsigned char *out,
                      const unsigned char* addt, const unsigned char* ivec,
                      unsigned char *tag, word32 nbytes,
                      word32 abytes, word32 ibytes,
                      word32 tbytes, const unsigned char* key, int nr)
                      XASM_LINK("AES_GCM_encrypt");
 #ifdef HAVE_INTEL_AVX1
-void AES_GCM_encrypt_avx1(const unsigned char *in, unsigned char *out,
+WOLF_CRYPT_SYSVABI void AES_GCM_encrypt_avx1(const unsigned char *in, unsigned char *out,
                           const unsigned char* addt, const unsigned char* ivec,
                           unsigned char *tag, word32 nbytes,
                           word32 abytes, word32 ibytes,
@@ -4863,7 +4863,7 @@ void AES_GCM_encrypt_avx1(const unsigned char *in, unsigned char *out,
                           int nr)
                           XASM_LINK("AES_GCM_encrypt_avx1");
 #ifdef HAVE_INTEL_AVX2
-void AES_GCM_encrypt_avx2(const unsigned char *in, unsigned char *out,
+WOLF_CRYPT_SYSVABI void AES_GCM_encrypt_avx2(const unsigned char *in, unsigned char *out,
                           const unsigned char* addt, const unsigned char* ivec,
                           unsigned char *tag, word32 nbytes,
                           word32 abytes, word32 ibytes,
@@ -4874,21 +4874,21 @@ void AES_GCM_encrypt_avx2(const unsigned char *in, unsigned char *out,
 #endif /* HAVE_INTEL_AVX1 */
 
 #ifdef HAVE_AES_DECRYPT
-void AES_GCM_decrypt(const unsigned char *in, unsigned char *out,
+WOLF_CRYPT_SYSVABI void AES_GCM_decrypt(const unsigned char *in, unsigned char *out,
                      const unsigned char* addt, const unsigned char* ivec,
                      const unsigned char *tag, word32 nbytes, word32 abytes,
                      word32 ibytes, word32 tbytes, const unsigned char* key,
                      int nr, int* res)
                      XASM_LINK("AES_GCM_decrypt");
 #ifdef HAVE_INTEL_AVX1
-void AES_GCM_decrypt_avx1(const unsigned char *in, unsigned char *out,
+WOLF_CRYPT_SYSVABI void AES_GCM_decrypt_avx1(const unsigned char *in, unsigned char *out,
                           const unsigned char* addt, const unsigned char* ivec,
                           const unsigned char *tag, word32 nbytes,
                           word32 abytes, word32 ibytes, word32 tbytes,
                           const unsigned char* key, int nr, int* res)
                           XASM_LINK("AES_GCM_decrypt_avx1");
 #ifdef HAVE_INTEL_AVX2
-void AES_GCM_decrypt_avx2(const unsigned char *in, unsigned char *out,
+WOLF_CRYPT_SYSVABI void AES_GCM_decrypt_avx2(const unsigned char *in, unsigned char *out,
                           const unsigned char* addt, const unsigned char* ivec,
                           const unsigned char *tag, word32 nbytes,
                           word32 abytes, word32 ibytes, word32 tbytes,
@@ -8615,55 +8615,55 @@ static WARN_UNUSED_RESULT int AesGcmFinal_C(
 
 /* Assembly code implementations in: aes_gcm_asm.S */
 #ifdef HAVE_INTEL_AVX2
-extern void AES_GCM_init_avx2(const unsigned char* key, int nr,
+extern WOLF_CRYPT_SYSVABI void AES_GCM_init_avx2(const unsigned char* key, int nr,
     const unsigned char* ivec, unsigned int ibytes, unsigned char* h,
     unsigned char* counter, unsigned char* initCtr);
-extern void AES_GCM_aad_update_avx2(const unsigned char* addt,
+extern WOLF_CRYPT_SYSVABI void AES_GCM_aad_update_avx2(const unsigned char* addt,
     unsigned int abytes, unsigned char* tag, unsigned char* h);
-extern void AES_GCM_encrypt_block_avx2(const unsigned char* key, int nr,
+extern WOLF_CRYPT_SYSVABI void AES_GCM_encrypt_block_avx2(const unsigned char* key, int nr,
     unsigned char* out, const unsigned char* in, unsigned char* counter);
-extern void AES_GCM_ghash_block_avx2(const unsigned char* data,
+extern WOLF_CRYPT_SYSVABI void AES_GCM_ghash_block_avx2(const unsigned char* data,
     unsigned char* tag, unsigned char* h);
 
-extern void AES_GCM_encrypt_update_avx2(const unsigned char* key, int nr,
+extern WOLF_CRYPT_SYSVABI void AES_GCM_encrypt_update_avx2(const unsigned char* key, int nr,
     unsigned char* out, const unsigned char* in, unsigned int nbytes,
     unsigned char* tag, unsigned char* h, unsigned char* counter);
-extern void AES_GCM_encrypt_final_avx2(unsigned char* tag,
+extern WOLF_CRYPT_SYSVABI void AES_GCM_encrypt_final_avx2(unsigned char* tag,
     unsigned char* authTag, unsigned int tbytes, unsigned int nbytes,
     unsigned int abytes, unsigned char* h, unsigned char* initCtr);
 #endif
 #ifdef HAVE_INTEL_AVX1
-extern void AES_GCM_init_avx1(const unsigned char* key, int nr,
+extern WOLF_CRYPT_SYSVABI void AES_GCM_init_avx1(const unsigned char* key, int nr,
     const unsigned char* ivec, unsigned int ibytes, unsigned char* h,
     unsigned char* counter, unsigned char* initCtr);
-extern void AES_GCM_aad_update_avx1(const unsigned char* addt,
+extern WOLF_CRYPT_SYSVABI void AES_GCM_aad_update_avx1(const unsigned char* addt,
     unsigned int abytes, unsigned char* tag, unsigned char* h);
-extern void AES_GCM_encrypt_block_avx1(const unsigned char* key, int nr,
+extern WOLF_CRYPT_SYSVABI void AES_GCM_encrypt_block_avx1(const unsigned char* key, int nr,
     unsigned char* out, const unsigned char* in, unsigned char* counter);
-extern void AES_GCM_ghash_block_avx1(const unsigned char* data,
+extern WOLF_CRYPT_SYSVABI void AES_GCM_ghash_block_avx1(const unsigned char* data,
     unsigned char* tag, unsigned char* h);
 
-extern void AES_GCM_encrypt_update_avx1(const unsigned char* key, int nr,
+extern WOLF_CRYPT_SYSVABI void AES_GCM_encrypt_update_avx1(const unsigned char* key, int nr,
     unsigned char* out, const unsigned char* in, unsigned int nbytes,
     unsigned char* tag, unsigned char* h, unsigned char* counter);
-extern void AES_GCM_encrypt_final_avx1(unsigned char* tag,
+extern WOLF_CRYPT_SYSVABI void AES_GCM_encrypt_final_avx1(unsigned char* tag,
     unsigned char* authTag, unsigned int tbytes, unsigned int nbytes,
     unsigned int abytes, unsigned char* h, unsigned char* initCtr);
 #endif
-extern void AES_GCM_init_aesni(const unsigned char* key, int nr,
+extern WOLF_CRYPT_SYSVABI void AES_GCM_init_aesni(const unsigned char* key, int nr,
     const unsigned char* ivec, unsigned int ibytes, unsigned char* h,
     unsigned char* counter, unsigned char* initCtr);
-extern void AES_GCM_aad_update_aesni(const unsigned char* addt,
+extern WOLF_CRYPT_SYSVABI void AES_GCM_aad_update_aesni(const unsigned char* addt,
     unsigned int abytes, unsigned char* tag, unsigned char* h);
-extern void AES_GCM_encrypt_block_aesni(const unsigned char* key, int nr,
+extern WOLF_CRYPT_SYSVABI void AES_GCM_encrypt_block_aesni(const unsigned char* key, int nr,
     unsigned char* out, const unsigned char* in, unsigned char* counter);
-extern void AES_GCM_ghash_block_aesni(const unsigned char* data,
+extern WOLF_CRYPT_SYSVABI void AES_GCM_ghash_block_aesni(const unsigned char* data,
     unsigned char* tag, unsigned char* h);
 
-extern void AES_GCM_encrypt_update_aesni(const unsigned char* key, int nr,
+extern WOLF_CRYPT_SYSVABI void AES_GCM_encrypt_update_aesni(const unsigned char* key, int nr,
     unsigned char* out, const unsigned char* in, unsigned int nbytes,
     unsigned char* tag, unsigned char* h, unsigned char* counter);
-extern void AES_GCM_encrypt_final_aesni(unsigned char* tag,
+extern WOLF_CRYPT_SYSVABI void AES_GCM_encrypt_final_aesni(unsigned char* tag,
     unsigned char* authTag, unsigned int tbytes, unsigned int nbytes,
     unsigned int abytes, unsigned char* h, unsigned char* initCtr);
 
@@ -9039,25 +9039,25 @@ static WARN_UNUSED_RESULT int AesGcmEncryptFinal_aesni(
 
 /* Assembly code implementations in: aes_gcm_asm.S */
 #ifdef HAVE_INTEL_AVX2
-extern void AES_GCM_decrypt_update_avx2(const unsigned char* key, int nr,
+extern WOLF_CRYPT_SYSVABI void AES_GCM_decrypt_update_avx2(const unsigned char* key, int nr,
     unsigned char* out, const unsigned char* in, unsigned int nbytes,
     unsigned char* tag, unsigned char* h, unsigned char* counter);
-extern void AES_GCM_decrypt_final_avx2(unsigned char* tag,
+extern WOLF_CRYPT_SYSVABI void AES_GCM_decrypt_final_avx2(unsigned char* tag,
     const unsigned char* authTag, unsigned int tbytes, unsigned int nbytes,
     unsigned int abytes, unsigned char* h, unsigned char* initCtr, int* res);
 #endif
 #ifdef HAVE_INTEL_AVX1
-extern void AES_GCM_decrypt_update_avx1(const unsigned char* key, int nr,
+extern WOLF_CRYPT_SYSVABI void AES_GCM_decrypt_update_avx1(const unsigned char* key, int nr,
     unsigned char* out, const unsigned char* in, unsigned int nbytes,
     unsigned char* tag, unsigned char* h, unsigned char* counter);
-extern void AES_GCM_decrypt_final_avx1(unsigned char* tag,
+extern WOLF_CRYPT_SYSVABI void AES_GCM_decrypt_final_avx1(unsigned char* tag,
     const unsigned char* authTag, unsigned int tbytes, unsigned int nbytes,
     unsigned int abytes, unsigned char* h, unsigned char* initCtr, int* res);
 #endif
-extern void AES_GCM_decrypt_update_aesni(const unsigned char* key, int nr,
+extern WOLF_CRYPT_SYSVABI void AES_GCM_decrypt_update_aesni(const unsigned char* key, int nr,
     unsigned char* out, const unsigned char* in, unsigned int nbytes,
     unsigned char* tag, unsigned char* h, unsigned char* counter);
-extern void AES_GCM_decrypt_final_aesni(unsigned char* tag,
+extern WOLF_CRYPT_SYSVABI void AES_GCM_decrypt_final_aesni(unsigned char* tag,
     const unsigned char* authTag, unsigned int tbytes, unsigned int nbytes,
     unsigned int abytes, unsigned char* h, unsigned char* initCtr, int* res);
 

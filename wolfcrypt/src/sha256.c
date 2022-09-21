@@ -173,7 +173,8 @@ on the specific device platform.
 #endif
 
 
-#if defined(USE_INTEL_SPEEDUP)
+/* gives internal compiler error on cygwin :( */
+#if defined(USE_INTEL_SPEEDUP) && !defined(__CYGWIN__) && !defined(__MINGW32__)
     #if defined(__GNUC__) && ((__GNUC__ < 4) || \
                               (__GNUC__ == 4 && __GNUC_MINOR__ <= 8))
         #undef  NO_AVX2_SUPPORT
@@ -315,27 +316,31 @@ static int InitSha256(wc_Sha256* sha256)
      */
 
     /* #if defined(HAVE_INTEL_AVX1/2) at the tail of sha256 */
-    static int Transform_Sha256(wc_Sha256* sha256, const byte* data);
+    static
+#if defined(HAVE_INTEL_AVX1) || defined(HAVE_INTEL_AVX2)
+WOLF_CRYPT_SYSVABI
+#endif
+    int Transform_Sha256(wc_Sha256* sha256, const byte* data);
 
 #ifdef __cplusplus
     extern "C" {
 #endif
 
     #if defined(HAVE_INTEL_AVX1)
-        extern int Transform_Sha256_AVX1(wc_Sha256 *sha256, const byte* data);
-        extern int Transform_Sha256_AVX1_Len(wc_Sha256* sha256,
+        extern WOLF_CRYPT_SYSVABI int Transform_Sha256_AVX1(wc_Sha256 *sha256, const byte* data);
+        extern WOLF_CRYPT_SYSVABI int Transform_Sha256_AVX1_Len(wc_Sha256* sha256,
                                              const byte* data, word32 len);
     #endif
     #if defined(HAVE_INTEL_AVX2)
-        extern int Transform_Sha256_AVX2(wc_Sha256 *sha256, const byte* data);
-        extern int Transform_Sha256_AVX2_Len(wc_Sha256* sha256,
+        extern WOLF_CRYPT_SYSVABI int Transform_Sha256_AVX2(wc_Sha256 *sha256, const byte* data);
+        extern WOLF_CRYPT_SYSVABI int Transform_Sha256_AVX2_Len(wc_Sha256* sha256,
                                              const byte* data, word32 len);
         #ifdef HAVE_INTEL_RORX
-        extern int Transform_Sha256_AVX1_RORX(wc_Sha256 *sha256, const byte* data);
-        extern int Transform_Sha256_AVX1_RORX_Len(wc_Sha256* sha256,
+        extern WOLF_CRYPT_SYSVABI int Transform_Sha256_AVX1_RORX(wc_Sha256 *sha256, const byte* data);
+        extern WOLF_CRYPT_SYSVABI int Transform_Sha256_AVX1_RORX_Len(wc_Sha256* sha256,
                                                   const byte* data, word32 len);
-        extern int Transform_Sha256_AVX2_RORX(wc_Sha256 *sha256, const byte* data);
-        extern int Transform_Sha256_AVX2_RORX_Len(wc_Sha256* sha256,
+        extern WOLF_CRYPT_SYSVABI int Transform_Sha256_AVX2_RORX(wc_Sha256 *sha256, const byte* data);
+        extern WOLF_CRYPT_SYSVABI int Transform_Sha256_AVX2_RORX_Len(wc_Sha256* sha256,
                                                   const byte* data, word32 len);
         #endif /* HAVE_INTEL_RORX */
     #endif /* HAVE_INTEL_AVX2 */
@@ -344,9 +349,19 @@ static int InitSha256(wc_Sha256* sha256)
     }  /* extern "C" */
 #endif
 
-    static int (*Transform_Sha256_p)(wc_Sha256* sha256, const byte* data);
+    static
+    int (
+#if defined(HAVE_INTEL_AVX1) || defined(HAVE_INTEL_AVX2)
+WOLF_CRYPT_SYSVABI
+#endif
+    *Transform_Sha256_p)(wc_Sha256* sha256, const byte* data);
                                                        /* = _Transform_Sha256 */
-    static int (*Transform_Sha256_Len_p)(wc_Sha256* sha256, const byte* data,
+    static
+    int (
+#if defined(HAVE_INTEL_AVX1) || defined(HAVE_INTEL_AVX2)
+WOLF_CRYPT_SYSVABI
+#endif
+    *Transform_Sha256_Len_p)(wc_Sha256* sha256, const byte* data,
                                          word32 len);
                                                                     /* = NULL */
     static int transform_check = 0;
@@ -508,7 +523,11 @@ static int InitSha256(wc_Sha256* sha256)
         return ret;
     }
 
-    static int Transform_Sha256(wc_Sha256* sha256, const byte* data)
+    static
+#if defined(HAVE_INTEL_AVX1) || defined(HAVE_INTEL_AVX2)
+WOLF_CRYPT_SYSVABI
+#endif
+    int Transform_Sha256(wc_Sha256* sha256, const byte* data)
     {
         int ret = wolfSSL_CryptHwMutexLock();
         if (ret == 0) {
@@ -522,7 +541,11 @@ static int InitSha256(wc_Sha256* sha256)
         return ret;
     }
 
-    static int Transform_Sha256_Len(wc_Sha256* sha256, const byte* data,
+    static
+#if defined(HAVE_INTEL_AVX1) || defined(HAVE_INTEL_AVX2)
+WOLF_CRYPT_SYSVABI
+#endif
+    int Transform_Sha256_Len(wc_Sha256* sha256, const byte* data,
         word32 len)
     {
         int ret = wolfSSL_CryptHwMutexLock();
@@ -897,7 +920,11 @@ static int InitSha256(wc_Sha256* sha256)
          d(j) += t0; \
          h(j)  = t0 + t1
 
-    static int Transform_Sha256(wc_Sha256* sha256, const byte* data)
+    static
+#if defined(HAVE_INTEL_AVX1) || defined(HAVE_INTEL_AVX2)
+WOLF_CRYPT_SYSVABI
+#endif
+    int Transform_Sha256(wc_Sha256* sha256, const byte* data)
     {
         word32 S[8], t0, t1;
         int i;
@@ -978,7 +1005,11 @@ static int InitSha256(wc_Sha256* sha256)
          d(j) += t0; \
          h(j)  = t0 + t1
 
-    static int Transform_Sha256(wc_Sha256* sha256, const byte* data)
+    static
+#if defined(HAVE_INTEL_AVX1) || defined(HAVE_INTEL_AVX2)
+WOLF_CRYPT_SYSVABI
+#endif
+    int Transform_Sha256(wc_Sha256* sha256, const byte* data)
     {
         word32 S[8], t0, t1;
         int i;

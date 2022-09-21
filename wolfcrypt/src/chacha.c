@@ -316,11 +316,11 @@ int wc_XChacha_SetKey(ChaCha *ctx,
     extern "C" {
 #endif
 
-extern void chacha_encrypt_x64(ChaCha* ctx, const byte* m, byte* c,
+extern WOLF_CRYPT_SYSVABI void chacha_encrypt_x64(ChaCha* ctx, const byte* m, byte* c,
                                word32 bytes);
-extern void chacha_encrypt_avx1(ChaCha* ctx, const byte* m, byte* c,
+extern WOLF_CRYPT_SYSVABI void chacha_encrypt_avx1(ChaCha* ctx, const byte* m, byte* c,
                                 word32 bytes);
-extern void chacha_encrypt_avx2(ChaCha* ctx, const byte* m, byte* c,
+extern WOLF_CRYPT_SYSVABI void chacha_encrypt_avx2(ChaCha* ctx, const byte* m, byte* c,
                                 word32 bytes);
 
 #ifdef __cplusplus

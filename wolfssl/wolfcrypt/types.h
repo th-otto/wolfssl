@@ -1411,6 +1411,12 @@ typedef struct w64wrapper {
         #pragma warning(disable: 4028)
     #endif
 
+#if defined(__CYGWIN__) || defined(__MINWG32__)
+#define WOLF_CRYPT_SYSVABI __attribute__((sysv_abi))
+#else
+#define WOLF_CRYPT_SYSVABI
+#endif
+
 
     #ifdef __cplusplus
         }   /* extern "C" */

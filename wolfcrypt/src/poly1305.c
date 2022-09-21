@@ -133,14 +133,14 @@ static word32 cpu_flags_set = 0;
  * ctx  Poly1305 context.
  * m    One block of message data.
  */
-extern void poly1305_block_avx(Poly1305* ctx, const unsigned char *m);
+extern WOLF_CRYPT_SYSVABI void poly1305_block_avx(Poly1305* ctx, const unsigned char *m);
 /* Process multiple blocks (n * 16 bytes) of data.
  *
  * ctx    Poly1305 context.
  * m      Blocks of message data.
  * bytes  The number of bytes to process.
  */
-extern void poly1305_blocks_avx(Poly1305* ctx, const unsigned char* m,
+extern WOLF_CRYPT_SYSVABI void poly1305_blocks_avx(Poly1305* ctx, const unsigned char* m,
                                 size_t bytes);
 /* Set the key to use when processing data.
  * Initialize the context.
@@ -148,14 +148,14 @@ extern void poly1305_blocks_avx(Poly1305* ctx, const unsigned char* m,
  * ctx  Poly1305 context.
  * key  The key data (16 bytes).
  */
-extern void poly1305_setkey_avx(Poly1305* ctx, const byte* key);
+extern WOLF_CRYPT_SYSVABI void poly1305_setkey_avx(Poly1305* ctx, const byte* key);
 /* Calculate the final result - authentication data.
  * Zeros out the private data in the context.
  *
  * ctx  Poly1305 context.
  * mac  Buffer to hold 16 bytes.
  */
-extern void poly1305_final_avx(Poly1305* ctx, byte* mac);
+extern WOLF_CRYPT_SYSVABI void poly1305_final_avx(Poly1305* ctx, byte* mac);
 #endif
 
 #ifdef HAVE_INTEL_AVX2
@@ -165,13 +165,13 @@ extern void poly1305_final_avx(Poly1305* ctx, byte* mac);
  * m      Blocks of message data.
  * bytes  The number of bytes to process.
  */
-extern void poly1305_blocks_avx2(Poly1305* ctx, const unsigned char* m,
+extern WOLF_CRYPT_SYSVABI void poly1305_blocks_avx2(Poly1305* ctx, const unsigned char* m,
                                  size_t bytes);
 /* Calculate R^1, R^2, R^3 and R^4 and store them in the context.
  *
  * ctx    Poly1305 context.
  */
-extern void poly1305_calc_powers_avx2(Poly1305* ctx);
+extern WOLF_CRYPT_SYSVABI void poly1305_calc_powers_avx2(Poly1305* ctx);
 /* Set the key to use when processing data.
  * Initialize the context.
  * Calls AVX set key function as final function calls AVX code.
@@ -179,7 +179,7 @@ extern void poly1305_calc_powers_avx2(Poly1305* ctx);
  * ctx  Poly1305 context.
  * key  The key data (16 bytes).
  */
-extern void poly1305_setkey_avx2(Poly1305* ctx, const byte* key);
+extern WOLF_CRYPT_SYSVABI void poly1305_setkey_avx2(Poly1305* ctx, const byte* key);
 /* Calculate the final result - authentication data.
  * Zeros out the private data in the context.
  * Calls AVX final function to quickly process last blocks.
@@ -187,7 +187,7 @@ extern void poly1305_setkey_avx2(Poly1305* ctx, const byte* key);
  * ctx  Poly1305 context.
  * mac  Buffer to hold 16 bytes - authentication data.
  */
-extern void poly1305_final_avx2(Poly1305* ctx, byte* mac);
+extern WOLF_CRYPT_SYSVABI void poly1305_final_avx2(Poly1305* ctx, byte* mac);
 #endif
 
 #ifdef __cplusplus

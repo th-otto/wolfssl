@@ -192,11 +192,11 @@ WOLFSSL_API int wc_Shake256_Copy(wc_Shake* src, wc_Sha3* dst);
 #endif
 
 #ifdef USE_INTEL_SPEEDUP
-WOLFSSL_LOCAL void sha3_block_n_bmi2(word64* s, const byte* data, word32 n,
+WOLFSSL_LOCAL WOLF_CRYPT_SYSVABI void sha3_block_n_bmi2(word64* s, const byte* data, word32 n,
     word64 c);
-WOLFSSL_LOCAL void sha3_block_bmi2(word64* s);
-WOLFSSL_LOCAL void sha3_block_avx2(word64* s);
-WOLFSSL_LOCAL void BlockSha3(word64 *s);
+WOLFSSL_LOCAL WOLF_CRYPT_SYSVABI void sha3_block_bmi2(word64* s);
+WOLFSSL_LOCAL WOLF_CRYPT_SYSVABI void sha3_block_avx2(word64* s);
+WOLFSSL_LOCAL WOLF_CRYPT_SYSVABI void BlockSha3(word64 *s);
 #endif
 #if defined(WOLFSSL_ARMASM) && defined(WOLFSSL_ARMASM_CRYPTO_SHA3)
 WOLFSSL_LOCAL void BlockSha3(word64 *s);

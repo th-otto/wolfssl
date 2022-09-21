@@ -70,7 +70,6 @@
 #include <wolfssl/wolfcrypt/ed25519.h>
 
 #include <wolfssl/wolfcrypt/dh.h>
-#include <wolfssl/wolfcrypt/random.h>
 #include <wolfssl/wolfcrypt/error-crypt.h>
 #include <wolfssl/wolfcrypt/types.h>
 
@@ -368,11 +367,11 @@ static word64 total_cycles;
 #define END_INTEL_CYCLES   total_cycles = get_intel_cycles() - total_cycles;
 	/* s == size in bytes that 1 count represents, normally BENCH_SIZE */
 #define SHOW_INTEL_CYCLES(b, n, s) \
-        (void)XSNPRINTF((b) + XSTRLEN(b), (n) - XSTRLEN(b), " %s = %6.2f\n", \
+        (void)snprintf((b) + strlen(b), (n) - strlen(b), " %s = %6.2f\n", \
             bench_result_words1[lng_index][2], \
             count == 0 ? 0 : (float)total_cycles / ((word64)count*(s)))
 #define SHOW_INTEL_CYCLES_CSV(b, n, s) \
-        (void)XSNPRINTF((b) + XSTRLEN(b), (n) - XSTRLEN(b), "%.2f,\n", \
+        (void)snprintf((b) + strlen(b), (n) - strlen(b), "%.2f,\n", \
             count == 0 ? 0 : (float)total_cycles / ((word64)count*(s)))
 #elif defined(LINUX_CYCLE_COUNT)
 #include <linux/perf_event.h>
@@ -398,11 +397,11 @@ static struct perf_event_attr atr;
 
 	/* s == size in bytes that 1 count represents, normally BENCH_SIZE */
 #define SHOW_INTEL_CYCLES(b, n, s) \
-        (void)XSNPRINTF(b + XSTRLEN(b), n - XSTRLEN(b), " %s = %6.2f\n", \
+        (void)snprintf(b + strlen(b), n - strlen(b), " %s = %6.2f\n", \
         bench_result_words1[lng_index][2], \
             (float)total_cycles / (count*s))
 #define SHOW_INTEL_CYCLES_CSV(b, n, s) \
-        (void)XSNPRINTF(b + XSTRLEN(b), n - XSTRLEN(b), "%.2f,\n", \
+        (void)snprintf(b + strlen(b), n - strlen(b), "%.2f,\n", \
             (float)total_cycles / (count*s))
 
 #elif defined(SYNERGY_CYCLE_COUNT)
@@ -416,19 +415,19 @@ static word64 total_cycles;
 
 	/* s == size in bytes that 1 count represents, normally BENCH_SIZE */
 #define SHOW_INTEL_CYCLES(b, n, s) \
-        (void)XSNPRINTF(b + XSTRLEN(b), n - XSTRLEN(b), " %s = %6.2f\n", \
+        (void)snprintf(b + strlen(b), n - strlen(b), " %s = %6.2f\n", \
         bench_result_words1[lng_index][2], \
             (float)total_cycles / (count*s))
 #define SHOW_INTEL_CYCLES_CSV(b, n, s) \
-        (void)XSNPRINTF(b + XSTRLEN(b), n - XSTRLEN(b), "%.2f,\n", \
+        (void)snprintf(b + strlen(b), n - strlen(b), "%.2f,\n", \
             (float)total_cycles / (count*s))
 
 #else
 #define INIT_CYCLE_COUNTER
 #define BEGIN_INTEL_CYCLES
 #define END_INTEL_CYCLES
-#define SHOW_INTEL_CYCLES(b, n, s)     b[XSTRLEN(b)] = '\n'
-#define SHOW_INTEL_CYCLES_CSV(b, n, s)     b[XSTRLEN(b)] = '\n'
+#define SHOW_INTEL_CYCLES(b, n, s)     b[strlen(b)] = '\n'
+#define SHOW_INTEL_CYCLES_CSV(b, n, s)     b[strlen(b)] = '\n'
 #endif
 
 /* determine benchmark buffer to use (if NO_FILESYSTEM) */
@@ -679,11 +678,11 @@ static void bench_stats_sym_finish(const char *desc, int count, int countSz, dou
 	/* format and print to terminal */
 	if (csv_format == 1)
 	{
-		(void) XSNPRINTF(msg, sizeof(msg), "%s,%.3f,", desc, persec);
+		(void) snprintf(msg, sizeof(msg), "%s,%.3f,", desc, persec);
 		SHOW_INTEL_CYCLES_CSV(msg, sizeof(msg), countSz);
 	} else
 	{
-		(void) XSNPRINTF(msg, sizeof(msg), "%-16s %5.0f %s %s %5.3f %s, %8.3f %s/s",
+		(void) snprintf(msg, sizeof(msg), "%-16s %5.0f %s %s %5.3f %s, %8.3f %s/s",
 						 desc, blocks, blockType, word[0], total, word[1], persec, blockType);
 		SHOW_INTEL_CYCLES(msg, sizeof(msg), countSz);
 	}
@@ -692,13 +691,11 @@ static void bench_stats_sym_finish(const char *desc, int count, int countSz, dou
 	/* show errors */
 	if (ret < 0)
 	{
-		printf("Benchmark %s failed: %d\n", desc, ret);
+		fprintf(stderr, "Benchmark %s failed: %d\n", desc, ret);
 	}
 
 	/* Add to thread stats */
 	bench_stats_add(BENCH_STAT_SYM, desc, 0, desc, persec, blockType, ret);
-
-	(void) ret;
 
 	TEST_SLEEP();
 }
@@ -729,10 +726,10 @@ static void bench_stats_asym_finish(const char *algo, int strength, const char *
 			printf("Algorithm,avg ms,ops/sec,\n");
 			csv_header_count++;
 		}
-		(void) XSNPRINTF(msg, sizeof(msg), "%s %d %s,%.3f,%.3f,\n", algo, strength, desc, milliEach, opsSec);
+		(void) snprintf(msg, sizeof(msg), "%s %d %s,%.3f,%.3f,\n", algo, strength, desc, milliEach, opsSec);
 	} else
 	{
-		(void) XSNPRINTF(msg, sizeof(msg), "%-6s %5d %-9s %6d %s %5.3f %s, %s %5.3f ms, %.3f %s\n",
+		(void) snprintf(msg, sizeof(msg), "%-6s %5d %-9s %6d %s %5.3f %s, %s %5.3f ms, %.3f %s\n",
 						 algo, strength, desc, count, word[0], total, word[1], word[2], milliEach, opsSec, word[3]);
 	}
 	printf("%s", msg);
@@ -740,13 +737,11 @@ static void bench_stats_asym_finish(const char *algo, int strength, const char *
 	/* show errors */
 	if (ret < 0)
 	{
-		printf("Benchmark %s %s %d failed: %d\n", algo, desc, strength, ret);
+		fprintf(stderr, "Benchmark %s %s %d failed: %d\n", algo, desc, strength, ret);
 	}
 
 	/* Add to thread stats */
 	bench_stats_add(BENCH_STAT_ASYM, algo, strength, desc, opsSec, kOpsSec, ret);
-
-	(void) ret;
 
 	TEST_SLEEP();
 }
@@ -774,7 +769,7 @@ static void bench_rng(void)
 	ret = wc_InitRng_ex(&myrng, HEAP_HINT, INVALID_DEVID);
 	if (ret < 0)
 	{
-		printf("InitRNG failed %d\n", ret);
+		fprintf(stderr, "InitRNG failed %d\n", ret);
 		return;
 	}
 
@@ -826,14 +821,14 @@ static void bench_aescbc_internal(const byte * key, word32 keySz,
 	{
 		if ((ret = wc_AesInit(&enc[i], HEAP_HINT, INVALID_DEVID)) != 0)
 		{
-			printf("AesInit failed, ret = %d\n", ret);
+			fprintf(stderr, "AesInit failed, ret = %d\n", ret);
 			goto exit;
 		}
 
 		ret = wc_AesSetKey(&enc[i], key, keySz, iv, AES_ENCRYPTION);
 		if (ret != 0)
 		{
-			printf("AesSetKey failed, ret = %d\n", ret);
+			fprintf(stderr, "AesSetKey failed, ret = %d\n", ret);
 			goto exit;
 		}
 	}
@@ -870,7 +865,7 @@ static void bench_aescbc_internal(const byte * key, word32 keySz,
 		ret = wc_AesSetKey(&enc[i], key, keySz, iv, AES_DECRYPTION);
 		if (ret != 0)
 		{
-			printf("AesSetKey failed, ret = %d\n", ret);
+			fprintf(stderr, "AesSetKey failed, ret = %d\n", ret);
 			goto exit;
 		}
 	}
@@ -896,7 +891,6 @@ static void bench_aescbc_internal(const byte * key, word32 keySz,
   exit_aes_dec:
 	bench_stats_sym_finish(decLabel, count, bench_size, start, ret);
 
-	(void) decLabel;
   exit:
 
 	for (i = 0; i < BENCH_MAX_PENDING; i++)
@@ -938,14 +932,14 @@ static void bench_aesgcm_internal(const byte * key, word32 keySz,
 	{
 		if ((ret = wc_AesInit(&enc[i], HEAP_HINT, INVALID_DEVID)) != 0)
 		{
-			printf("AesInit failed, ret = %d\n", ret);
+			fprintf(stderr, "AesInit failed, ret = %d\n", ret);
 			goto exit;
 		}
 
 		ret = wc_AesGcmSetKey(&enc[i], key, keySz);
 		if (ret != 0)
 		{
-			printf("AesGcmSetKey failed, ret = %d\n", ret);
+			fprintf(stderr, "AesGcmSetKey failed, ret = %d\n", ret);
 			goto exit;
 		}
 	}
@@ -978,14 +972,14 @@ static void bench_aesgcm_internal(const byte * key, word32 keySz,
 	{
 		if ((ret = wc_AesInit(&dec[i], HEAP_HINT, INVALID_DEVID)) != 0)
 		{
-			printf("AesInit failed, ret = %d\n", ret);
+			fprintf(stderr, "AesInit failed, ret = %d\n", ret);
 			goto exit;
 		}
 
 		ret = wc_AesGcmSetKey(&dec[i], key, keySz);
 		if (ret != 0)
 		{
-			printf("AesGcmSetKey failed, ret = %d\n", ret);
+			fprintf(stderr, "AesGcmSetKey failed, ret = %d\n", ret);
 			goto exit;
 		}
 	}
@@ -1018,7 +1012,7 @@ static void bench_aesgcm_internal(const byte * key, word32 keySz,
 
 	if (ret < 0)
 	{
-		printf("bench_aesgcm failed: %d\n", ret);
+		fprintf(stderr, "bench_aesgcm failed: %d\n", ret);
 	}
 	for (i = 0; i < BENCH_MAX_PENDING; i++)
 	{
@@ -1097,7 +1091,7 @@ static void bench_poly1305(void)
 		ret = wc_Poly1305SetKey(&enc, bench_key, 32);
 		if (ret != 0)
 		{
-			printf("Poly1305SetKey failed, ret = %d\n", ret);
+			fprintf(stderr, "Poly1305SetKey failed, ret = %d\n", ret);
 			return;
 		}
 
@@ -1109,7 +1103,7 @@ static void bench_poly1305(void)
 				ret = wc_Poly1305Update(&enc, bench_plain, BENCH_SIZE);
 				if (ret != 0)
 				{
-					printf("Poly1305Update failed: %d\n", ret);
+					fprintf(stderr, "Poly1305Update failed: %d\n", ret);
 					break;
 				}
 			}
@@ -1127,13 +1121,13 @@ static void bench_poly1305(void)
 				ret = wc_Poly1305SetKey(&enc, bench_key, 32);
 				if (ret != 0)
 				{
-					printf("Poly1305SetKey failed, ret = %d\n", ret);
+					fprintf(stderr, "Poly1305SetKey failed, ret = %d\n", ret);
 					return;
 				}
 				ret = wc_Poly1305Update(&enc, bench_plain, BENCH_SIZE);
 				if (ret != 0)
 				{
-					printf("Poly1305Update failed: %d\n", ret);
+					fprintf(stderr, "Poly1305Update failed: %d\n", ret);
 					break;
 				}
 				wc_Poly1305Final(&enc, mac);
@@ -1162,14 +1156,14 @@ static void bench_des(void)
 	{
 		if ((ret = wc_Des3Init(&enc[i], HEAP_HINT, INVALID_DEVID)) != 0)
 		{
-			printf("Des3Init failed, ret = %d\n", ret);
+			fprintf(stderr, "Des3Init failed, ret = %d\n", ret);
 			goto exit;
 		}
 
 		ret = wc_Des3_SetKey(&enc[i], bench_key, bench_iv, DES_ENCRYPTION);
 		if (ret != 0)
 		{
-			printf("Des3_SetKey failed, ret = %d\n", ret);
+			fprintf(stderr, "Des3_SetKey failed, ret = %d\n", ret);
 			goto exit;
 		}
 	}
@@ -1246,7 +1240,7 @@ static void bench_chacha20_poly1305_aead(void)
 											  bench_plain, BENCH_SIZE, bench_cipher, authTag);
 			if (ret < 0)
 			{
-				printf("wc_ChaCha20Poly1305_Encrypt error: %d\n", ret);
+				fprintf(stderr, "wc_ChaCha20Poly1305_Encrypt error: %d\n", ret);
 				break;
 			}
 		}
@@ -1279,7 +1273,7 @@ static void bench_md5(void)
 			ret = wc_InitMd5_ex(&hash[i], HEAP_HINT, INVALID_DEVID);
 			if (ret != 0)
 			{
-				printf("InitMd5_ex failed, ret = %d\n", ret);
+				fprintf(stderr, "InitMd5_ex failed, ret = %d\n", ret);
 				goto exit;
 			}
 		}
@@ -1364,7 +1358,7 @@ static void bench_sha(void)
 			ret = wc_InitSha_ex(&hash[i], HEAP_HINT, INVALID_DEVID);
 			if (ret != 0)
 			{
-				printf("InitSha failed, ret = %d\n", ret);
+				fprintf(stderr, "InitSha failed, ret = %d\n", ret);
 				goto exit;
 			}
 		}
@@ -1454,7 +1448,7 @@ static void bench_sha224(void)
 			ret = wc_InitSha224_ex(&hash[i], HEAP_HINT, INVALID_DEVID);
 			if (ret != 0)
 			{
-				printf("InitSha224_ex failed, ret = %d\n", ret);
+				fprintf(stderr, "InitSha224_ex failed, ret = %d\n", ret);
 				goto exit;
 			}
 		}
@@ -1543,7 +1537,7 @@ static void bench_sha256(void)
 			ret = wc_InitSha256_ex(&hash[i], HEAP_HINT, INVALID_DEVID);
 			if (ret != 0)
 			{
-				printf("InitSha256_ex failed, ret = %d\n", ret);
+				fprintf(stderr, "InitSha256_ex failed, ret = %d\n", ret);
 				goto exit;
 			}
 		}
@@ -1633,7 +1627,7 @@ static void bench_sha384(void)
 			ret = wc_InitSha384_ex(&hash[i], HEAP_HINT, INVALID_DEVID);
 			if (ret != 0)
 			{
-				printf("InitSha384_ex failed, ret = %d\n", ret);
+				fprintf(stderr, "InitSha384_ex failed, ret = %d\n", ret);
 				goto exit;
 			}
 		}
@@ -1723,7 +1717,7 @@ static void bench_sha512(void)
 			ret = wc_InitSha512_ex(&hash[i], HEAP_HINT, INVALID_DEVID);
 			if (ret != 0)
 			{
-				printf("InitSha512_ex failed, ret = %d\n", ret);
+				fprintf(stderr, "InitSha512_ex failed, ret = %d\n", ret);
 				goto exit;
 			}
 		}
@@ -1813,7 +1807,7 @@ static void bench_sha3_224(void)
 			ret = wc_InitSha3_224(&hash[i], HEAP_HINT, INVALID_DEVID);
 			if (ret != 0)
 			{
-				printf("InitSha3_224 failed, ret = %d\n", ret);
+				fprintf(stderr, "InitSha3_224 failed, ret = %d\n", ret);
 				goto exit;
 			}
 		}
@@ -1903,7 +1897,7 @@ static void bench_sha3_256(void)
 			ret = wc_InitSha3_256(&hash[i], HEAP_HINT, INVALID_DEVID);
 			if (ret != 0)
 			{
-				printf("InitSha3_256 failed, ret = %d\n", ret);
+				fprintf(stderr, "InitSha3_256 failed, ret = %d\n", ret);
 				goto exit;
 			}
 		}
@@ -1993,7 +1987,7 @@ static void bench_sha3_384(void)
 			ret = wc_InitSha3_384(&hash[i], HEAP_HINT, INVALID_DEVID);
 			if (ret != 0)
 			{
-				printf("InitSha3_384 failed, ret = %d\n", ret);
+				fprintf(stderr, "InitSha3_384 failed, ret = %d\n", ret);
 				goto exit;
 			}
 		}
@@ -2083,7 +2077,7 @@ static void bench_sha3_512(void)
 			ret = wc_InitSha3_512(&hash[i], HEAP_HINT, INVALID_DEVID);
 			if (ret != 0)
 			{
-				printf("InitSha3_512 failed, ret = %d\n", ret);
+				fprintf(stderr, "InitSha3_512 failed, ret = %d\n", ret);
 				goto exit;
 			}
 		}
@@ -2237,14 +2231,14 @@ static void bench_hmac(int type, int digestSz, byte * key, word32 keySz, const c
 		ret = wc_HmacInit(&hmac[i], HEAP_HINT, INVALID_DEVID);
 		if (ret != 0)
 		{
-			printf("wc_HmacInit failed for %s, ret = %d\n", label, ret);
+			fprintf(stderr, "wc_HmacInit failed for %s, ret = %d\n", label, ret);
 			goto exit;
 		}
 
 		ret = wc_HmacSetKey(&hmac[i], type, key, keySz);
 		if (ret != 0)
 		{
-			printf("wc_HmacSetKey failed for %s, ret = %d\n", label, ret);
+			fprintf(stderr, "wc_HmacSetKey failed for %s, ret = %d\n", label, ret);
 			goto exit;
 		}
 	}
@@ -2384,7 +2378,7 @@ static void bench_pbkdf2(void)
 	bench_stats_start(&count, &start);
 	do
 	{
-		ret = wc_PBKDF2(derived, (const byte *) passwd32, (int) XSTRLEN(passwd32),
+		ret = wc_PBKDF2(derived, (const byte *) passwd32, (int) strlen(passwd32),
 						salt32, (int) sizeof(salt32), 1000, 32, WC_SHA256);
 		count++;
 	} while (bench_stats_sym_check(start));
@@ -2403,7 +2397,7 @@ static void bench_rsa_helper(RsaKey rsaKey[BENCH_MAX_PENDING], int rsaKeySz)
 
 	const char *messageStr = TEST_STRING;
 	const int len = (int) TEST_STRING_SZ;
-	double start = 0.0F;
+	double start = 0.0;
 	const char **desc = bench_desc_words[lng_index];
 
 	WC_DECLARE_VAR(message, byte, TEST_STRING_SZ, HEAP_HINT);
@@ -2414,11 +2408,13 @@ static void bench_rsa_helper(RsaKey rsaKey[BENCH_MAX_PENDING], int rsaKeySz)
 	WC_DECLARE_ARRAY_DYNAMIC_EXE(out, byte, BENCH_MAX_PENDING, rsaKeySz, HEAP_HINT);
 	if (out[0] == NULL)
 	{
+		fprintf(stderr, "bench_rsa_helper: alloc memory failed\n");
 		ret = MEMORY_E;
 		goto exit;
 	}
 	if (enc[0] == NULL)
 	{
+		fprintf(stderr, "bench_rsa_helper: alloc memory failed\n");
 		ret = MEMORY_E;
 		goto exit;
 	}
@@ -2541,7 +2537,7 @@ static void bench_rsa(void)
 	int i;
 	RsaKey rsaKey[BENCH_MAX_PENDING];
 	int ret = 0;
-	int rsaKeySz = 0;
+	int rsaKeySz;
 	const byte *tmp;
 	size_t bytes;
 	word32 idx;
@@ -2560,18 +2556,22 @@ static void bench_rsa(void)
 		ret = wc_InitRsaKey_ex(&rsaKey[i], HEAP_HINT, INVALID_DEVID);
 		if (ret < 0)
 		{
+			fprintf(stderr, "wc_InitRsaKey_ex failed! %d\n", ret);
 			goto exit_bench_rsa;
 		}
 
 		ret = wc_RsaSetRNG(&rsaKey[i], &gRng);
 		if (ret != 0)
+		{
+			fprintf(stderr, "wc_RsaSetRNG failed! %d\n", ret);
 			goto exit_bench_rsa;
-
+		}
+	
 		/* decode the private key */
 		idx = 0;
 		if ((ret = wc_RsaPrivateKeyDecode(tmp, &idx, &rsaKey[i], (word32) bytes)) != 0)
 		{
-			printf("wc_RsaPrivateKeyDecode failed! %d\n", ret);
+			fprintf(stderr, "wc_RsaPrivateKeyDecode failed! %d\n", ret);
 			goto exit_bench_rsa;
 		}
 	}
@@ -2580,9 +2580,6 @@ static void bench_rsa(void)
 	{
 		bench_rsa_helper(rsaKey, rsaKeySz);
 	}
-
-	(void) bytes;
-	(void) tmp;
 
   exit_bench_rsa:
 	/* cleanup */
@@ -2661,7 +2658,7 @@ static void bench_dh(void)
 		}
 		if (ret != 0)
 		{
-			printf("DhKeyDecode failed %d, can't benchmark\n", ret);
+			fprintf(stderr, "DhKeyDecode failed %d, can't benchmark\n", ret);
 			goto exit;
 		}
 	}
@@ -2783,7 +2780,7 @@ static void bench_eccMakeKey(int curveId)
 		count += times;
 	} while (bench_stats_sym_check(start));
   exit:
-	(void) XSNPRINTF(name, BENCH_ECC_NAME_SZ, "ECC   [%15s]", wc_ecc_get_name(curveId));
+	(void) snprintf(name, BENCH_ECC_NAME_SZ, "ECC   [%15s]", wc_ecc_get_name(curveId));
 	bench_stats_asym_finish(name, keySize * 8, desc[2], count, start, ret);
 
 	/* cleanup */
@@ -2868,7 +2865,7 @@ static void bench_ecc(int curveId)
 	} while (bench_stats_sym_check(start));
 	PRIVATE_KEY_UNLOCK();
   exit_ecdhe:
-	(void) XSNPRINTF(name, BENCH_ECC_NAME_SZ, "ECDHE [%15s]", wc_ecc_get_name(curveId));
+	(void) snprintf(name, BENCH_ECC_NAME_SZ, "ECDHE [%15s]", wc_ecc_get_name(curveId));
 
 	bench_stats_asym_finish(name, keySize * 8, desc[3], count, start, ret);
 
@@ -2952,7 +2949,7 @@ static void bench_ed25519KeySign(void)
 	ret = wc_ed25519_make_key(&gRng, ED25519_KEY_SIZE, &genKey);
 	if (ret != 0)
 	{
-		printf("ed25519_make_key failed\n");
+		fprintf(stderr, "ed25519_make_key failed\n");
 		return;
 	}
 
@@ -2969,7 +2966,7 @@ static void bench_ed25519KeySign(void)
 			ret = wc_ed25519_sign_msg(msg, sizeof(msg), sig, &x, &genKey);
 			if (ret != 0)
 			{
-				printf("ed25519_sign_msg failed\n");
+				fprintf(stderr, "ed25519_sign_msg failed\n");
 				goto exit_ed_sign;
 			}
 		}
@@ -2988,7 +2985,7 @@ static void bench_ed25519KeySign(void)
 			ret = wc_ed25519_verify_msg(sig, x, msg, sizeof(msg), &verify, &genKey);
 			if (ret != 0 || verify != 1)
 			{
-				printf("ed25519_verify_msg failed\n");
+				fprintf(stderr, "ed25519_verify_msg failed\n");
 				goto exit_ed_verify;
 			}
 		}
@@ -3069,11 +3066,9 @@ static void benchmark_configure(int block_size)
 }
 
 
-static void *benchmarks_do(void *args)
+static void *benchmarks_do(void)
 {
 	int bench_buf_size;
-
-	(void) args;
 
 	{
 		int rngRet;
@@ -3081,7 +3076,7 @@ static void *benchmarks_do(void *args)
 		rngRet = wc_InitRng_ex(&gRng, HEAP_HINT, INVALID_DEVID);
 		if (rngRet < 0)
 		{
-			printf("InitRNG failed\n");
+			fprintf(stderr, "InitRNG failed\n");
 			return NULL;
 		}
 	}
@@ -3100,7 +3095,7 @@ static void *benchmarks_do(void *args)
 		XFREE(bench_cipher, HEAP_HINT, DYNAMIC_TYPE_WOLF_BIGINT);
 		bench_plain = bench_cipher = NULL;
 
-		printf("Benchmark block buffer alloc failed!\n");
+		fprintf(stderr, "Benchmark block buffer alloc failed!\n");
 		goto exit;
 	}
 	XMEMSET(bench_plain, 0, (size_t) bench_buf_size);
@@ -3112,9 +3107,7 @@ static void *benchmarks_do(void *args)
 	if (bench_all || (bench_other_algs & BENCH_RNG))
 		bench_rng();
 	if (bench_all || (bench_cipher_algs & BENCH_AES_CBC))
-	{
 		bench_aescbc();
-	}
 	if (bench_all || (bench_cipher_algs & BENCH_AES_GCM))
 	{
 		bench_aesgcm();
@@ -3126,92 +3119,52 @@ static void *benchmarks_do(void *args)
 	if (bench_all || (bench_cipher_algs & BENCH_CHACHA20_POLY1305))
 		bench_chacha20_poly1305_aead();
 	if (bench_all || (bench_cipher_algs & BENCH_DES))
-	{
 		bench_des();
-	}
 	if (bench_all || (bench_digest_algs & BENCH_MD5))
-	{
 		bench_md5();
-	}
 	if (bench_all || (bench_digest_algs & BENCH_POLY1305))
 		bench_poly1305();
 	if (bench_all || (bench_digest_algs & BENCH_SHA))
-	{
 		bench_sha();
-	}
 	if (bench_all || (bench_digest_algs & BENCH_SHA224))
-	{
 		bench_sha224();
-	}
 	if (bench_all || (bench_digest_algs & BENCH_SHA256))
-	{
 		bench_sha256();
-	}
 	if (bench_all || (bench_digest_algs & BENCH_SHA384))
-	{
 		bench_sha384();
-	}
 	if (bench_all || (bench_digest_algs & BENCH_SHA512))
-	{
 		bench_sha512();
-	}
 	if (bench_all || (bench_digest_algs & BENCH_SHA3_224))
-	{
 		bench_sha3_224();
-	}
 	if (bench_all || (bench_digest_algs & BENCH_SHA3_256))
-	{
 		bench_sha3_256();
-	}
 	if (bench_all || (bench_digest_algs & BENCH_SHA3_384))
-	{
 		bench_sha3_384();
-	}
 	if (bench_all || (bench_digest_algs & BENCH_SHA3_512))
-	{
 		bench_sha3_512();
-	}
 	if (bench_all || (bench_digest_algs & BENCH_RIPEMD))
 		bench_ripemd();
 
 	if (bench_all || (bench_mac_algs & BENCH_HMAC_MD5))
-	{
 		bench_hmac_md5();
-	}
 	if (bench_all || (bench_mac_algs & BENCH_HMAC_SHA))
-	{
 		bench_hmac_sha();
-	}
 	if (bench_all || (bench_mac_algs & BENCH_HMAC_SHA224))
-	{
 		bench_hmac_sha224();
-	}
 	if (bench_all || (bench_mac_algs & BENCH_HMAC_SHA256))
-	{
 		bench_hmac_sha256();
-	}
 	if (bench_all || (bench_mac_algs & BENCH_HMAC_SHA384))
-	{
 		bench_hmac_sha384();
-	}
 	if (bench_all || (bench_mac_algs & BENCH_HMAC_SHA512))
-	{
 		bench_hmac_sha512();
-	}
 	if (bench_all || (bench_mac_algs & BENCH_PBKDF2))
-	{
 		bench_pbkdf2();
-	}
 
 	if (bench_all || (bench_asym_algs & BENCH_RSA))
-	{
 		bench_rsa();
-	}
 
 	if (bench_all || (bench_asym_algs & BENCH_DH))
-	{
 		bench_dh();
-	}
 
 	if (bench_all || (bench_asym_algs & BENCH_ECC_MAKEKEY) ||
 		(bench_asym_algs & BENCH_ECC) || (bench_asym_algs & BENCH_ECC_ALL) || (bench_asym_algs & BENCH_ECC_ENCRYPT))
@@ -3278,7 +3231,7 @@ static int benchmark_init(void)
 
 	if ((ret = wolfCrypt_Init()) != 0)
 	{
-		printf("wolfCrypt_Init failed %d\n", ret);
+		fprintf(stderr, "wolfCrypt_Init failed %d\n", ret);
 		return EXIT_FAILURE;
 	}
 
@@ -3306,7 +3259,7 @@ static int benchmark_free(void)
 
 	if ((ret = wolfCrypt_Cleanup()) != 0)
 	{
-		printf("error %d with wolfCrypt_Cleanup\n", ret);
+		fprintf(stderr, "error %d with wolfCrypt_Cleanup\n", ret);
 	}
 
 	return ret;
@@ -3314,23 +3267,21 @@ static int benchmark_free(void)
 
 
 /* so embedded projects can pull in tests on their own */
-static int benchmark_test(void *args)
+static int benchmark_test(void)
 {
 	int ret;
 
-	(void) args;
-
 	ret = benchmark_init();
 	if (ret != 0)
-		EXIT_TEST(ret);
+		return ret;
 
-	benchmarks_do(NULL);
+	benchmarks_do();
 
 	printf("Benchmark complete\n");
 
 	ret = benchmark_free();
 
-	EXIT_TEST(ret);
+	return ret;
 }
 
 
@@ -3344,7 +3295,7 @@ static void print_alg(const char *str, int *line)
 {
 	int optLen;
 
-	optLen = (int) XSTRLEN(str) + 1;
+	optLen = (int) strlen(str) + 1;
 	if (optLen + *line > 80)
 	{
 		printf("\n             ");
@@ -3407,9 +3358,9 @@ static void Usage(void)
  */
 static int string_matches(const char *arg, const char *str)
 {
-	int len = (int) XSTRLEN(str) + 1;
+	int len = (int) strlen(str) + 1;
 
-	return XSTRNCMP(arg, str, len) == 0;
+	return strncmp(arg, str, len) == 0;
 }
 
 int main(int argc, char **argv)
@@ -3426,21 +3377,14 @@ int main(int argc, char **argv)
 
 	while (argc > 1)
 	{
-		if (string_matches(argv[1], "-?"))
+		if (string_matches(argv[1], "-?") || string_matches(argv[1], "--help"))
 		{
-			if (--argc > 1)
-			{
-				++argv;
-			}
 			Usage();
 			return 0;
 		} else if (string_matches(argv[1], "-lng"))
 		{
 			argc--;
 			argv++;
-			if (argc > 1)
-			{
-			}
 		} else if (string_matches(argv[1], "-base10"))
 			base2 = 0;
 		else if (string_matches(argv[1], "-no_aad"))
@@ -3517,9 +3461,9 @@ int main(int argc, char **argv)
 			}
 			if (!optMatched)
 			{
-				printf("Option not recognized: %s\n", argv[1]);
+				fprintf(stderr, "Option not recognized: %s\n", argv[1]);
 				Usage();
-				return 1;
+				return EXIT_FAILURE;
 			}
 		} else
 		{
@@ -3531,7 +3475,7 @@ int main(int argc, char **argv)
 	}
 
 	{
-		ret = benchmark_test(NULL);
+		ret = benchmark_test();
 	}
 
 	return ret;

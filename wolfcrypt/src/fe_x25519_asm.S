@@ -34,186 +34,186 @@
 
 FUNCTION(fe_init)
 #ifdef HAVE_INTEL_AVX2
-#ifndef __APPLE__
-        movq	cpuFlagsSet@GOTPCREL(%rip), %rax
+#ifdef __ELF__
+        movq	ASM_NAME(cpuFlagsSet)@GOTPCREL(%rip), %rax
         movl	(%rax), %eax
 #else
-        movl	_cpuFlagsSet(%rip), %eax
+        movl	ASM_NAME(cpuFlagsSet)(%rip), %eax
 #endif /* __APPLE__ */
         testl	%eax, %eax
         je	L_fe_init_get_flags
         repz retq
 L_fe_init_get_flags:
         CALL(cpuid_get_flags)
-#ifndef __APPLE__
-        movq	intelFlags@GOTPCREL(%rip), %rdx
+#ifdef __ELF__
+        movq	ASM_NAME(intelFlags)@GOTPCREL(%rip), %rdx
         movl	%eax, (%rdx)
 #else
-        movl	%eax, _intelFlags(%rip)
+        movl	%eax, ASM_NAME(intelFlags)(%rip)
 #endif /* __APPLE__ */
         andl	$0x50, %eax
         cmpl	$0x50, %eax
         jne	L_fe_init_flags_done
-#ifndef __APPLE__
-        movq	fe_mul_avx2@GOTPCREL(%rip), %rax
+#ifdef __ELF__
+        movq	ASM_NAME(fe_mul_avx2)@GOTPCREL(%rip), %rax
 #else
-        leaq	_fe_mul_avx2(%rip), %rax
+        leaq	ASM_NAME(fe_mul_avx2)(%rip), %rax
 #endif /* __APPLE__ */
-#ifndef __APPLE__
-        movq	fe_mul_p@GOTPCREL(%rip), %rdx
+#ifdef __ELF__
+        movq	ASM_NAME(fe_mul_p)@GOTPCREL(%rip), %rdx
         movq	%rax, (%rdx)
 #else
-        movq	%rax, _fe_mul_p(%rip)
+        movq	%rax, ASM_NAME(fe_mul_p)(%rip)
 #endif /* __APPLE__ */
-#ifndef __APPLE__
-        movq	fe_sq_avx2@GOTPCREL(%rip), %rax
+#ifdef __ELF__
+        movq	ASM_NAME(fe_sq_avx2)@GOTPCREL(%rip), %rax
 #else
-        leaq	_fe_sq_avx2(%rip), %rax
+        leaq	ASM_NAME(fe_sq_avx2)(%rip), %rax
 #endif /* __APPLE__ */
-#ifndef __APPLE__
-        movq	fe_sq_p@GOTPCREL(%rip), %rdx
+#ifdef __ELF__
+        movq	ASM_NAME(fe_sq_p)@GOTPCREL(%rip), %rdx
         movq	%rax, (%rdx)
 #else
-        movq	%rax, _fe_sq_p(%rip)
+        movq	%rax, ASM_NAME(fe_sq_p)(%rip)
 #endif /* __APPLE__ */
-#ifndef __APPLE__
-        movq	fe_mul121666_avx2@GOTPCREL(%rip), %rax
+#ifdef __ELF__
+        movq	ASM_NAME(fe_mul121666_avx2)@GOTPCREL(%rip), %rax
 #else
-        leaq	_fe_mul121666_avx2(%rip), %rax
+        leaq	ASM_NAME(fe_mul121666_avx2)(%rip), %rax
 #endif /* __APPLE__ */
-#ifndef __APPLE__
-        movq	fe_mul121666_p@GOTPCREL(%rip), %rdx
+#ifdef __ELF__
+        movq	ASM_NAME(fe_mul121666_p)@GOTPCREL(%rip), %rdx
         movq	%rax, (%rdx)
 #else
-        movq	%rax, _fe_mul121666_p(%rip)
+        movq	%rax, ASM_NAME(fe_mul121666_p)(%rip)
 #endif /* __APPLE__ */
-#ifndef __APPLE__
-        movq	fe_sq2_avx2@GOTPCREL(%rip), %rax
+#ifdef __ELF__
+        movq	ASM_NAME(fe_sq2_avx2)@GOTPCREL(%rip), %rax
 #else
-        leaq	_fe_sq2_avx2(%rip), %rax
+        leaq	ASM_NAME(fe_sq2_avx2)(%rip), %rax
 #endif /* __APPLE__ */
-#ifndef __APPLE__
-        movq	fe_sq2_p@GOTPCREL(%rip), %rdx
+#ifdef __ELF__
+        movq	ASM_NAME(fe_sq2_p)@GOTPCREL(%rip), %rdx
         movq	%rax, (%rdx)
 #else
-        movq	%rax, _fe_sq2_p(%rip)
+        movq	%rax, ASM_NAME(fe_sq2_p)(%rip)
 #endif /* __APPLE__ */
-#ifndef __APPLE__
-        movq	fe_invert_avx2@GOTPCREL(%rip), %rax
+#ifdef __ELF__
+        movq	ASM_NAME(fe_invert_avx2)@GOTPCREL(%rip), %rax
 #else
-        leaq	_fe_invert_avx2(%rip), %rax
+        leaq	ASM_NAME(fe_invert_avx2)(%rip), %rax
 #endif /* __APPLE__ */
-#ifndef __APPLE__
-        movq	fe_invert_p@GOTPCREL(%rip), %rdx
+#ifdef __ELF__
+        movq	ASM_NAME(fe_invert_p)@GOTPCREL(%rip), %rdx
         movq	%rax, (%rdx)
 #else
-        movq	%rax, _fe_invert_p(%rip)
+        movq	%rax, ASM_NAME(fe_invert_p)(%rip)
 #endif /* __APPLE__ */
-#ifndef __APPLE__
-        movq	curve25519_avx2@GOTPCREL(%rip), %rax
+#ifdef __ELF__
+        movq	ASM_NAME(curve25519_avx2)@GOTPCREL(%rip), %rax
 #else
-        leaq	_curve25519_avx2(%rip), %rax
+        leaq	ASM_NAME(curve25519_avx2)(%rip), %rax
 #endif /* __APPLE__ */
-#ifndef __APPLE__
-        movq	curve25519_p@GOTPCREL(%rip), %rdx
+#ifdef __ELF__
+        movq	ASM_NAME(curve25519_p)@GOTPCREL(%rip), %rdx
         movq	%rax, (%rdx)
 #else
-        movq	%rax, _curve25519_p(%rip)
+        movq	%rax, ASM_NAME(curve25519_p)(%rip)
 #endif /* __APPLE__ */
-#ifndef __APPLE__
-        movq	fe_pow22523_avx2@GOTPCREL(%rip), %rax
+#ifdef __ELF__
+        movq	ASM_NAME(fe_pow22523_avx2)@GOTPCREL(%rip), %rax
 #else
-        leaq	_fe_pow22523_avx2(%rip), %rax
+        leaq	ASM_NAME(fe_pow22523_avx2)(%rip), %rax
 #endif /* __APPLE__ */
-#ifndef __APPLE__
-        movq	fe_pow22523_p@GOTPCREL(%rip), %rdx
+#ifdef __ELF__
+        movq	ASM_NAME(fe_pow22523_p)@GOTPCREL(%rip), %rdx
         movq	%rax, (%rdx)
 #else
-        movq	%rax, _fe_pow22523_p(%rip)
+        movq	%rax, ASM_NAME(fe_pow22523_p)(%rip)
 #endif /* __APPLE__ */
-#ifndef __APPLE__
-        movq	fe_ge_to_p2_avx2@GOTPCREL(%rip), %rax
+#ifdef __ELF__
+        movq	ASM_NAME(fe_ge_to_p2_avx2)@GOTPCREL(%rip), %rax
 #else
-        leaq	_fe_ge_to_p2_avx2(%rip), %rax
+        leaq	ASM_NAME(fe_ge_to_p2_avx2)(%rip), %rax
 #endif /* __APPLE__ */
-#ifndef __APPLE__
-        movq	fe_ge_to_p2_p@GOTPCREL(%rip), %rdx
+#ifdef __ELF__
+        movq	ASM_NAME(fe_ge_to_p2_p)@GOTPCREL(%rip), %rdx
         movq	%rax, (%rdx)
 #else
-        movq	%rax, _fe_ge_to_p2_p(%rip)
+        movq	%rax, ASM_NAME(fe_ge_to_p2_p)(%rip)
 #endif /* __APPLE__ */
-#ifndef __APPLE__
-        movq	fe_ge_to_p3_avx2@GOTPCREL(%rip), %rax
+#ifdef __ELF__
+        movq	ASM_NAME(fe_ge_to_p3_avx2)@GOTPCREL(%rip), %rax
 #else
-        leaq	_fe_ge_to_p3_avx2(%rip), %rax
+        leaq	ASM_NAME(fe_ge_to_p3_avx2)(%rip), %rax
 #endif /* __APPLE__ */
-#ifndef __APPLE__
-        movq	fe_ge_to_p3_p@GOTPCREL(%rip), %rdx
+#ifdef __ELF__
+        movq	ASM_NAME(fe_ge_to_p3_p)@GOTPCREL(%rip), %rdx
         movq	%rax, (%rdx)
 #else
-        movq	%rax, _fe_ge_to_p3_p(%rip)
+        movq	%rax, ASM_NAME(fe_ge_to_p3_p)(%rip)
 #endif /* __APPLE__ */
-#ifndef __APPLE__
-        movq	fe_ge_dbl_avx2@GOTPCREL(%rip), %rax
+#ifdef __ELF__
+        movq	ASM_NAME(fe_ge_dbl_avx2)@GOTPCREL(%rip), %rax
 #else
-        leaq	_fe_ge_dbl_avx2(%rip), %rax
+        leaq	ASM_NAME(fe_ge_dbl_avx2)(%rip), %rax
 #endif /* __APPLE__ */
-#ifndef __APPLE__
-        movq	fe_ge_dbl_p@GOTPCREL(%rip), %rdx
+#ifdef __ELF__
+        movq	ASM_NAME(fe_ge_dbl_p)@GOTPCREL(%rip), %rdx
         movq	%rax, (%rdx)
 #else
-        movq	%rax, _fe_ge_dbl_p(%rip)
+        movq	%rax, ASM_NAME(fe_ge_dbl_p)(%rip)
 #endif /* __APPLE__ */
-#ifndef __APPLE__
-        movq	fe_ge_madd_avx2@GOTPCREL(%rip), %rax
+#ifdef __ELF__
+        movq	ASM_NAME(fe_ge_madd_avx2)@GOTPCREL(%rip), %rax
 #else
-        leaq	_fe_ge_madd_avx2(%rip), %rax
+        leaq	ASM_NAME(fe_ge_madd_avx2)(%rip), %rax
 #endif /* __APPLE__ */
-#ifndef __APPLE__
-        movq	fe_ge_madd_p@GOTPCREL(%rip), %rdx
+#ifdef __ELF__
+        movq	ASM_NAME(fe_ge_madd_p)@GOTPCREL(%rip), %rdx
         movq	%rax, (%rdx)
 #else
-        movq	%rax, _fe_ge_madd_p(%rip)
+        movq	%rax, ASM_NAME(fe_ge_madd_p)(%rip)
 #endif /* __APPLE__ */
-#ifndef __APPLE__
-        movq	fe_ge_msub_avx2@GOTPCREL(%rip), %rax
+#ifdef __ELF__
+        movq	ASM_NAME(fe_ge_msub_avx2)@GOTPCREL(%rip), %rax
 #else
-        leaq	_fe_ge_msub_avx2(%rip), %rax
+        leaq	ASM_NAME(fe_ge_msub_avx2)(%rip), %rax
 #endif /* __APPLE__ */
-#ifndef __APPLE__
-        movq	fe_ge_msub_p@GOTPCREL(%rip), %rdx
+#ifdef __ELF__
+        movq	ASM_NAME(fe_ge_msub_p)@GOTPCREL(%rip), %rdx
         movq	%rax, (%rdx)
 #else
-        movq	%rax, _fe_ge_msub_p(%rip)
+        movq	%rax, ASM_NAME(fe_ge_msub_p)(%rip)
 #endif /* __APPLE__ */
-#ifndef __APPLE__
-        movq	fe_ge_add_avx2@GOTPCREL(%rip), %rax
+#ifdef __ELF__
+        movq	ASM_NAME(fe_ge_add_avx2)@GOTPCREL(%rip), %rax
 #else
-        leaq	_fe_ge_add_avx2(%rip), %rax
+        leaq	ASM_NAME(fe_ge_add_avx2)(%rip), %rax
 #endif /* __APPLE__ */
-#ifndef __APPLE__
-        movq	fe_ge_add_p@GOTPCREL(%rip), %rdx
+#ifdef __ELF__
+        movq	ASM_NAME(fe_ge_add_p)@GOTPCREL(%rip), %rdx
         movq	%rax, (%rdx)
 #else
-        movq	%rax, _fe_ge_add_p(%rip)
+        movq	%rax, ASM_NAME(fe_ge_add_p)(%rip)
 #endif /* __APPLE__ */
-#ifndef __APPLE__
-        movq	fe_ge_sub_avx2@GOTPCREL(%rip), %rax
+#ifdef __ELF__
+        movq	ASM_NAME(fe_ge_sub_avx2)@GOTPCREL(%rip), %rax
 #else
-        leaq	_fe_ge_sub_avx2(%rip), %rax
+        leaq	ASM_NAME(fe_ge_sub_avx2)(%rip), %rax
 #endif /* __APPLE__ */
-#ifndef __APPLE__
-        movq	fe_ge_sub_p@GOTPCREL(%rip), %rdx
+#ifdef __ELF__
+        movq	ASM_NAME(fe_ge_sub_p)@GOTPCREL(%rip), %rdx
         movq	%rax, (%rdx)
 #else
-        movq	%rax, _fe_ge_sub_p(%rip)
+        movq	%rax, ASM_NAME(fe_ge_sub_p)(%rip)
 #endif /* __APPLE__ */
 L_fe_init_flags_done:
-#ifndef __APPLE__
-        movq	cpuFlagsSet@GOTPCREL(%rip), %rdx
+#ifdef __ELF__
+        movq	ASM_NAME(cpuFlagsSet)@GOTPCREL(%rip), %rdx
         movl	$0x1, (%rdx)
 #else
-        movl	$0x1, _cpuFlagsSet(%rip)
+        movl	$0x1, ASM_NAME(cpuFlagsSet)(%rip)
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
         repz retq
@@ -713,107 +713,55 @@ FUNCTION(fe_mul)
 FUNCTION_END(fe_mul)
 
 FUNCTION(fe_sq)
-#ifndef __APPLE__
-        jmpq	*fe_sq_p(%rip)
-#else
-        jmpq	*_fe_sq_p(%rip)
-#endif /* __APPLE__ */
+        jmpq	*ASM_NAME(fe_sq_p)(%rip)
 FUNCTION_END(fe_sq)
 
 FUNCTION(fe_mul121666)
-#ifndef __APPLE__
-        jmpq	*fe_mul121666_p(%rip)
-#else
-        jmpq	*_fe_mul121666_p(%rip)
-#endif /* __APPLE__ */
+        jmpq	*ASM_NAME(fe_mul121666_p)(%rip)
 FUNCTION_END(fe_mul121666)
 
 FUNCTION(fe_sq2)
-#ifndef __APPLE__
-        jmpq	*fe_sq2_p(%rip)
-#else
-        jmpq	*_fe_sq2_p(%rip)
-#endif /* __APPLE__ */
+        jmpq	*ASM_NAME(fe_sq2_p)(%rip)
 FUNCTION_END(fe_sq2)
 
 FUNCTION(fe_invert)
-#ifndef __APPLE__
-        jmpq	*fe_invert_p(%rip)
-#else
-        jmpq	*_fe_invert_p(%rip)
-#endif /* __APPLE__ */
+        jmpq	*ASM_NAME(fe_invert_p)(%rip)
 FUNCTION_END(fe_invert)
 
 FUNCTION(curve25519)
-#ifndef __APPLE__
-        jmpq	*curve25519_p(%rip)
-#else
-        jmpq	*_curve25519_p(%rip)
-#endif /* __APPLE__ */
+        jmpq	*ASM_NAME(curve25519_p)(%rip)
 FUNCTION_END(curve25519)
 
 FUNCTION(fe_pow22523)
-#ifndef __APPLE__
-        jmpq	*fe_pow22523_p(%rip)
-#else
-        jmpq	*_fe_pow22523_p(%rip)
-#endif /* __APPLE__ */
+        jmpq	*ASM_NAME(fe_pow22523_p)(%rip)
 FUNCTION_END(fe_pow22523)
 
 FUNCTION(fe_ge_to_p2)
-#ifndef __APPLE__
-        jmpq	*fe_ge_to_p2_p(%rip)
-#else
-        jmpq	*_fe_ge_to_p2_p(%rip)
-#endif /* __APPLE__ */
+        jmpq	*ASM_NAME(fe_ge_to_p2_p)(%rip)
 FUNCTION_END(fe_ge_to_p2)
 
 FUNCTION(fe_ge_to_p3)
-#ifndef __APPLE__
-        jmpq	*fe_ge_to_p3_p(%rip)
-#else
-        jmpq	*_fe_ge_to_p3_p(%rip)
-#endif /* __APPLE__ */
+        jmpq	*ASM_NAME(fe_ge_to_p3_p)(%rip)
 FUNCTION_END(fe_ge_to_p3)
 
 FUNCTION(fe_ge_dbl)
-#ifndef __APPLE__
-        jmpq	*fe_ge_dbl_p(%rip)
-#else
-        jmpq	*_fe_ge_dbl_p(%rip)
-#endif /* __APPLE__ */
+        jmpq	*ASM_NAME(fe_ge_dbl_p)(%rip)
 FUNCTION_END(fe_ge_dbl)
 
 FUNCTION(fe_ge_madd)
-#ifndef __APPLE__
-        jmpq	*fe_ge_madd_p(%rip)
-#else
-        jmpq	*_fe_ge_madd_p(%rip)
-#endif /* __APPLE__ */
+        jmpq	*ASM_NAME(fe_ge_madd_p)(%rip)
 FUNCTION_END(fe_ge_madd)
 
 FUNCTION(fe_ge_msub)
-#ifndef __APPLE__
-        jmpq	*fe_ge_msub_p(%rip)
-#else
-        jmpq	*_fe_ge_msub_p(%rip)
-#endif /* __APPLE__ */
+        jmpq	*ASM_NAME(fe_ge_msub_p)(%rip)
 FUNCTION_END(fe_ge_msub)
 
 FUNCTION(fe_ge_add)
-#ifndef __APPLE__
-        jmpq	*fe_ge_add_p(%rip)
-#else
-        jmpq	*_fe_ge_add_p(%rip)
-#endif /* __APPLE__ */
+        jmpq	*ASM_NAME(fe_ge_add_p)(%rip)
 FUNCTION_END(fe_ge_add)
 
 FUNCTION(fe_ge_sub)
-#ifndef __APPLE__
-        jmpq	*fe_ge_sub_p(%rip)
-#else
-        jmpq	*_fe_ge_sub_p(%rip)
-#endif /* __APPLE__ */
+        jmpq	*ASM_NAME(fe_ge_sub_p)(%rip)
 FUNCTION_END(fe_ge_sub)
 
 #ifndef __APPLE__
@@ -3746,6 +3694,8 @@ FUNCTION(fe_pow22523_x64)
         movq	96(%rsp), %rdi
         addq	$0x70, %rsp
         repz retq
+FUNCTION_END(fe_pow22523_x64)
+
 FUNCTION(fe_ge_to_p2_x64)
         pushq	%rbx
         pushq	%r12
@@ -11003,6 +10953,8 @@ FUNCTION(fe_pow22523_avx2)
         movq	96(%rsp), %rdi
         addq	$0x70, %rsp
         repz retq
+FUNCTION_END(fe_pow22523_avx2)
+
 FUNCTION(fe_ge_to_p2_avx2)
         pushq	%rbx
         pushq	%r12

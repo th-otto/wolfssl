@@ -293,8 +293,8 @@ L_poly1305_avx_final_no_more:
         popq	%rbx
         repz retq
 FUNCTION_END(poly1305_final_avx)
-
 #endif /* HAVE_INTEL_AVX1 */
+
 #ifdef HAVE_INTEL_AVX2
 FUNCTION(poly1305_calc_powers_avx2)
         pushq	%r12

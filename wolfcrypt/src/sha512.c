@@ -152,7 +152,8 @@
 #endif
 
 
-#if defined(USE_INTEL_SPEEDUP)
+/* gives internal compiler error on cygwin :( */
+#if defined(USE_INTEL_SPEEDUP) && !defined(__CYGWIN__) && !defined(__MINGW32__)
     #if defined(__GNUC__) && ((__GNUC__ < 4) || \
                               (__GNUC__ == 4 && __GNUC_MINOR__ <= 8))
         #undef  NO_AVX2_SUPPORT
@@ -476,18 +477,18 @@ static int InitSha512_256(wc_Sha512* sha512)
 #endif
 
     #if defined(HAVE_INTEL_AVX1)
-        extern int Transform_Sha512_AVX1(wc_Sha512 *sha512);
-        extern int Transform_Sha512_AVX1_Len(wc_Sha512 *sha512, word32 len);
+        extern WOLF_CRYPT_SYSVABI int Transform_Sha512_AVX1(wc_Sha512 *sha512);
+        extern WOLF_CRYPT_SYSVABI int Transform_Sha512_AVX1_Len(wc_Sha512 *sha512, word32 len);
     #endif
     #if defined(HAVE_INTEL_AVX2)
-        extern int Transform_Sha512_AVX2(wc_Sha512 *sha512);
-        extern int Transform_Sha512_AVX2_Len(wc_Sha512 *sha512, word32 len);
+        extern WOLF_CRYPT_SYSVABI int Transform_Sha512_AVX2(wc_Sha512 *sha512);
+        extern WOLF_CRYPT_SYSVABI int Transform_Sha512_AVX2_Len(wc_Sha512 *sha512, word32 len);
         #if defined(HAVE_INTEL_RORX)
-            extern int Transform_Sha512_AVX1_RORX(wc_Sha512 *sha512);
-            extern int Transform_Sha512_AVX1_RORX_Len(wc_Sha512 *sha512,
+            extern WOLF_CRYPT_SYSVABI int Transform_Sha512_AVX1_RORX(wc_Sha512 *sha512);
+            extern WOLF_CRYPT_SYSVABI int Transform_Sha512_AVX1_RORX_Len(wc_Sha512 *sha512,
                                                       word32 len);
-            extern int Transform_Sha512_AVX2_RORX(wc_Sha512 *sha512);
-            extern int Transform_Sha512_AVX2_RORX_Len(wc_Sha512 *sha512,
+            extern WOLF_CRYPT_SYSVABI int Transform_Sha512_AVX2_RORX(wc_Sha512 *sha512);
+            extern WOLF_CRYPT_SYSVABI int Transform_Sha512_AVX2_RORX_Len(wc_Sha512 *sha512,
                                                       word32 len);
         #endif
     #endif
@@ -496,9 +497,21 @@ static int InitSha512_256(wc_Sha512* sha512)
     }  /* extern "C" */
 #endif
 
-    static int _Transform_Sha512(wc_Sha512 *sha512);
-    static int (*Transform_Sha512_p)(wc_Sha512* sha512) = _Transform_Sha512;
-    static int (*Transform_Sha512_Len_p)(wc_Sha512* sha512, word32 len) = NULL;
+    static
+#if defined(HAVE_INTEL_AVX1) || defined(HAVE_INTEL_AVX2)
+WOLF_CRYPT_SYSVABI
+#endif
+    int _Transform_Sha512(wc_Sha512 *sha512);
+    static int (
+#if defined(HAVE_INTEL_AVX1) || defined(HAVE_INTEL_AVX2)
+WOLF_CRYPT_SYSVABI
+#endif
+    	*Transform_Sha512_p)(wc_Sha512* sha512) = _Transform_Sha512;
+    static int (
+#if defined(HAVE_INTEL_AVX1) || defined(HAVE_INTEL_AVX2)
+WOLF_CRYPT_SYSVABI
+#endif
+    	*Transform_Sha512_Len_p)(wc_Sha512* sha512, word32 len) = NULL;
     static int transform_check = 0;
     static int intel_flags;
     static int Transform_Sha512_is_vectorized = 0;
@@ -711,7 +724,11 @@ static const word64 K512[80] = {
     d(i) += h(i); \
     h(i) += S0(a(i)) + Maj(a(i),b(i),c(i))
 
-static int _Transform_Sha512(wc_Sha512* sha512)
+static
+#if defined(HAVE_INTEL_AVX1) || defined(HAVE_INTEL_AVX2)
+WOLF_CRYPT_SYSVABI
+#endif
+int _Transform_Sha512(wc_Sha512* sha512)
 {
     const word64* K = K512;
     word32 j;

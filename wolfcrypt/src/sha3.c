@@ -58,8 +58,8 @@
 
     word32 cpuid_flags;
     int cpuid_flags_set = 0;
-    void (*sha3_block)(word64 *s) = NULL;
-    void (*sha3_block_n)(word64 *s, const byte* data, word32 n,
+    void (WOLF_CRYPT_SYSVABI *sha3_block)(word64 *s) = NULL;
+    void (WOLF_CRYPT_SYSVABI *sha3_block_n)(word64 *s, const byte* data, word32 n,
         word64 c) = NULL;
 #endif
 
@@ -231,7 +231,7 @@ while (0)
 #ifndef USE_INTEL_SPEEDUP
 static
 #endif
-void BlockSha3(word64 *s)
+void WOLF_CRYPT_SYSVABI BlockSha3(word64 *s)
 {
     byte i, x, y;
     word64 t0, t1;
@@ -522,7 +522,7 @@ while (0)
 #ifndef USE_INTEL_SPEEDUP
 static
 #endif
-void BlockSha3(word64 *s)
+void WOLF_CRYPT_SYSVABI BlockSha3(word64 *s)
 {
     word64 n[25];
     word64 b[5];
