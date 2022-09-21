@@ -29139,10 +29139,10 @@ int wolfSSL_ASN1_STRING_canon(WOLFSSL_ASN1_STRING* asn_out,
 
     /* trimming spaces at the head and tail */
     dst--;
-    for (; (len > 0 && XISSPACE(*dst)); len--) {
+    for (; (len > 0 && XISSPACE((unsigned char)*dst)); len--) {
         dst--;
     }
-    for (; (len > 0 && XISSPACE(*src)); len--) {
+    for (; (len > 0 && XISSPACE((unsigned char)*src)); len--) {
         src++;
     }
 
@@ -29153,10 +29153,10 @@ int wolfSSL_ASN1_STRING_canon(WOLFSSL_ASN1_STRING* asn_out,
         if (!XISASCII(*src)) {
             /* keep non-ascii code */
             *dst = *src++;
-        } else if (XISSPACE(*src)) {
+        } else if (XISSPACE((unsigned char)*src)) {
             *dst = 0x20; /* space */
             /* remove the rest of spaces */
-            while (XISSPACE(*++src) && i++ < len);
+            while (XISSPACE((unsigned char)*++src) && i++ < len);
         } else {
             *dst = (char)XTOLOWER((unsigned char)*src++);
         }

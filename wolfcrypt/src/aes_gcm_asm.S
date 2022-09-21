@@ -165,7 +165,6 @@ L_aes_gcm_mod2_128:
 #ifndef __APPLE__
 .text
 .globl	AES_GCM_encrypt
-.type	AES_GCM_encrypt,@function
 .align	16
 AES_GCM_encrypt:
 #else
@@ -2014,12 +2013,10 @@ L_AES_GCM_encrypt_store_tag_done:
         popq	%r13
         repz retq
 #ifndef __APPLE__
-.size	AES_GCM_encrypt,.-AES_GCM_encrypt
 #endif /* __APPLE__ */
 #ifndef __APPLE__
 .text
 .globl	AES_GCM_decrypt
-.type	AES_GCM_decrypt,@function
 .align	16
 AES_GCM_decrypt:
 #else
@@ -3420,13 +3417,11 @@ L_AES_GCM_decrypt_cmp_tag_done:
         popq	%r13
         repz retq
 #ifndef __APPLE__
-.size	AES_GCM_decrypt,.-AES_GCM_decrypt
 #endif /* __APPLE__ */
 #ifdef WOLFSSL_AESGCM_STREAM
 #ifndef __APPLE__
 .text
 .globl	AES_GCM_init_aesni
-.type	AES_GCM_init_aesni,@function
 .align	16
 AES_GCM_init_aesni:
 #else
@@ -3774,12 +3769,10 @@ L_AES_GCM_init_aesni_iv_done:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	AES_GCM_init_aesni,.-AES_GCM_init_aesni
 #endif /* __APPLE__ */
 #ifndef __APPLE__
 .text
 .globl	AES_GCM_aad_update_aesni
-.type	AES_GCM_aad_update_aesni,@function
 .align	16
 AES_GCM_aad_update_aesni:
 #else
@@ -3856,12 +3849,10 @@ L_AES_GCM_aad_update_aesni_16_loop:
         movdqa	%xmm5, (%rdx)
         repz retq
 #ifndef __APPLE__
-.size	AES_GCM_aad_update_aesni,.-AES_GCM_aad_update_aesni
 #endif /* __APPLE__ */
 #ifndef __APPLE__
 .text
 .globl	AES_GCM_encrypt_block_aesni
-.type	AES_GCM_encrypt_block_aesni,@function
 .align	16
 AES_GCM_encrypt_block_aesni:
 #else
@@ -3906,12 +3897,10 @@ L_AES_GCM_encrypt_block_aesni_aesenc_block_aesenc_avx_last:
         pshufb	L_aes_gcm_bswap_mask(%rip), %xmm8
         repz retq
 #ifndef __APPLE__
-.size	AES_GCM_encrypt_block_aesni,.-AES_GCM_encrypt_block_aesni
 #endif /* __APPLE__ */
 #ifndef __APPLE__
 .text
 .globl	AES_GCM_ghash_block_aesni
-.type	AES_GCM_ghash_block_aesni,@function
 .align	16
 AES_GCM_ghash_block_aesni:
 #else
@@ -3982,12 +3971,10 @@ _AES_GCM_ghash_block_aesni:
         movdqa	%xmm4, (%rsi)
         repz retq
 #ifndef __APPLE__
-.size	AES_GCM_ghash_block_aesni,.-AES_GCM_ghash_block_aesni
 #endif /* __APPLE__ */
 #ifndef __APPLE__
 .text
 .globl	AES_GCM_encrypt_update_aesni
-.type	AES_GCM_encrypt_update_aesni,@function
 .align	16
 AES_GCM_encrypt_update_aesni:
 #else
@@ -5204,12 +5191,10 @@ L_AES_GCM_encrypt_update_aesni_done_enc:
         popq	%r13
         repz retq
 #ifndef __APPLE__
-.size	AES_GCM_encrypt_update_aesni,.-AES_GCM_encrypt_update_aesni
 #endif /* __APPLE__ */
 #ifndef __APPLE__
 .text
 .globl	AES_GCM_encrypt_final_aesni
-.type	AES_GCM_encrypt_final_aesni,@function
 .align	16
 AES_GCM_encrypt_final_aesni:
 #else
@@ -5305,12 +5290,10 @@ L_AES_GCM_encrypt_final_aesni_store_tag_done:
         popq	%r13
         repz retq
 #ifndef __APPLE__
-.size	AES_GCM_encrypt_final_aesni,.-AES_GCM_encrypt_final_aesni
 #endif /* __APPLE__ */
 #ifndef __APPLE__
 .text
 .globl	AES_GCM_decrypt_update_aesni
-.type	AES_GCM_decrypt_update_aesni,@function
 .align	16
 AES_GCM_decrypt_update_aesni:
 #else
@@ -6071,12 +6054,10 @@ L_AES_GCM_decrypt_update_aesni_done_dec:
         popq	%r13
         repz retq
 #ifndef __APPLE__
-.size	AES_GCM_decrypt_update_aesni,.-AES_GCM_decrypt_update_aesni
 #endif /* __APPLE__ */
 #ifndef __APPLE__
 .text
 .globl	AES_GCM_decrypt_final_aesni
-.type	AES_GCM_decrypt_final_aesni,@function
 .align	16
 AES_GCM_decrypt_final_aesni:
 #else
@@ -6191,7 +6172,6 @@ L_AES_GCM_decrypt_final_aesni_cmp_tag_done:
         popq	%r13
         repz retq
 #ifndef __APPLE__
-.size	AES_GCM_decrypt_final_aesni,.-AES_GCM_decrypt_final_aesni
 #endif /* __APPLE__ */
 #endif /* WOLFSSL_AESGCM_STREAM */
 #ifdef HAVE_INTEL_AVX1
@@ -6330,7 +6310,6 @@ L_avx1_aes_gcm_mod2_128:
 #ifndef __APPLE__
 .text
 .globl	AES_GCM_encrypt_avx1
-.type	AES_GCM_encrypt_avx1,@function
 .align	16
 AES_GCM_encrypt_avx1:
 #else
@@ -7905,12 +7884,10 @@ L_AES_GCM_encrypt_avx1_store_tag_done:
         popq	%r13
         repz retq
 #ifndef __APPLE__
-.size	AES_GCM_encrypt_avx1,.-AES_GCM_encrypt_avx1
 #endif /* __APPLE__ */
 #ifndef __APPLE__
 .text
 .globl	AES_GCM_decrypt_avx1
-.type	AES_GCM_decrypt_avx1,@function
 .align	16
 AES_GCM_decrypt_avx1:
 #else
@@ -9079,13 +9056,11 @@ L_AES_GCM_decrypt_avx1_cmp_tag_done:
         popq	%r13
         repz retq
 #ifndef __APPLE__
-.size	AES_GCM_decrypt_avx1,.-AES_GCM_decrypt_avx1
 #endif /* __APPLE__ */
 #ifdef WOLFSSL_AESGCM_STREAM
 #ifndef __APPLE__
 .text
 .globl	AES_GCM_init_avx1
-.type	AES_GCM_init_avx1,@function
 .align	16
 AES_GCM_init_avx1:
 #else
@@ -9398,12 +9373,10 @@ L_AES_GCM_init_avx1_iv_done:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	AES_GCM_init_avx1,.-AES_GCM_init_avx1
 #endif /* __APPLE__ */
 #ifndef __APPLE__
 .text
 .globl	AES_GCM_aad_update_avx1
-.type	AES_GCM_aad_update_avx1,@function
 .align	16
 AES_GCM_aad_update_avx1:
 #else
@@ -9470,12 +9443,10 @@ L_AES_GCM_aad_update_avx1_16_loop:
         vzeroupper
         repz retq
 #ifndef __APPLE__
-.size	AES_GCM_aad_update_avx1,.-AES_GCM_aad_update_avx1
 #endif /* __APPLE__ */
 #ifndef __APPLE__
 .text
 .globl	AES_GCM_encrypt_block_avx1
-.type	AES_GCM_encrypt_block_avx1,@function
 .align	16
 AES_GCM_encrypt_block_avx1:
 #else
@@ -9520,12 +9491,10 @@ L_AES_GCM_encrypt_block_avx1_aesenc_block_last:
         vzeroupper
         repz retq
 #ifndef __APPLE__
-.size	AES_GCM_encrypt_block_avx1,.-AES_GCM_encrypt_block_avx1
 #endif /* __APPLE__ */
 #ifndef __APPLE__
 .text
 .globl	AES_GCM_ghash_block_avx1
-.type	AES_GCM_ghash_block_avx1,@function
 .align	16
 AES_GCM_ghash_block_avx1:
 #else
@@ -9586,12 +9555,10 @@ _AES_GCM_ghash_block_avx1:
         vzeroupper
         repz retq
 #ifndef __APPLE__
-.size	AES_GCM_ghash_block_avx1,.-AES_GCM_ghash_block_avx1
 #endif /* __APPLE__ */
 #ifndef __APPLE__
 .text
 .globl	AES_GCM_encrypt_update_avx1
-.type	AES_GCM_encrypt_update_avx1,@function
 .align	16
 AES_GCM_encrypt_update_avx1:
 #else
@@ -10611,12 +10578,10 @@ L_AES_GCM_encrypt_update_avx1_done_enc:
         popq	%r13
         repz retq
 #ifndef __APPLE__
-.size	AES_GCM_encrypt_update_avx1,.-AES_GCM_encrypt_update_avx1
 #endif /* __APPLE__ */
 #ifndef __APPLE__
 .text
 .globl	AES_GCM_encrypt_final_avx1
-.type	AES_GCM_encrypt_final_avx1,@function
 .align	16
 AES_GCM_encrypt_final_avx1:
 #else
@@ -10700,12 +10665,10 @@ L_AES_GCM_encrypt_final_avx1_store_tag_done:
         popq	%r13
         repz retq
 #ifndef __APPLE__
-.size	AES_GCM_encrypt_final_avx1,.-AES_GCM_encrypt_final_avx1
 #endif /* __APPLE__ */
 #ifndef __APPLE__
 .text
 .globl	AES_GCM_decrypt_update_avx1
-.type	AES_GCM_decrypt_update_avx1,@function
 .align	16
 AES_GCM_decrypt_update_avx1:
 #else
@@ -11309,12 +11272,10 @@ L_AES_GCM_decrypt_update_avx1_done_dec:
         popq	%r13
         repz retq
 #ifndef __APPLE__
-.size	AES_GCM_decrypt_update_avx1,.-AES_GCM_decrypt_update_avx1
 #endif /* __APPLE__ */
 #ifndef __APPLE__
 .text
 .globl	AES_GCM_decrypt_final_avx1
-.type	AES_GCM_decrypt_final_avx1,@function
 .align	16
 AES_GCM_decrypt_final_avx1:
 #else
@@ -11417,7 +11378,6 @@ L_AES_GCM_decrypt_final_avx1_cmp_tag_done:
         popq	%r13
         repz retq
 #ifndef __APPLE__
-.size	AES_GCM_decrypt_final_avx1,.-AES_GCM_decrypt_final_avx1
 #endif /* __APPLE__ */
 #endif /* WOLFSSL_AESGCM_STREAM */
 #endif /* HAVE_INTEL_AVX1 */
@@ -11569,7 +11529,6 @@ L_avx2_aes_gcm_mod2_128:
 #ifndef __APPLE__
 .text
 .globl	AES_GCM_encrypt_avx2
-.type	AES_GCM_encrypt_avx2,@function
 .align	16
 AES_GCM_encrypt_avx2:
 #else
@@ -12872,12 +12831,10 @@ L_AES_GCM_encrypt_avx2_store_tag_done:
         popq	%r13
         repz retq
 #ifndef __APPLE__
-.size	AES_GCM_encrypt_avx2,.-AES_GCM_encrypt_avx2
 #endif /* __APPLE__ */
 #ifndef __APPLE__
 .text
 .globl	AES_GCM_decrypt_avx2
-.type	AES_GCM_decrypt_avx2,@function
 .align	16
 AES_GCM_decrypt_avx2:
 #else
@@ -13843,13 +13800,11 @@ L_AES_GCM_decrypt_avx2_cmp_tag_done:
         popq	%r13
         repz retq
 #ifndef __APPLE__
-.size	AES_GCM_decrypt_avx2,.-AES_GCM_decrypt_avx2
 #endif /* __APPLE__ */
 #ifdef WOLFSSL_AESGCM_STREAM
 #ifndef __APPLE__
 .text
 .globl	AES_GCM_init_avx2
-.type	AES_GCM_init_avx2,@function
 .align	16
 AES_GCM_init_avx2:
 #else
@@ -14117,12 +14072,10 @@ L_AES_GCM_init_avx2_iv_done:
         popq	%rbx
         repz retq
 #ifndef __APPLE__
-.size	AES_GCM_init_avx2,.-AES_GCM_init_avx2
 #endif /* __APPLE__ */
 #ifndef __APPLE__
 .text
 .globl	AES_GCM_aad_update_avx2
-.type	AES_GCM_aad_update_avx2,@function
 .align	16
 AES_GCM_aad_update_avx2:
 #else
@@ -14176,12 +14129,10 @@ L_AES_GCM_aad_update_avx2_16_loop:
         vzeroupper
         repz retq
 #ifndef __APPLE__
-.size	AES_GCM_aad_update_avx2,.-AES_GCM_aad_update_avx2
 #endif /* __APPLE__ */
 #ifndef __APPLE__
 .text
 .globl	AES_GCM_encrypt_block_avx2
-.type	AES_GCM_encrypt_block_avx2,@function
 .align	16
 AES_GCM_encrypt_block_avx2:
 #else
@@ -14241,12 +14192,10 @@ L_AES_GCM_encrypt_block_avx2_aesenc_block_last:
         addq	$0x98, %rsp
         repz retq
 #ifndef __APPLE__
-.size	AES_GCM_encrypt_block_avx2,.-AES_GCM_encrypt_block_avx2
 #endif /* __APPLE__ */
 #ifndef __APPLE__
 .text
 .globl	AES_GCM_ghash_block_avx2
-.type	AES_GCM_ghash_block_avx2,@function
 .align	16
 AES_GCM_ghash_block_avx2:
 #else
@@ -14294,12 +14243,10 @@ _AES_GCM_ghash_block_avx2:
         vzeroupper
         repz retq
 #ifndef __APPLE__
-.size	AES_GCM_ghash_block_avx2,.-AES_GCM_ghash_block_avx2
 #endif /* __APPLE__ */
 #ifndef __APPLE__
 .text
 .globl	AES_GCM_encrypt_update_avx2
-.type	AES_GCM_encrypt_update_avx2,@function
 .align	16
 AES_GCM_encrypt_update_avx2:
 #else
@@ -15152,12 +15099,10 @@ L_AES_GCM_encrypt_update_avx2_done_enc:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	AES_GCM_encrypt_update_avx2,.-AES_GCM_encrypt_update_avx2
 #endif /* __APPLE__ */
 #ifndef __APPLE__
 .text
 .globl	AES_GCM_encrypt_final_avx2
-.type	AES_GCM_encrypt_final_avx2,@function
 .align	16
 AES_GCM_encrypt_final_avx2:
 #else
@@ -15228,12 +15173,10 @@ L_AES_GCM_encrypt_final_avx2_store_tag_done:
         popq	%r13
         repz retq
 #ifndef __APPLE__
-.size	AES_GCM_encrypt_final_avx2,.-AES_GCM_encrypt_final_avx2
 #endif /* __APPLE__ */
 #ifndef __APPLE__
 .text
 .globl	AES_GCM_decrypt_update_avx2
-.type	AES_GCM_decrypt_update_avx2,@function
 .align	16
 AES_GCM_decrypt_update_avx2:
 #else
@@ -15739,12 +15682,10 @@ L_AES_GCM_decrypt_update_avx2_done_dec:
         popq	%r13
         repz retq
 #ifndef __APPLE__
-.size	AES_GCM_decrypt_update_avx2,.-AES_GCM_decrypt_update_avx2
 #endif /* __APPLE__ */
 #ifndef __APPLE__
 .text
 .globl	AES_GCM_decrypt_final_avx2
-.type	AES_GCM_decrypt_final_avx2,@function
 .align	16
 AES_GCM_decrypt_final_avx2:
 #else
@@ -15829,7 +15770,6 @@ L_AES_GCM_decrypt_final_avx2_cmp_tag_done:
         popq	%r13
         repz retq
 #ifndef __APPLE__
-.size	AES_GCM_decrypt_final_avx2,.-AES_GCM_decrypt_final_avx2
 #endif /* __APPLE__ */
 #endif /* WOLFSSL_AESGCM_STREAM */
 #endif /* HAVE_INTEL_AVX2 */

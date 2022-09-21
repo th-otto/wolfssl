@@ -44,7 +44,6 @@
 #ifndef __APPLE__
 .text
 .globl	sp_2048_from_bin_bswap
-.type	sp_2048_from_bin_bswap,@function
 .align	16
 sp_2048_from_bin_bswap:
 #else
@@ -125,7 +124,6 @@ L_2048_from_bin_bswap_zero_start:
 L_2048_from_bin_bswap_zero_end:
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_from_bin_bswap,.-sp_2048_from_bin_bswap
 #endif /* __APPLE__ */
 #ifndef NO_MOVBE_SUPPORT
 /* Read big endian unsigned byte array into r.
@@ -139,7 +137,6 @@ L_2048_from_bin_bswap_zero_end:
 #ifndef __APPLE__
 .text
 .globl	sp_2048_from_bin_movbe
-.type	sp_2048_from_bin_movbe,@function
 .align	16
 sp_2048_from_bin_movbe:
 #else
@@ -210,7 +207,6 @@ L_2048_from_bin_movbe_zero_start:
 L_2048_from_bin_movbe_zero_end:
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_from_bin_movbe,.-sp_2048_from_bin_movbe
 #endif /* __APPLE__ */
 #endif /* !NO_MOVBE_SUPPORT */
 /* Write r as big endian to byte array.
@@ -223,7 +219,6 @@ L_2048_from_bin_movbe_zero_end:
 #ifndef __APPLE__
 .text
 .globl	sp_2048_to_bin_bswap_32
-.type	sp_2048_to_bin_bswap_32,@function
 .align	16
 sp_2048_to_bin_bswap_32:
 #else
@@ -330,7 +325,6 @@ _sp_2048_to_bin_bswap_32:
         movq	%rax, 248(%rsi)
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_to_bin_bswap_32,.-sp_2048_to_bin_bswap_32
 #endif /* __APPLE__ */
 #ifndef NO_MOVBE_SUPPORT
 /* Write r as big endian to byte array.
@@ -343,7 +337,6 @@ _sp_2048_to_bin_bswap_32:
 #ifndef __APPLE__
 .text
 .globl	sp_2048_to_bin_movbe_32
-.type	sp_2048_to_bin_movbe_32,@function
 .align	16
 sp_2048_to_bin_movbe_32:
 #else
@@ -418,7 +411,6 @@ _sp_2048_to_bin_movbe_32:
         movq	%rax, 248(%rsi)
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_to_bin_movbe_32,.-sp_2048_to_bin_movbe_32
 #endif /* __APPLE__ */
 #endif /* NO_MOVBE_SUPPORT */
 /* Multiply a and b into r. (r = a * b)
@@ -430,7 +422,6 @@ _sp_2048_to_bin_movbe_32:
 #ifndef __APPLE__
 .text
 .globl	sp_2048_mul_16
-.type	sp_2048_mul_16,@function
 .align	16
 sp_2048_mul_16:
 #else
@@ -2071,7 +2062,6 @@ _sp_2048_mul_16:
         addq	$0x80, %rsp
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_mul_16,.-sp_2048_mul_16
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Multiply a and b into r. (r = a * b)
@@ -2083,7 +2073,6 @@ _sp_2048_mul_16:
 #ifndef __APPLE__
 .text
 .globl	sp_2048_mul_avx2_16
-.type	sp_2048_mul_avx2_16,@function
 .align	16
 sp_2048_mul_avx2_16:
 #else
@@ -3747,7 +3736,6 @@ L_end_2048_mul_avx2_16:
         popq	%rbx
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_mul_avx2_16,.-sp_2048_mul_avx2_16
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 /* Add b to a into r. (r = a + b)
@@ -3759,7 +3747,6 @@ L_end_2048_mul_avx2_16:
 #ifndef __APPLE__
 .text
 .globl	sp_2048_add_16
-.type	sp_2048_add_16,@function
 .align	16
 sp_2048_add_16:
 #else
@@ -3821,7 +3808,6 @@ _sp_2048_add_16:
         adcq	$0x00, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_add_16,.-sp_2048_add_16
 #endif /* __APPLE__ */
 /* Sub b from a into a. (a -= b)
  *
@@ -3831,7 +3817,6 @@ _sp_2048_add_16:
 #ifndef __APPLE__
 .text
 .globl	sp_2048_sub_in_place_32
-.type	sp_2048_sub_in_place_32,@function
 .align	16
 sp_2048_sub_in_place_32:
 #else
@@ -3939,7 +3924,6 @@ _sp_2048_sub_in_place_32:
         sbbq	%rax, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_sub_in_place_32,.-sp_2048_sub_in_place_32
 #endif /* __APPLE__ */
 /* Add b to a into r. (r = a + b)
  *
@@ -3950,7 +3934,6 @@ _sp_2048_sub_in_place_32:
 #ifndef __APPLE__
 .text
 .globl	sp_2048_add_32
-.type	sp_2048_add_32,@function
 .align	16
 sp_2048_add_32:
 #else
@@ -4060,7 +4043,6 @@ _sp_2048_add_32:
         adcq	$0x00, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_add_32,.-sp_2048_add_32
 #endif /* __APPLE__ */
 /* Multiply a and b into r. (r = a * b)
  *
@@ -4071,7 +4053,6 @@ _sp_2048_add_32:
 #ifndef __APPLE__
 .text
 .globl	sp_2048_mul_32
-.type	sp_2048_mul_32,@function
 .align	16
 sp_2048_mul_32:
 #else
@@ -4784,7 +4765,6 @@ _sp_2048_mul_32:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_mul_32,.-sp_2048_mul_32
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Multiply a and b into r. (r = a * b)
@@ -4796,7 +4776,6 @@ _sp_2048_mul_32:
 #ifndef __APPLE__
 .text
 .globl	sp_2048_mul_avx2_32
-.type	sp_2048_mul_avx2_32,@function
 .align	16
 sp_2048_mul_avx2_32:
 #else
@@ -5461,7 +5440,6 @@ _sp_2048_mul_avx2_32:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_mul_avx2_32,.-sp_2048_mul_avx2_32
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 /* Square a and put result in r. (r = a * a)
@@ -5472,7 +5450,6 @@ _sp_2048_mul_avx2_32:
 #ifndef __APPLE__
 .text
 .globl	sp_2048_sqr_16
-.type	sp_2048_sqr_16,@function
 .align	16
 sp_2048_sqr_16:
 #else
@@ -6556,7 +6533,6 @@ _sp_2048_sqr_16:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_sqr_16,.-sp_2048_sqr_16
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Square a and put result in r. (r = a * a)
@@ -6567,7 +6543,6 @@ _sp_2048_sqr_16:
 #ifndef __APPLE__
 .text
 .globl	sp_2048_sqr_avx2_16
-.type	sp_2048_sqr_avx2_16,@function
 .align	16
 sp_2048_sqr_avx2_16:
 #else
@@ -7614,7 +7589,6 @@ L_end_2048_sqr_avx2_16:
         popq	%rbp
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_sqr_avx2_16,.-sp_2048_sqr_avx2_16
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 /* Square a and put result in r. (r = a * a)
@@ -7627,7 +7601,6 @@ L_end_2048_sqr_avx2_16:
 #ifndef __APPLE__
 .text
 .globl	sp_2048_sqr_32
-.type	sp_2048_sqr_32,@function
 .align	16
 sp_2048_sqr_32:
 #else
@@ -8155,7 +8128,6 @@ _sp_2048_sqr_32:
         addq	$0x110, %rsp
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_sqr_32,.-sp_2048_sqr_32
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Square a and put result in r. (r = a * a)
@@ -8168,7 +8140,6 @@ _sp_2048_sqr_32:
 #ifndef __APPLE__
 .text
 .globl	sp_2048_sqr_avx2_32
-.type	sp_2048_sqr_avx2_32,@function
 .align	16
 sp_2048_sqr_avx2_32:
 #else
@@ -8696,7 +8667,6 @@ _sp_2048_sqr_avx2_32:
         addq	$0x110, %rsp
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_sqr_avx2_32,.-sp_2048_sqr_avx2_32
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 /* Sub b from a into a. (a -= b)
@@ -8707,7 +8677,6 @@ _sp_2048_sqr_avx2_32:
 #ifndef __APPLE__
 .text
 .globl	sp_2048_sub_in_place_16
-.type	sp_2048_sub_in_place_16,@function
 .align	16
 sp_2048_sub_in_place_16:
 #else
@@ -8767,7 +8736,6 @@ _sp_2048_sub_in_place_16:
         sbbq	%rax, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_sub_in_place_16,.-sp_2048_sub_in_place_16
 #endif /* __APPLE__ */
 /* Mul a by digit b into r. (r = a * b)
  *
@@ -8778,7 +8746,6 @@ _sp_2048_sub_in_place_16:
 #ifndef __APPLE__
 .text
 .globl	sp_2048_mul_d_32
-.type	sp_2048_mul_d_32,@function
 .align	16
 sp_2048_mul_d_32:
 #else
@@ -9044,7 +9011,6 @@ _sp_2048_mul_d_32:
         movq	%r10, 256(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_mul_d_32,.-sp_2048_mul_d_32
 #endif /* __APPLE__ */
 /* Conditionally subtract b from a using the mask m.
  * m is -1 to subtract and 0 when not copying.
@@ -9057,7 +9023,6 @@ _sp_2048_mul_d_32:
 #ifndef __APPLE__
 .text
 .globl	sp_2048_cond_sub_16
-.type	sp_2048_cond_sub_16,@function
 .align	16
 sp_2048_cond_sub_16:
 #else
@@ -9183,7 +9148,6 @@ _sp_2048_cond_sub_16:
         addq	$0x80, %rsp
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_cond_sub_16,.-sp_2048_cond_sub_16
 #endif /* __APPLE__ */
 /* Reduce the number back to 2048 bits using Montgomery reduction.
  *
@@ -9194,7 +9158,6 @@ _sp_2048_cond_sub_16:
 #ifndef __APPLE__
 .text
 .globl	sp_2048_mont_reduce_16
-.type	sp_2048_mont_reduce_16,@function
 .align	16
 sp_2048_mont_reduce_16:
 #else
@@ -9401,7 +9364,6 @@ L_2048_mont_reduce_16_loop:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_mont_reduce_16,.-sp_2048_mont_reduce_16
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Conditionally subtract b from a using the mask m.
@@ -9415,7 +9377,6 @@ L_2048_mont_reduce_16_loop:
 #ifndef __APPLE__
 .text
 .globl	sp_2048_cond_sub_avx2_16
-.type	sp_2048_cond_sub_avx2_16,@function
 .align	16
 sp_2048_cond_sub_avx2_16:
 #else
@@ -9507,7 +9468,6 @@ _sp_2048_cond_sub_avx2_16:
         sbbq	%rax, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_cond_sub_avx2_16,.-sp_2048_cond_sub_avx2_16
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 /* Mul a by digit b into r. (r = a * b)
@@ -9519,7 +9479,6 @@ _sp_2048_cond_sub_avx2_16:
 #ifndef __APPLE__
 .text
 .globl	sp_2048_mul_d_16
-.type	sp_2048_mul_d_16,@function
 .align	16
 sp_2048_mul_d_16:
 #else
@@ -9657,7 +9616,6 @@ _sp_2048_mul_d_16:
         movq	%r9, 128(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_mul_d_16,.-sp_2048_mul_d_16
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Mul a by digit b into r. (r = a * b)
@@ -9669,7 +9627,6 @@ _sp_2048_mul_d_16:
 #ifndef __APPLE__
 .text
 .globl	sp_2048_mul_d_avx2_16
-.type	sp_2048_mul_d_avx2_16,@function
 .align	16
 sp_2048_mul_d_avx2_16:
 #else
@@ -9778,7 +9735,6 @@ _sp_2048_mul_d_avx2_16:
         movq	%r9, 128(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_mul_d_avx2_16,.-sp_2048_mul_d_avx2_16
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #ifdef _WIN64
@@ -9792,7 +9748,6 @@ _sp_2048_mul_d_avx2_16:
 #ifndef __APPLE__
 .text
 .globl	div_2048_word_asm_16
-.type	div_2048_word_asm_16,@function
 .align	16
 div_2048_word_asm_16:
 #else
@@ -9807,7 +9762,6 @@ _div_2048_word_asm_16:
         divq	%rcx
         repz retq
 #ifndef __APPLE__
-.size	div_2048_word_asm_16,.-div_2048_word_asm_16
 #endif /* __APPLE__ */
 #endif /* _WIN64 */
 /* Compare a with b in constant time.
@@ -9820,7 +9774,6 @@ _div_2048_word_asm_16:
 #ifndef __APPLE__
 .text
 .globl	sp_2048_cmp_16
-.type	sp_2048_cmp_16,@function
 .align	16
 sp_2048_cmp_16:
 #else
@@ -9964,13 +9917,11 @@ _sp_2048_cmp_16:
         xorq	%rdx, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_cmp_16,.-sp_2048_cmp_16
 #endif /* __APPLE__ */
 #ifndef WC_NO_CACHE_RESISTANT
 #ifndef __APPLE__
 .text
 .globl	sp_2048_get_from_table_16
-.type	sp_2048_get_from_table_16,@function
 .align	16
 sp_2048_get_from_table_16:
 #else
@@ -11130,7 +11081,6 @@ _sp_2048_get_from_table_16:
         # END: 8-15
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_get_from_table_16,.-sp_2048_get_from_table_16
 #endif /* __APPLE__ */
 #endif /* !WC_NO_CACHE_RESISTANT */
 #ifdef HAVE_INTEL_AVX2
@@ -11143,7 +11093,6 @@ _sp_2048_get_from_table_16:
 #ifndef __APPLE__
 .text
 .globl	sp_2048_mont_reduce_avx2_16
-.type	sp_2048_mont_reduce_avx2_16,@function
 .align	16
 sp_2048_mont_reduce_avx2_16:
 #else
@@ -11468,14 +11417,12 @@ L_2048_mont_reduce_avx2_16_loop:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_mont_reduce_avx2_16,.-sp_2048_mont_reduce_avx2_16
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #ifndef WC_NO_CACHE_RESISTANT
 #ifndef __APPLE__
 .text
 .globl	sp_2048_get_from_table_avx2_16
-.type	sp_2048_get_from_table_avx2_16,@function
 .align	16
 sp_2048_get_from_table_avx2_16:
 #else
@@ -12015,7 +11962,6 @@ _sp_2048_get_from_table_avx2_16:
         # END: 0-15
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_get_from_table_avx2_16,.-sp_2048_get_from_table_avx2_16
 #endif /* __APPLE__ */
 #endif /* !WC_NO_CACHE_RESISTANT */
 /* Conditionally subtract b from a using the mask m.
@@ -12029,7 +11975,6 @@ _sp_2048_get_from_table_avx2_16:
 #ifndef __APPLE__
 .text
 .globl	sp_2048_cond_sub_32
-.type	sp_2048_cond_sub_32,@function
 .align	16
 sp_2048_cond_sub_32:
 #else
@@ -12267,7 +12212,6 @@ _sp_2048_cond_sub_32:
         addq	$0x100, %rsp
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_cond_sub_32,.-sp_2048_cond_sub_32
 #endif /* __APPLE__ */
 /* Reduce the number back to 2048 bits using Montgomery reduction.
  *
@@ -12278,7 +12222,6 @@ _sp_2048_cond_sub_32:
 #ifndef __APPLE__
 .text
 .globl	sp_2048_mont_reduce_32
-.type	sp_2048_mont_reduce_32,@function
 .align	16
 sp_2048_mont_reduce_32:
 #else
@@ -12645,7 +12588,6 @@ L_2048_mont_reduce_32_loop:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_mont_reduce_32,.-sp_2048_mont_reduce_32
 #endif /* __APPLE__ */
 /* Sub b from a into r. (r = a - b)
  *
@@ -12656,7 +12598,6 @@ L_2048_mont_reduce_32_loop:
 #ifndef __APPLE__
 .text
 .globl	sp_2048_sub_32
-.type	sp_2048_sub_32,@function
 .align	16
 sp_2048_sub_32:
 #else
@@ -12764,7 +12705,6 @@ _sp_2048_sub_32:
         sbbq	%rax, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_sub_32,.-sp_2048_sub_32
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Mul a by digit b into r. (r = a * b)
@@ -12776,7 +12716,6 @@ _sp_2048_sub_32:
 #ifndef __APPLE__
 .text
 .globl	sp_2048_mul_d_avx2_32
-.type	sp_2048_mul_d_avx2_32,@function
 .align	16
 sp_2048_mul_d_avx2_32:
 #else
@@ -12981,7 +12920,6 @@ _sp_2048_mul_d_avx2_32:
         movq	%r9, 256(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_mul_d_avx2_32,.-sp_2048_mul_d_avx2_32
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #ifdef _WIN64
@@ -12995,7 +12933,6 @@ _sp_2048_mul_d_avx2_32:
 #ifndef __APPLE__
 .text
 .globl	div_2048_word_asm_32
-.type	div_2048_word_asm_32,@function
 .align	16
 div_2048_word_asm_32:
 #else
@@ -13010,7 +12947,6 @@ _div_2048_word_asm_32:
         divq	%rcx
         repz retq
 #ifndef __APPLE__
-.size	div_2048_word_asm_32,.-div_2048_word_asm_32
 #endif /* __APPLE__ */
 #endif /* _WIN64 */
 #ifdef HAVE_INTEL_AVX2
@@ -13025,7 +12961,6 @@ _div_2048_word_asm_32:
 #ifndef __APPLE__
 .text
 .globl	sp_2048_cond_sub_avx2_32
-.type	sp_2048_cond_sub_avx2_32,@function
 .align	16
 sp_2048_cond_sub_avx2_32:
 #else
@@ -13197,7 +13132,6 @@ _sp_2048_cond_sub_avx2_32:
         sbbq	%rax, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_cond_sub_avx2_32,.-sp_2048_cond_sub_avx2_32
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 /* Compare a with b in constant time.
@@ -13210,7 +13144,6 @@ _sp_2048_cond_sub_avx2_32:
 #ifndef __APPLE__
 .text
 .globl	sp_2048_cmp_32
-.type	sp_2048_cmp_32,@function
 .align	16
 sp_2048_cmp_32:
 #else
@@ -13482,13 +13415,11 @@ _sp_2048_cmp_32:
         xorq	%rdx, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_cmp_32,.-sp_2048_cmp_32
 #endif /* __APPLE__ */
 #ifndef WC_NO_CACHE_RESISTANT
 #ifndef __APPLE__
 .text
 .globl	sp_2048_get_from_table_32
-.type	sp_2048_get_from_table_32,@function
 .align	16
 sp_2048_get_from_table_32:
 #else
@@ -18096,7 +18027,6 @@ _sp_2048_get_from_table_32:
         # END: 24-31
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_get_from_table_32,.-sp_2048_get_from_table_32
 #endif /* __APPLE__ */
 #endif /* !WC_NO_CACHE_RESISTANT */
 #ifdef HAVE_INTEL_AVX2
@@ -18109,7 +18039,6 @@ _sp_2048_get_from_table_32:
 #ifndef __APPLE__
 .text
 .globl	sp_2048_mont_reduce_avx2_32
-.type	sp_2048_mont_reduce_avx2_32,@function
 .align	16
 sp_2048_mont_reduce_avx2_32:
 #else
@@ -18509,14 +18438,12 @@ L_2048_mont_reduce_avx2_32_loop:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_mont_reduce_avx2_32,.-sp_2048_mont_reduce_avx2_32
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #ifndef WC_NO_CACHE_RESISTANT
 #ifndef __APPLE__
 .text
 .globl	sp_2048_get_from_table_avx2_32
-.type	sp_2048_get_from_table_avx2_32,@function
 .align	16
 sp_2048_get_from_table_avx2_32:
 #else
@@ -20668,7 +20595,6 @@ _sp_2048_get_from_table_avx2_32:
         # END: 16-31
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_get_from_table_avx2_32,.-sp_2048_get_from_table_avx2_32
 #endif /* __APPLE__ */
 #endif /* !WC_NO_CACHE_RESISTANT */
 /* Conditionally add a and b using the mask m.
@@ -20682,7 +20608,6 @@ _sp_2048_get_from_table_avx2_32:
 #ifndef __APPLE__
 .text
 .globl	sp_2048_cond_add_16
-.type	sp_2048_cond_add_16,@function
 .align	16
 sp_2048_cond_add_16:
 #else
@@ -20809,7 +20734,6 @@ _sp_2048_cond_add_16:
         addq	$0x80, %rsp
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_cond_add_16,.-sp_2048_cond_add_16
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Conditionally add a and b using the mask m.
@@ -20823,7 +20747,6 @@ _sp_2048_cond_add_16:
 #ifndef __APPLE__
 .text
 .globl	sp_2048_cond_add_avx2_16
-.type	sp_2048_cond_add_avx2_16,@function
 .align	16
 sp_2048_cond_add_avx2_16:
 #else
@@ -20916,7 +20839,6 @@ _sp_2048_cond_add_avx2_16:
         adcq	$0x00, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_cond_add_avx2_16,.-sp_2048_cond_add_avx2_16
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 /* Shift number left by n bit. (r = a << n)
@@ -20928,7 +20850,6 @@ _sp_2048_cond_add_avx2_16:
 #ifndef __APPLE__
 .text
 .globl	sp_2048_lshift_32
-.type	sp_2048_lshift_32,@function
 .align	16
 sp_2048_lshift_32:
 #else
@@ -21039,7 +20960,6 @@ _sp_2048_lshift_32:
         movq	%r11, 24(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_2048_lshift_32,.-sp_2048_lshift_32
 #endif /* __APPLE__ */
 #endif /* !WOLFSSL_SP_NO_2048 */
 #endif /* !WOLFSSL_SP_NO_2048 */
@@ -21056,7 +20976,6 @@ _sp_2048_lshift_32:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_from_bin_bswap
-.type	sp_3072_from_bin_bswap,@function
 .align	16
 sp_3072_from_bin_bswap:
 #else
@@ -21137,7 +21056,6 @@ L_3072_from_bin_bswap_zero_start:
 L_3072_from_bin_bswap_zero_end:
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_from_bin_bswap,.-sp_3072_from_bin_bswap
 #endif /* __APPLE__ */
 #ifndef NO_MOVBE_SUPPORT
 /* Read big endian unsigned byte array into r.
@@ -21151,7 +21069,6 @@ L_3072_from_bin_bswap_zero_end:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_from_bin_movbe
-.type	sp_3072_from_bin_movbe,@function
 .align	16
 sp_3072_from_bin_movbe:
 #else
@@ -21222,7 +21139,6 @@ L_3072_from_bin_movbe_zero_start:
 L_3072_from_bin_movbe_zero_end:
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_from_bin_movbe,.-sp_3072_from_bin_movbe
 #endif /* __APPLE__ */
 #endif /* !NO_MOVBE_SUPPORT */
 /* Write r as big endian to byte array.
@@ -21235,7 +21151,6 @@ L_3072_from_bin_movbe_zero_end:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_to_bin_bswap_48
-.type	sp_3072_to_bin_bswap_48,@function
 .align	16
 sp_3072_to_bin_bswap_48:
 #else
@@ -21390,7 +21305,6 @@ _sp_3072_to_bin_bswap_48:
         movq	%rax, 376(%rsi)
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_to_bin_bswap_48,.-sp_3072_to_bin_bswap_48
 #endif /* __APPLE__ */
 #ifndef NO_MOVBE_SUPPORT
 /* Write r as big endian to byte array.
@@ -21403,7 +21317,6 @@ _sp_3072_to_bin_bswap_48:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_to_bin_movbe_48
-.type	sp_3072_to_bin_movbe_48,@function
 .align	16
 sp_3072_to_bin_movbe_48:
 #else
@@ -21510,7 +21423,6 @@ _sp_3072_to_bin_movbe_48:
         movq	%rax, 376(%rsi)
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_to_bin_movbe_48,.-sp_3072_to_bin_movbe_48
 #endif /* __APPLE__ */
 #endif /* NO_MOVBE_SUPPORT */
 /* Multiply a and b into r. (r = a * b)
@@ -21522,7 +21434,6 @@ _sp_3072_to_bin_movbe_48:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_mul_12
-.type	sp_3072_mul_12,@function
 .align	16
 sp_3072_mul_12:
 #else
@@ -22467,7 +22378,6 @@ _sp_3072_mul_12:
         addq	$0x60, %rsp
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_mul_12,.-sp_3072_mul_12
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Multiply a and b into r. (r = a * b)
@@ -22479,7 +22389,6 @@ _sp_3072_mul_12:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_mul_avx2_12
-.type	sp_3072_mul_avx2_12,@function
 .align	16
 sp_3072_mul_avx2_12:
 #else
@@ -23443,7 +23352,6 @@ L_end_3072_mul_avx2_12:
         popq	%rbx
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_mul_avx2_12,.-sp_3072_mul_avx2_12
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 /* Add b to a into r. (r = a + b)
@@ -23455,7 +23363,6 @@ L_end_3072_mul_avx2_12:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_add_12
-.type	sp_3072_add_12,@function
 .align	16
 sp_3072_add_12:
 #else
@@ -23505,7 +23412,6 @@ _sp_3072_add_12:
         adcq	$0x00, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_add_12,.-sp_3072_add_12
 #endif /* __APPLE__ */
 /* Sub b from a into a. (a -= b)
  *
@@ -23515,7 +23421,6 @@ _sp_3072_add_12:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_sub_in_place_24
-.type	sp_3072_sub_in_place_24,@function
 .align	16
 sp_3072_sub_in_place_24:
 #else
@@ -23599,7 +23504,6 @@ _sp_3072_sub_in_place_24:
         sbbq	%rax, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_sub_in_place_24,.-sp_3072_sub_in_place_24
 #endif /* __APPLE__ */
 /* Add b to a into r. (r = a + b)
  *
@@ -23610,7 +23514,6 @@ _sp_3072_sub_in_place_24:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_add_24
-.type	sp_3072_add_24,@function
 .align	16
 sp_3072_add_24:
 #else
@@ -23696,7 +23599,6 @@ _sp_3072_add_24:
         adcq	$0x00, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_add_24,.-sp_3072_add_24
 #endif /* __APPLE__ */
 /* Multiply a and b into r. (r = a * b)
  *
@@ -23707,7 +23609,6 @@ _sp_3072_add_24:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_mul_24
-.type	sp_3072_mul_24,@function
 .align	16
 sp_3072_mul_24:
 #else
@@ -24264,7 +24165,6 @@ _sp_3072_mul_24:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_mul_24,.-sp_3072_mul_24
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Multiply a and b into r. (r = a * b)
@@ -24276,7 +24176,6 @@ _sp_3072_mul_24:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_mul_avx2_24
-.type	sp_3072_mul_avx2_24,@function
 .align	16
 sp_3072_mul_avx2_24:
 #else
@@ -24797,7 +24696,6 @@ _sp_3072_mul_avx2_24:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_mul_avx2_24,.-sp_3072_mul_avx2_24
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 /* Sub b from a into a. (a -= b)
@@ -24808,7 +24706,6 @@ _sp_3072_mul_avx2_24:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_sub_in_place_48
-.type	sp_3072_sub_in_place_48,@function
 .align	16
 sp_3072_sub_in_place_48:
 #else
@@ -24964,7 +24861,6 @@ _sp_3072_sub_in_place_48:
         sbbq	%rax, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_sub_in_place_48,.-sp_3072_sub_in_place_48
 #endif /* __APPLE__ */
 /* Add b to a into r. (r = a + b)
  *
@@ -24975,7 +24871,6 @@ _sp_3072_sub_in_place_48:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_add_48
-.type	sp_3072_add_48,@function
 .align	16
 sp_3072_add_48:
 #else
@@ -25133,7 +25028,6 @@ _sp_3072_add_48:
         adcq	$0x00, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_add_48,.-sp_3072_add_48
 #endif /* __APPLE__ */
 /* Multiply a and b into r. (r = a * b)
  *
@@ -25144,7 +25038,6 @@ _sp_3072_add_48:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_mul_48
-.type	sp_3072_mul_48,@function
 .align	16
 sp_3072_mul_48:
 #else
@@ -26169,7 +26062,6 @@ _sp_3072_mul_48:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_mul_48,.-sp_3072_mul_48
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Multiply a and b into r. (r = a * b)
@@ -26181,7 +26073,6 @@ _sp_3072_mul_48:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_mul_avx2_48
-.type	sp_3072_mul_avx2_48,@function
 .align	16
 sp_3072_mul_avx2_48:
 #else
@@ -27134,7 +27025,6 @@ _sp_3072_mul_avx2_48:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_mul_avx2_48,.-sp_3072_mul_avx2_48
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 /* Square a and put result in r. (r = a * a)
@@ -27145,7 +27035,6 @@ _sp_3072_mul_avx2_48:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_sqr_12
-.type	sp_3072_sqr_12,@function
 .align	16
 sp_3072_sqr_12:
 #else
@@ -27809,7 +27698,6 @@ _sp_3072_sqr_12:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_sqr_12,.-sp_3072_sqr_12
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Square a and put result in r. (r = a * a)
@@ -27820,7 +27708,6 @@ _sp_3072_sqr_12:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_sqr_avx2_12
-.type	sp_3072_sqr_avx2_12,@function
 .align	16
 sp_3072_sqr_avx2_12:
 #else
@@ -28456,7 +28343,6 @@ L_end_3072_sqr_avx2_12:
         popq	%rbp
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_sqr_avx2_12,.-sp_3072_sqr_avx2_12
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 /* Square a and put result in r. (r = a * a)
@@ -28469,7 +28355,6 @@ L_end_3072_sqr_avx2_12:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_sqr_24
-.type	sp_3072_sqr_24,@function
 .align	16
 sp_3072_sqr_24:
 #else
@@ -28881,7 +28766,6 @@ _sp_3072_sqr_24:
         addq	$0xd0, %rsp
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_sqr_24,.-sp_3072_sqr_24
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Square a and put result in r. (r = a * a)
@@ -28894,7 +28778,6 @@ _sp_3072_sqr_24:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_sqr_avx2_24
-.type	sp_3072_sqr_avx2_24,@function
 .align	16
 sp_3072_sqr_avx2_24:
 #else
@@ -29306,7 +29189,6 @@ _sp_3072_sqr_avx2_24:
         addq	$0xd0, %rsp
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_sqr_avx2_24,.-sp_3072_sqr_avx2_24
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 /* Square a and put result in r. (r = a * a)
@@ -29319,7 +29201,6 @@ _sp_3072_sqr_avx2_24:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_sqr_48
-.type	sp_3072_sqr_48,@function
 .align	16
 sp_3072_sqr_48:
 #else
@@ -30079,7 +29960,6 @@ _sp_3072_sqr_48:
         addq	$0x190, %rsp
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_sqr_48,.-sp_3072_sqr_48
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Square a and put result in r. (r = a * a)
@@ -30092,7 +29972,6 @@ _sp_3072_sqr_48:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_sqr_avx2_48
-.type	sp_3072_sqr_avx2_48,@function
 .align	16
 sp_3072_sqr_avx2_48:
 #else
@@ -30852,7 +30731,6 @@ _sp_3072_sqr_avx2_48:
         addq	$0x190, %rsp
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_sqr_avx2_48,.-sp_3072_sqr_avx2_48
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 /* Mul a by digit b into r. (r = a * b)
@@ -30864,7 +30742,6 @@ _sp_3072_sqr_avx2_48:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_mul_d_48
-.type	sp_3072_mul_d_48,@function
 .align	16
 sp_3072_mul_d_48:
 #else
@@ -31258,7 +31135,6 @@ _sp_3072_mul_d_48:
         movq	%r8, 384(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_mul_d_48,.-sp_3072_mul_d_48
 #endif /* __APPLE__ */
 /* Conditionally subtract b from a using the mask m.
  * m is -1 to subtract and 0 when not copying.
@@ -31271,7 +31147,6 @@ _sp_3072_mul_d_48:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_cond_sub_24
-.type	sp_3072_cond_sub_24,@function
 .align	16
 sp_3072_cond_sub_24:
 #else
@@ -31453,7 +31328,6 @@ _sp_3072_cond_sub_24:
         addq	$0xc0, %rsp
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_cond_sub_24,.-sp_3072_cond_sub_24
 #endif /* __APPLE__ */
 /* Reduce the number back to 3072 bits using Montgomery reduction.
  *
@@ -31464,7 +31338,6 @@ _sp_3072_cond_sub_24:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_mont_reduce_24
-.type	sp_3072_mont_reduce_24,@function
 .align	16
 sp_3072_mont_reduce_24:
 #else
@@ -31751,7 +31624,6 @@ L_3072_mont_reduce_24_loop:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_mont_reduce_24,.-sp_3072_mont_reduce_24
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Conditionally subtract b from a using the mask m.
@@ -31765,7 +31637,6 @@ L_3072_mont_reduce_24_loop:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_cond_sub_avx2_24
-.type	sp_3072_cond_sub_avx2_24,@function
 .align	16
 sp_3072_cond_sub_avx2_24:
 #else
@@ -31897,7 +31768,6 @@ _sp_3072_cond_sub_avx2_24:
         sbbq	%rax, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_cond_sub_avx2_24,.-sp_3072_cond_sub_avx2_24
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 /* Mul a by digit b into r. (r = a * b)
@@ -31909,7 +31779,6 @@ _sp_3072_cond_sub_avx2_24:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_mul_d_24
-.type	sp_3072_mul_d_24,@function
 .align	16
 sp_3072_mul_d_24:
 #else
@@ -32111,7 +31980,6 @@ _sp_3072_mul_d_24:
         movq	%r8, 192(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_mul_d_24,.-sp_3072_mul_d_24
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Mul a by digit b into r. (r = a * b)
@@ -32123,7 +31991,6 @@ _sp_3072_mul_d_24:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_mul_d_avx2_24
-.type	sp_3072_mul_d_avx2_24,@function
 .align	16
 sp_3072_mul_d_avx2_24:
 #else
@@ -32280,7 +32147,6 @@ _sp_3072_mul_d_avx2_24:
         movq	%r9, 192(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_mul_d_avx2_24,.-sp_3072_mul_d_avx2_24
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #ifdef _WIN64
@@ -32294,7 +32160,6 @@ _sp_3072_mul_d_avx2_24:
 #ifndef __APPLE__
 .text
 .globl	div_3072_word_asm_24
-.type	div_3072_word_asm_24,@function
 .align	16
 div_3072_word_asm_24:
 #else
@@ -32309,7 +32174,6 @@ _div_3072_word_asm_24:
         divq	%rcx
         repz retq
 #ifndef __APPLE__
-.size	div_3072_word_asm_24,.-div_3072_word_asm_24
 #endif /* __APPLE__ */
 #endif /* _WIN64 */
 /* Compare a with b in constant time.
@@ -32322,7 +32186,6 @@ _div_3072_word_asm_24:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_cmp_24
-.type	sp_3072_cmp_24,@function
 .align	16
 sp_3072_cmp_24:
 #else
@@ -32530,13 +32393,11 @@ _sp_3072_cmp_24:
         xorq	%rdx, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_cmp_24,.-sp_3072_cmp_24
 #endif /* __APPLE__ */
 #ifndef WC_NO_CACHE_RESISTANT
 #ifndef __APPLE__
 .text
 .globl	sp_3072_get_from_table_24
-.type	sp_3072_get_from_table_24,@function
 .align	16
 sp_3072_get_from_table_24:
 #else
@@ -34284,7 +34145,6 @@ _sp_3072_get_from_table_24:
         # END: 16-23
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_get_from_table_24,.-sp_3072_get_from_table_24
 #endif /* __APPLE__ */
 #endif /* !WC_NO_CACHE_RESISTANT */
 #ifdef HAVE_INTEL_AVX2
@@ -34297,7 +34157,6 @@ _sp_3072_get_from_table_24:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_mont_reduce_avx2_24
-.type	sp_3072_mont_reduce_avx2_24,@function
 .align	16
 sp_3072_mont_reduce_avx2_24:
 #else
@@ -34609,14 +34468,12 @@ L_3072_mont_reduce_avx2_24_loop:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_mont_reduce_avx2_24,.-sp_3072_mont_reduce_avx2_24
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #ifndef WC_NO_CACHE_RESISTANT
 #ifndef __APPLE__
 .text
 .globl	sp_3072_get_from_table_avx2_24
-.type	sp_3072_get_from_table_avx2_24,@function
 .align	16
 sp_3072_get_from_table_avx2_24:
 #else
@@ -35516,7 +35373,6 @@ _sp_3072_get_from_table_avx2_24:
         # END: 16-23
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_get_from_table_avx2_24,.-sp_3072_get_from_table_avx2_24
 #endif /* __APPLE__ */
 #endif /* !WC_NO_CACHE_RESISTANT */
 /* Conditionally subtract b from a using the mask m.
@@ -35530,7 +35386,6 @@ _sp_3072_get_from_table_avx2_24:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_cond_sub_48
-.type	sp_3072_cond_sub_48,@function
 .align	16
 sp_3072_cond_sub_48:
 #else
@@ -35880,7 +35735,6 @@ _sp_3072_cond_sub_48:
         addq	$0x180, %rsp
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_cond_sub_48,.-sp_3072_cond_sub_48
 #endif /* __APPLE__ */
 /* Reduce the number back to 3072 bits using Montgomery reduction.
  *
@@ -35891,7 +35745,6 @@ _sp_3072_cond_sub_48:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_mont_reduce_48
-.type	sp_3072_mont_reduce_48,@function
 .align	16
 sp_3072_mont_reduce_48:
 #else
@@ -36418,7 +36271,6 @@ L_3072_mont_reduce_48_loop:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_mont_reduce_48,.-sp_3072_mont_reduce_48
 #endif /* __APPLE__ */
 /* Sub b from a into r. (r = a - b)
  *
@@ -36429,7 +36281,6 @@ L_3072_mont_reduce_48_loop:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_sub_48
-.type	sp_3072_sub_48,@function
 .align	16
 sp_3072_sub_48:
 #else
@@ -36585,7 +36436,6 @@ _sp_3072_sub_48:
         sbbq	%rax, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_sub_48,.-sp_3072_sub_48
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Mul a by digit b into r. (r = a * b)
@@ -36597,7 +36447,6 @@ _sp_3072_sub_48:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_mul_d_avx2_48
-.type	sp_3072_mul_d_avx2_48,@function
 .align	16
 sp_3072_mul_d_avx2_48:
 #else
@@ -36898,7 +36747,6 @@ _sp_3072_mul_d_avx2_48:
         movq	%r9, 384(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_mul_d_avx2_48,.-sp_3072_mul_d_avx2_48
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #ifdef _WIN64
@@ -36912,7 +36760,6 @@ _sp_3072_mul_d_avx2_48:
 #ifndef __APPLE__
 .text
 .globl	div_3072_word_asm_48
-.type	div_3072_word_asm_48,@function
 .align	16
 div_3072_word_asm_48:
 #else
@@ -36927,7 +36774,6 @@ _div_3072_word_asm_48:
         divq	%rcx
         repz retq
 #ifndef __APPLE__
-.size	div_3072_word_asm_48,.-div_3072_word_asm_48
 #endif /* __APPLE__ */
 #endif /* _WIN64 */
 #ifdef HAVE_INTEL_AVX2
@@ -36942,7 +36788,6 @@ _div_3072_word_asm_48:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_cond_sub_avx2_48
-.type	sp_3072_cond_sub_avx2_48,@function
 .align	16
 sp_3072_cond_sub_avx2_48:
 #else
@@ -37194,7 +37039,6 @@ _sp_3072_cond_sub_avx2_48:
         sbbq	%rax, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_cond_sub_avx2_48,.-sp_3072_cond_sub_avx2_48
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 /* Compare a with b in constant time.
@@ -37207,7 +37051,6 @@ _sp_3072_cond_sub_avx2_48:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_cmp_48
-.type	sp_3072_cmp_48,@function
 .align	16
 sp_3072_cmp_48:
 #else
@@ -37607,13 +37450,11 @@ _sp_3072_cmp_48:
         xorq	%rdx, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_cmp_48,.-sp_3072_cmp_48
 #endif /* __APPLE__ */
 #ifndef WC_NO_CACHE_RESISTANT
 #ifndef __APPLE__
 .text
 .globl	sp_3072_get_from_table_48
-.type	sp_3072_get_from_table_48,@function
 .align	16
 sp_3072_get_from_table_48:
 #else
@@ -39413,7 +39254,6 @@ _sp_3072_get_from_table_48:
         # END: 40-47
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_get_from_table_48,.-sp_3072_get_from_table_48
 #endif /* __APPLE__ */
 #endif /* !WC_NO_CACHE_RESISTANT */
 #ifdef HAVE_INTEL_AVX2
@@ -39426,7 +39266,6 @@ _sp_3072_get_from_table_48:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_mont_reduce_avx2_48
-.type	sp_3072_mont_reduce_avx2_48,@function
 .align	16
 sp_3072_mont_reduce_avx2_48:
 #else
@@ -40002,14 +39841,12 @@ L_3072_mont_reduce_avx2_48_loop:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_mont_reduce_avx2_48,.-sp_3072_mont_reduce_avx2_48
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #ifndef WC_NO_CACHE_RESISTANT
 #ifndef __APPLE__
 .text
 .globl	sp_3072_get_from_table_avx2_48
-.type	sp_3072_get_from_table_avx2_48,@function
 .align	16
 sp_3072_get_from_table_avx2_48:
 #else
@@ -40861,7 +40698,6 @@ _sp_3072_get_from_table_avx2_48:
         # END: 32-47
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_get_from_table_avx2_48,.-sp_3072_get_from_table_avx2_48
 #endif /* __APPLE__ */
 #endif /* !WC_NO_CACHE_RESISTANT */
 /* Conditionally add a and b using the mask m.
@@ -40875,7 +40711,6 @@ _sp_3072_get_from_table_avx2_48:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_cond_add_24
-.type	sp_3072_cond_add_24,@function
 .align	16
 sp_3072_cond_add_24:
 #else
@@ -41058,7 +40893,6 @@ _sp_3072_cond_add_24:
         addq	$0xc0, %rsp
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_cond_add_24,.-sp_3072_cond_add_24
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Conditionally add a and b using the mask m.
@@ -41072,7 +40906,6 @@ _sp_3072_cond_add_24:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_cond_add_avx2_24
-.type	sp_3072_cond_add_avx2_24,@function
 .align	16
 sp_3072_cond_add_avx2_24:
 #else
@@ -41205,7 +41038,6 @@ _sp_3072_cond_add_avx2_24:
         adcq	$0x00, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_cond_add_avx2_24,.-sp_3072_cond_add_avx2_24
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 /* Shift number left by n bit. (r = a << n)
@@ -41217,7 +41049,6 @@ _sp_3072_cond_add_avx2_24:
 #ifndef __APPLE__
 .text
 .globl	sp_3072_lshift_48
-.type	sp_3072_lshift_48,@function
 .align	16
 sp_3072_lshift_48:
 #else
@@ -41376,7 +41207,6 @@ _sp_3072_lshift_48:
         movq	%r11, 24(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_3072_lshift_48,.-sp_3072_lshift_48
 #endif /* __APPLE__ */
 #endif /* !WOLFSSL_SP_NO_3072 */
 #endif /* !WOLFSSL_SP_NO_3072 */
@@ -41393,7 +41223,6 @@ _sp_3072_lshift_48:
 #ifndef __APPLE__
 .text
 .globl	sp_4096_from_bin_bswap
-.type	sp_4096_from_bin_bswap,@function
 .align	16
 sp_4096_from_bin_bswap:
 #else
@@ -41474,7 +41303,6 @@ L_4096_from_bin_bswap_zero_start:
 L_4096_from_bin_bswap_zero_end:
         repz retq
 #ifndef __APPLE__
-.size	sp_4096_from_bin_bswap,.-sp_4096_from_bin_bswap
 #endif /* __APPLE__ */
 #ifndef NO_MOVBE_SUPPORT
 /* Read big endian unsigned byte array into r.
@@ -41488,7 +41316,6 @@ L_4096_from_bin_bswap_zero_end:
 #ifndef __APPLE__
 .text
 .globl	sp_4096_from_bin_movbe
-.type	sp_4096_from_bin_movbe,@function
 .align	16
 sp_4096_from_bin_movbe:
 #else
@@ -41559,7 +41386,6 @@ L_4096_from_bin_movbe_zero_start:
 L_4096_from_bin_movbe_zero_end:
         repz retq
 #ifndef __APPLE__
-.size	sp_4096_from_bin_movbe,.-sp_4096_from_bin_movbe
 #endif /* __APPLE__ */
 #endif /* !NO_MOVBE_SUPPORT */
 /* Write r as big endian to byte array.
@@ -41572,7 +41398,6 @@ L_4096_from_bin_movbe_zero_end:
 #ifndef __APPLE__
 .text
 .globl	sp_4096_to_bin_bswap_64
-.type	sp_4096_to_bin_bswap_64,@function
 .align	16
 sp_4096_to_bin_bswap_64:
 #else
@@ -41775,7 +41600,6 @@ _sp_4096_to_bin_bswap_64:
         movq	%rax, 504(%rsi)
         repz retq
 #ifndef __APPLE__
-.size	sp_4096_to_bin_bswap_64,.-sp_4096_to_bin_bswap_64
 #endif /* __APPLE__ */
 #ifndef NO_MOVBE_SUPPORT
 /* Write r as big endian to byte array.
@@ -41788,7 +41612,6 @@ _sp_4096_to_bin_bswap_64:
 #ifndef __APPLE__
 .text
 .globl	sp_4096_to_bin_movbe_64
-.type	sp_4096_to_bin_movbe_64,@function
 .align	16
 sp_4096_to_bin_movbe_64:
 #else
@@ -41927,7 +41750,6 @@ _sp_4096_to_bin_movbe_64:
         movq	%rax, 504(%rsi)
         repz retq
 #ifndef __APPLE__
-.size	sp_4096_to_bin_movbe_64,.-sp_4096_to_bin_movbe_64
 #endif /* __APPLE__ */
 #endif /* NO_MOVBE_SUPPORT */
 /* Sub b from a into a. (a -= b)
@@ -41938,7 +41760,6 @@ _sp_4096_to_bin_movbe_64:
 #ifndef __APPLE__
 .text
 .globl	sp_4096_sub_in_place_64
-.type	sp_4096_sub_in_place_64,@function
 .align	16
 sp_4096_sub_in_place_64:
 #else
@@ -42142,7 +41963,6 @@ _sp_4096_sub_in_place_64:
         sbbq	%rax, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_4096_sub_in_place_64,.-sp_4096_sub_in_place_64
 #endif /* __APPLE__ */
 /* Add b to a into r. (r = a + b)
  *
@@ -42153,7 +41973,6 @@ _sp_4096_sub_in_place_64:
 #ifndef __APPLE__
 .text
 .globl	sp_4096_add_64
-.type	sp_4096_add_64,@function
 .align	16
 sp_4096_add_64:
 #else
@@ -42359,7 +42178,6 @@ _sp_4096_add_64:
         adcq	$0x00, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_4096_add_64,.-sp_4096_add_64
 #endif /* __APPLE__ */
 /* Multiply a and b into r. (r = a * b)
  *
@@ -42370,7 +42188,6 @@ _sp_4096_add_64:
 #ifndef __APPLE__
 .text
 .globl	sp_4096_mul_64
-.type	sp_4096_mul_64,@function
 .align	16
 sp_4096_mul_64:
 #else
@@ -43707,7 +43524,6 @@ _sp_4096_mul_64:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_4096_mul_64,.-sp_4096_mul_64
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Multiply a and b into r. (r = a * b)
@@ -43719,7 +43535,6 @@ _sp_4096_mul_64:
 #ifndef __APPLE__
 .text
 .globl	sp_4096_mul_avx2_64
-.type	sp_4096_mul_avx2_64,@function
 .align	16
 sp_4096_mul_avx2_64:
 #else
@@ -44960,7 +44775,6 @@ _sp_4096_mul_avx2_64:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_4096_mul_avx2_64,.-sp_4096_mul_avx2_64
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 /* Square a and put result in r. (r = a * a)
@@ -44973,7 +44787,6 @@ _sp_4096_mul_avx2_64:
 #ifndef __APPLE__
 .text
 .globl	sp_4096_sqr_64
-.type	sp_4096_sqr_64,@function
 .align	16
 sp_4096_sqr_64:
 #else
@@ -45965,7 +45778,6 @@ _sp_4096_sqr_64:
         addq	$0x210, %rsp
         repz retq
 #ifndef __APPLE__
-.size	sp_4096_sqr_64,.-sp_4096_sqr_64
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Square a and put result in r. (r = a * a)
@@ -45978,7 +45790,6 @@ _sp_4096_sqr_64:
 #ifndef __APPLE__
 .text
 .globl	sp_4096_sqr_avx2_64
-.type	sp_4096_sqr_avx2_64,@function
 .align	16
 sp_4096_sqr_avx2_64:
 #else
@@ -46970,7 +46781,6 @@ _sp_4096_sqr_avx2_64:
         addq	$0x210, %rsp
         repz retq
 #ifndef __APPLE__
-.size	sp_4096_sqr_avx2_64,.-sp_4096_sqr_avx2_64
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 /* Mul a by digit b into r. (r = a * b)
@@ -46982,7 +46792,6 @@ _sp_4096_sqr_avx2_64:
 #ifndef __APPLE__
 .text
 .globl	sp_4096_mul_d_64
-.type	sp_4096_mul_d_64,@function
 .align	16
 sp_4096_mul_d_64:
 #else
@@ -47504,7 +47313,6 @@ _sp_4096_mul_d_64:
         movq	%r9, 512(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_4096_mul_d_64,.-sp_4096_mul_d_64
 #endif /* __APPLE__ */
 /* Conditionally subtract b from a using the mask m.
  * m is -1 to subtract and 0 when not copying.
@@ -47517,7 +47325,6 @@ _sp_4096_mul_d_64:
 #ifndef __APPLE__
 .text
 .globl	sp_4096_cond_sub_64
-.type	sp_4096_cond_sub_64,@function
 .align	16
 sp_4096_cond_sub_64:
 #else
@@ -47979,7 +47786,6 @@ _sp_4096_cond_sub_64:
         addq	$0x200, %rsp
         repz retq
 #ifndef __APPLE__
-.size	sp_4096_cond_sub_64,.-sp_4096_cond_sub_64
 #endif /* __APPLE__ */
 /* Reduce the number back to 4096 bits using Montgomery reduction.
  *
@@ -47990,7 +47796,6 @@ _sp_4096_cond_sub_64:
 #ifndef __APPLE__
 .text
 .globl	sp_4096_mont_reduce_64
-.type	sp_4096_mont_reduce_64,@function
 .align	16
 sp_4096_mont_reduce_64:
 #else
@@ -48677,7 +48482,6 @@ L_4096_mont_reduce_64_loop:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_4096_mont_reduce_64,.-sp_4096_mont_reduce_64
 #endif /* __APPLE__ */
 /* Sub b from a into r. (r = a - b)
  *
@@ -48688,7 +48492,6 @@ L_4096_mont_reduce_64_loop:
 #ifndef __APPLE__
 .text
 .globl	sp_4096_sub_64
-.type	sp_4096_sub_64,@function
 .align	16
 sp_4096_sub_64:
 #else
@@ -48892,7 +48695,6 @@ _sp_4096_sub_64:
         sbbq	%rax, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_4096_sub_64,.-sp_4096_sub_64
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Mul a by digit b into r. (r = a * b)
@@ -48904,7 +48706,6 @@ _sp_4096_sub_64:
 #ifndef __APPLE__
 .text
 .globl	sp_4096_mul_d_avx2_64
-.type	sp_4096_mul_d_avx2_64,@function
 .align	16
 sp_4096_mul_d_avx2_64:
 #else
@@ -49301,7 +49102,6 @@ _sp_4096_mul_d_avx2_64:
         movq	%r9, 512(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_4096_mul_d_avx2_64,.-sp_4096_mul_d_avx2_64
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #ifdef _WIN64
@@ -49315,7 +49115,6 @@ _sp_4096_mul_d_avx2_64:
 #ifndef __APPLE__
 .text
 .globl	div_4096_word_asm_64
-.type	div_4096_word_asm_64,@function
 .align	16
 div_4096_word_asm_64:
 #else
@@ -49330,7 +49129,6 @@ _div_4096_word_asm_64:
         divq	%rcx
         repz retq
 #ifndef __APPLE__
-.size	div_4096_word_asm_64,.-div_4096_word_asm_64
 #endif /* __APPLE__ */
 #endif /* _WIN64 */
 #ifdef HAVE_INTEL_AVX2
@@ -49345,7 +49143,6 @@ _div_4096_word_asm_64:
 #ifndef __APPLE__
 .text
 .globl	sp_4096_cond_sub_avx2_64
-.type	sp_4096_cond_sub_avx2_64,@function
 .align	16
 sp_4096_cond_sub_avx2_64:
 #else
@@ -49677,7 +49474,6 @@ _sp_4096_cond_sub_avx2_64:
         sbbq	%rax, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_4096_cond_sub_avx2_64,.-sp_4096_cond_sub_avx2_64
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 /* Compare a with b in constant time.
@@ -49690,7 +49486,6 @@ _sp_4096_cond_sub_avx2_64:
 #ifndef __APPLE__
 .text
 .globl	sp_4096_cmp_64
-.type	sp_4096_cmp_64,@function
 .align	16
 sp_4096_cmp_64:
 #else
@@ -50218,13 +50013,11 @@ _sp_4096_cmp_64:
         xorq	%rdx, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_4096_cmp_64,.-sp_4096_cmp_64
 #endif /* __APPLE__ */
 #ifndef WC_NO_CACHE_RESISTANT
 #ifndef __APPLE__
 .text
 .globl	sp_4096_get_from_table_64
-.type	sp_4096_get_from_table_64,@function
 .align	16
 sp_4096_get_from_table_64:
 #else
@@ -52624,7 +52417,6 @@ _sp_4096_get_from_table_64:
         # END: 56-63
         repz retq
 #ifndef __APPLE__
-.size	sp_4096_get_from_table_64,.-sp_4096_get_from_table_64
 #endif /* __APPLE__ */
 #endif /* !WC_NO_CACHE_RESISTANT */
 #ifdef HAVE_INTEL_AVX2
@@ -52637,7 +52429,6 @@ _sp_4096_get_from_table_64:
 #ifndef __APPLE__
 .text
 .globl	sp_4096_mont_reduce_avx2_64
-.type	sp_4096_mont_reduce_avx2_64,@function
 .align	16
 sp_4096_mont_reduce_avx2_64:
 #else
@@ -53389,14 +53180,12 @@ L_4096_mont_reduce_avx2_64_loop:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_4096_mont_reduce_avx2_64,.-sp_4096_mont_reduce_avx2_64
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #ifndef WC_NO_CACHE_RESISTANT
 #ifndef __APPLE__
 .text
 .globl	sp_4096_get_from_table_avx2_64
-.type	sp_4096_get_from_table_avx2_64,@function
 .align	16
 sp_4096_get_from_table_avx2_64:
 #else
@@ -54532,7 +54321,6 @@ _sp_4096_get_from_table_avx2_64:
         # END: 48-63
         repz retq
 #ifndef __APPLE__
-.size	sp_4096_get_from_table_avx2_64,.-sp_4096_get_from_table_avx2_64
 #endif /* __APPLE__ */
 #endif /* !WC_NO_CACHE_RESISTANT */
 /* Conditionally add a and b using the mask m.
@@ -54546,7 +54334,6 @@ _sp_4096_get_from_table_avx2_64:
 #ifndef __APPLE__
 .text
 .globl	sp_4096_cond_add_32
-.type	sp_4096_cond_add_32,@function
 .align	16
 sp_4096_cond_add_32:
 #else
@@ -54785,7 +54572,6 @@ _sp_4096_cond_add_32:
         addq	$0x100, %rsp
         repz retq
 #ifndef __APPLE__
-.size	sp_4096_cond_add_32,.-sp_4096_cond_add_32
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Conditionally add a and b using the mask m.
@@ -54799,7 +54585,6 @@ _sp_4096_cond_add_32:
 #ifndef __APPLE__
 .text
 .globl	sp_4096_cond_add_avx2_32
-.type	sp_4096_cond_add_avx2_32,@function
 .align	16
 sp_4096_cond_add_avx2_32:
 #else
@@ -54972,7 +54757,6 @@ _sp_4096_cond_add_avx2_32:
         adcq	$0x00, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_4096_cond_add_avx2_32,.-sp_4096_cond_add_avx2_32
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 /* Shift number left by n bit. (r = a << n)
@@ -54984,7 +54768,6 @@ _sp_4096_cond_add_avx2_32:
 #ifndef __APPLE__
 .text
 .globl	sp_4096_lshift_64
-.type	sp_4096_lshift_64,@function
 .align	16
 sp_4096_lshift_64:
 #else
@@ -55191,7 +54974,6 @@ _sp_4096_lshift_64:
         movq	%r11, 24(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_4096_lshift_64,.-sp_4096_lshift_64
 #endif /* __APPLE__ */
 #endif /* WOLFSSL_SP_4096 */
 #endif /* WOLFSSL_SP_4096 */
@@ -55205,7 +54987,6 @@ _sp_4096_lshift_64:
 #ifndef __APPLE__
 .text
 .globl	sp_256_mul_4
-.type	sp_256_mul_4,@function
 .align	16
 sp_256_mul_4:
 #else
@@ -55334,7 +55115,6 @@ _sp_256_mul_4:
         addq	$32, %rsp
         repz retq
 #ifndef __APPLE__
-.size	sp_256_mul_4,.-sp_256_mul_4
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Multiply a and b into r. (r = a * b)
@@ -55346,7 +55126,6 @@ _sp_256_mul_4:
 #ifndef __APPLE__
 .text
 .globl	sp_256_mul_avx2_4
-.type	sp_256_mul_avx2_4,@function
 .align	16
 sp_256_mul_avx2_4:
 #else
@@ -55449,7 +55228,6 @@ _sp_256_mul_avx2_4:
         popq	%rbp
         repz retq
 #ifndef __APPLE__
-.size	sp_256_mul_avx2_4,.-sp_256_mul_avx2_4
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 /* Square a and put result in r. (r = a * a)
@@ -55460,7 +55238,6 @@ _sp_256_mul_avx2_4:
 #ifndef __APPLE__
 .text
 .globl	sp_256_sqr_4
-.type	sp_256_sqr_4,@function
 .align	16
 sp_256_sqr_4:
 #else
@@ -55572,7 +55349,6 @@ _sp_256_sqr_4:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_256_sqr_4,.-sp_256_sqr_4
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Square a and put result in r. (r = a * a)
@@ -55583,7 +55359,6 @@ _sp_256_sqr_4:
 #ifndef __APPLE__
 .text
 .globl	sp_256_sqr_avx2_4
-.type	sp_256_sqr_avx2_4,@function
 .align	16
 sp_256_sqr_avx2_4:
 #else
@@ -55669,7 +55444,6 @@ _sp_256_sqr_avx2_4:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_256_sqr_avx2_4,.-sp_256_sqr_avx2_4
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 /* Add b to a into r. (r = a + b)
@@ -55681,7 +55455,6 @@ _sp_256_sqr_avx2_4:
 #ifndef __APPLE__
 .text
 .globl	sp_256_add_4
-.type	sp_256_add_4,@function
 .align	16
 sp_256_add_4:
 #else
@@ -55706,7 +55479,6 @@ _sp_256_add_4:
         adcq	$0x00, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_256_add_4,.-sp_256_add_4
 #endif /* __APPLE__ */
 /* Sub b from a into r. (r = a - b)
  *
@@ -55717,7 +55489,6 @@ _sp_256_add_4:
 #ifndef __APPLE__
 .text
 .globl	sp_256_sub_4
-.type	sp_256_sub_4,@function
 .align	16
 sp_256_sub_4:
 #else
@@ -55742,7 +55513,6 @@ _sp_256_sub_4:
         sbbq	%rax, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_256_sub_4,.-sp_256_sub_4
 #endif /* __APPLE__ */
 /* Conditionally copy a into r using the mask m.
  * m is -1 to copy and 0 when not.
@@ -55754,7 +55524,6 @@ _sp_256_sub_4:
 #ifndef __APPLE__
 .text
 .globl	sp_256_cond_copy_4
-.type	sp_256_cond_copy_4,@function
 .align	16
 sp_256_cond_copy_4:
 #else
@@ -55781,7 +55550,6 @@ _sp_256_cond_copy_4:
         xorq	%r9, 24(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_256_cond_copy_4,.-sp_256_cond_copy_4
 #endif /* __APPLE__ */
 /* Multiply two Montgomery form numbers mod the modulus (prime).
  * (r = a * b mod m)
@@ -55795,7 +55563,6 @@ _sp_256_cond_copy_4:
 #ifndef __APPLE__
 .text
 .globl	sp_256_mont_mul_4
-.type	sp_256_mont_mul_4,@function
 .align	16
 sp_256_mont_mul_4:
 #else
@@ -55987,7 +55754,6 @@ _sp_256_mont_mul_4:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_256_mont_mul_4,.-sp_256_mont_mul_4
 #endif /* __APPLE__ */
 /* Square the Montgomery form number mod the modulus (prime). (r = a * a mod m)
  *
@@ -55999,7 +55765,6 @@ _sp_256_mont_mul_4:
 #ifndef __APPLE__
 .text
 .globl	sp_256_mont_sqr_4
-.type	sp_256_mont_sqr_4,@function
 .align	16
 sp_256_mont_sqr_4:
 #else
@@ -56169,7 +55934,6 @@ _sp_256_mont_sqr_4:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_256_mont_sqr_4,.-sp_256_mont_sqr_4
 #endif /* __APPLE__ */
 /* Compare a with b in constant time.
  *
@@ -56181,7 +55945,6 @@ _sp_256_mont_sqr_4:
 #ifndef __APPLE__
 .text
 .globl	sp_256_cmp_4
-.type	sp_256_cmp_4,@function
 .align	16
 sp_256_cmp_4:
 #else
@@ -56229,7 +55992,6 @@ _sp_256_cmp_4:
         xorq	%rdx, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_256_cmp_4,.-sp_256_cmp_4
 #endif /* __APPLE__ */
 /* Conditionally subtract b from a using the mask m.
  * m is -1 to subtract and 0 when not copying.
@@ -56242,7 +56004,6 @@ _sp_256_cmp_4:
 #ifndef __APPLE__
 .text
 .globl	sp_256_cond_sub_4
-.type	sp_256_cond_sub_4,@function
 .align	16
 sp_256_cond_sub_4:
 #else
@@ -56282,7 +56043,6 @@ _sp_256_cond_sub_4:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_256_cond_sub_4,.-sp_256_cond_sub_4
 #endif /* __APPLE__ */
 /* Reduce the number back to 256 bits using Montgomery reduction.
  *
@@ -56293,7 +56053,6 @@ _sp_256_cond_sub_4:
 #ifndef __APPLE__
 .text
 .globl	sp_256_mont_reduce_4
-.type	sp_256_mont_reduce_4,@function
 .align	16
 sp_256_mont_reduce_4:
 #else
@@ -56394,7 +56153,6 @@ _sp_256_mont_reduce_4:
         popq	%rbx
         repz retq
 #ifndef __APPLE__
-.size	sp_256_mont_reduce_4,.-sp_256_mont_reduce_4
 #endif /* __APPLE__ */
 /* Reduce the number back to 256 bits using Montgomery reduction.
  *
@@ -56405,7 +56163,6 @@ _sp_256_mont_reduce_4:
 #ifndef __APPLE__
 .text
 .globl	sp_256_mont_reduce_order_4
-.type	sp_256_mont_reduce_order_4,@function
 .align	16
 sp_256_mont_reduce_order_4:
 #else
@@ -56502,7 +56259,6 @@ L_mont_loop_4:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_256_mont_reduce_order_4,.-sp_256_mont_reduce_order_4
 #endif /* __APPLE__ */
 /* Add two Montgomery form numbers (r = a + b % m).
  *
@@ -56514,7 +56270,6 @@ L_mont_loop_4:
 #ifndef __APPLE__
 .text
 .globl	sp_256_mont_add_4
-.type	sp_256_mont_add_4,@function
 .align	16
 sp_256_mont_add_4:
 #else
@@ -56553,7 +56308,6 @@ _sp_256_mont_add_4:
         movq	%r9, 24(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_256_mont_add_4,.-sp_256_mont_add_4
 #endif /* __APPLE__ */
 /* Double a Montgomery form number (r = a + a % m).
  *
@@ -56564,7 +56318,6 @@ _sp_256_mont_add_4:
 #ifndef __APPLE__
 .text
 .globl	sp_256_mont_dbl_4
-.type	sp_256_mont_dbl_4,@function
 .align	16
 sp_256_mont_dbl_4:
 #else
@@ -56603,7 +56356,6 @@ _sp_256_mont_dbl_4:
         movq	%r8, 24(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_256_mont_dbl_4,.-sp_256_mont_dbl_4
 #endif /* __APPLE__ */
 /* Triple a Montgomery form number (r = a + a + a % m).
  *
@@ -56614,7 +56366,6 @@ _sp_256_mont_dbl_4:
 #ifndef __APPLE__
 .text
 .globl	sp_256_mont_tpl_4
-.type	sp_256_mont_tpl_4,@function
 .align	16
 sp_256_mont_tpl_4:
 #else
@@ -56673,7 +56424,6 @@ _sp_256_mont_tpl_4:
         movq	%r8, 24(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_256_mont_tpl_4,.-sp_256_mont_tpl_4
 #endif /* __APPLE__ */
 /* Subtract two Montgomery form numbers (r = a - b % m).
  *
@@ -56685,7 +56435,6 @@ _sp_256_mont_tpl_4:
 #ifndef __APPLE__
 .text
 .globl	sp_256_mont_sub_4
-.type	sp_256_mont_sub_4,@function
 .align	16
 sp_256_mont_sub_4:
 #else
@@ -56724,7 +56473,6 @@ _sp_256_mont_sub_4:
         movq	%r9, 24(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_256_mont_sub_4,.-sp_256_mont_sub_4
 #endif /* __APPLE__ */
 /* Subtract two Montgomery form numbers (r = a - b % m).
  *
@@ -56738,7 +56486,6 @@ _sp_256_mont_sub_4:
 #ifndef __APPLE__
 .text
 .globl	sp_256_mont_sub_lower_4
-.type	sp_256_mont_sub_lower_4,@function
 .align	16
 sp_256_mont_sub_lower_4:
 #else
@@ -56770,7 +56517,6 @@ _sp_256_mont_sub_lower_4:
         movq	%r9, 24(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_256_mont_sub_lower_4,.-sp_256_mont_sub_lower_4
 #endif /* __APPLE__ */
 /* Divide the number by 2 mod the modulus (prime). (r = a / 2 % m)
  *
@@ -56781,7 +56527,6 @@ _sp_256_mont_sub_lower_4:
 #ifndef __APPLE__
 .text
 .globl	sp_256_div2_4
-.type	sp_256_div2_4,@function
 .align	16
 sp_256_div2_4:
 #else
@@ -56817,7 +56562,6 @@ _sp_256_div2_4:
         movq	%r8, 24(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_256_div2_4,.-sp_256_div2_4
 #endif /* __APPLE__ */
 /* Triple a Montgomery form number (r = a + a + a % m).
  *
@@ -56830,7 +56574,6 @@ _sp_256_div2_4:
 #ifndef __APPLE__
 .text
 .globl	sp_256_mont_tpl_lower_4
-.type	sp_256_mont_tpl_lower_4,@function
 .align	16
 sp_256_mont_tpl_lower_4:
 #else
@@ -56882,7 +56625,6 @@ _sp_256_mont_tpl_lower_4:
         movq	%r8, 24(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_256_mont_tpl_lower_4,.-sp_256_mont_tpl_lower_4
 #endif /* __APPLE__ */
 /* Two Montgomery numbers, subtract double second from first (r = a - 2.b % m).
  *
@@ -56894,7 +56636,6 @@ _sp_256_mont_tpl_lower_4:
 #ifndef __APPLE__
 .text
 .globl	sp_256_mont_sub_dbl_4
-.type	sp_256_mont_sub_dbl_4,@function
 .align	16
 sp_256_mont_sub_dbl_4:
 #else
@@ -56965,7 +56706,6 @@ _sp_256_mont_sub_dbl_4:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_256_mont_sub_dbl_4,.-sp_256_mont_sub_dbl_4
 #endif /* __APPLE__ */
 /* Two Montgomery numbers, subtract second from first and double.
  * (r = 2.(a - b) % m).
@@ -56980,7 +56720,6 @@ _sp_256_mont_sub_dbl_4:
 #ifndef __APPLE__
 .text
 .globl	sp_256_mont_dbl_sub_4
-.type	sp_256_mont_dbl_sub_4,@function
 .align	16
 sp_256_mont_dbl_sub_4:
 #else
@@ -57025,7 +56764,6 @@ _sp_256_mont_dbl_sub_4:
         movq	%r9, 24(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_256_mont_dbl_sub_4,.-sp_256_mont_dbl_sub_4
 #endif /* __APPLE__ */
 #ifndef WC_NO_CACHE_RESISTANT
 /* Touch each possible point that could be being copied.
@@ -57037,7 +56775,6 @@ _sp_256_mont_dbl_sub_4:
 #ifndef __APPLE__
 .text
 .globl	sp_256_get_point_33_4
-.type	sp_256_get_point_33_4,@function
 .align	16
 sp_256_get_point_33_4:
 #else
@@ -57094,7 +56831,6 @@ L_256_get_point_33_4_start_1:
         movdqu	%xmm5, 144(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_256_get_point_33_4,.-sp_256_get_point_33_4
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Touch each possible point that could be being copied.
@@ -57106,7 +56842,6 @@ L_256_get_point_33_4_start_1:
 #ifndef __APPLE__
 .text
 .globl	sp_256_get_point_33_avx2_4
-.type	sp_256_get_point_33_avx2_4,@function
 .align	16
 sp_256_get_point_33_avx2_4:
 #else
@@ -57147,7 +56882,6 @@ L_256_get_point_33_avx2_4_start:
         vmovupd	%ymm2, 128(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_256_get_point_33_avx2_4,.-sp_256_get_point_33_avx2_4
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #endif /* !WC_NO_CACHE_RESISTANT */
@@ -57164,7 +56898,6 @@ L_256_get_point_33_avx2_4_start:
 #ifndef __APPLE__
 .text
 .globl	sp_256_mont_mul_avx2_4
-.type	sp_256_mont_mul_avx2_4,@function
 .align	16
 sp_256_mont_mul_avx2_4:
 #else
@@ -57331,7 +57064,6 @@ _sp_256_mont_mul_avx2_4:
         popq	%rbp
         repz retq
 #ifndef __APPLE__
-.size	sp_256_mont_mul_avx2_4,.-sp_256_mont_mul_avx2_4
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #ifdef HAVE_INTEL_AVX2
@@ -57345,7 +57077,6 @@ _sp_256_mont_mul_avx2_4:
 #ifndef __APPLE__
 .text
 .globl	sp_256_mont_sqr_avx2_4
-.type	sp_256_mont_sqr_avx2_4,@function
 .align	16
 sp_256_mont_sqr_avx2_4:
 #else
@@ -57495,7 +57226,6 @@ _sp_256_mont_sqr_avx2_4:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_256_mont_sqr_avx2_4,.-sp_256_mont_sqr_avx2_4
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #ifdef HAVE_INTEL_AVX2
@@ -57510,7 +57240,6 @@ _sp_256_mont_sqr_avx2_4:
 #ifndef __APPLE__
 .text
 .globl	sp_256_cond_sub_avx2_4
-.type	sp_256_cond_sub_avx2_4,@function
 .align	16
 sp_256_cond_sub_avx2_4:
 #else
@@ -57550,7 +57279,6 @@ _sp_256_cond_sub_avx2_4:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_256_cond_sub_avx2_4,.-sp_256_cond_sub_avx2_4
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #ifdef HAVE_INTEL_AVX2
@@ -57563,7 +57291,6 @@ _sp_256_cond_sub_avx2_4:
 #ifndef __APPLE__
 .text
 .globl	sp_256_mont_reduce_avx2_order_4
-.type	sp_256_mont_reduce_avx2_order_4,@function
 .align	16
 sp_256_mont_reduce_avx2_order_4:
 #else
@@ -57714,7 +57441,6 @@ _sp_256_mont_reduce_avx2_order_4:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_256_mont_reduce_avx2_order_4,.-sp_256_mont_reduce_avx2_order_4
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #ifdef HAVE_INTEL_AVX2
@@ -57727,7 +57453,6 @@ _sp_256_mont_reduce_avx2_order_4:
 #ifndef __APPLE__
 .text
 .globl	sp_256_div2_avx2_4
-.type	sp_256_div2_avx2_4,@function
 .align	16
 sp_256_div2_avx2_4:
 #else
@@ -57763,7 +57488,6 @@ _sp_256_div2_avx2_4:
         movq	%r8, 24(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_256_div2_avx2_4,.-sp_256_div2_avx2_4
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #ifndef WC_NO_CACHE_RESISTANT
@@ -57776,7 +57500,6 @@ _sp_256_div2_avx2_4:
 #ifndef __APPLE__
 .text
 .globl	sp_256_get_entry_64_4
-.type	sp_256_get_entry_64_4,@function
 .align	16
 sp_256_get_entry_64_4:
 #else
@@ -57824,7 +57547,6 @@ L_256_get_entry_64_4_start_0:
         movdqu	%xmm3, 80(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_256_get_entry_64_4,.-sp_256_get_entry_64_4
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Touch each possible entry that could be being copied.
@@ -57836,7 +57558,6 @@ L_256_get_entry_64_4_start_0:
 #ifndef __APPLE__
 .text
 .globl	sp_256_get_entry_64_avx2_4
-.type	sp_256_get_entry_64_avx2_4,@function
 .align	16
 sp_256_get_entry_64_avx2_4:
 #else
@@ -57872,7 +57593,6 @@ L_256_get_entry_64_avx2_4_start:
         vmovupd	%ymm1, 64(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_256_get_entry_64_avx2_4,.-sp_256_get_entry_64_avx2_4
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #endif /* !WC_NO_CACHE_RESISTANT */
@@ -57886,7 +57606,6 @@ L_256_get_entry_64_avx2_4_start:
 #ifndef __APPLE__
 .text
 .globl	sp_256_get_entry_65_4
-.type	sp_256_get_entry_65_4,@function
 .align	16
 sp_256_get_entry_65_4:
 #else
@@ -57934,7 +57653,6 @@ L_256_get_entry_65_4_start_0:
         movdqu	%xmm3, 80(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_256_get_entry_65_4,.-sp_256_get_entry_65_4
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Touch each possible entry that could be being copied.
@@ -57946,7 +57664,6 @@ L_256_get_entry_65_4_start_0:
 #ifndef __APPLE__
 .text
 .globl	sp_256_get_entry_65_avx2_4
-.type	sp_256_get_entry_65_avx2_4,@function
 .align	16
 sp_256_get_entry_65_avx2_4:
 #else
@@ -57982,7 +57699,6 @@ L_256_get_entry_65_avx2_4_start:
         vmovupd	%ymm1, 64(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_256_get_entry_65_avx2_4,.-sp_256_get_entry_65_avx2_4
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #endif /* !WC_NO_CACHE_RESISTANT */
@@ -57993,7 +57709,6 @@ L_256_get_entry_65_avx2_4_start:
 #ifndef __APPLE__
 .text
 .globl	sp_256_add_one_4
-.type	sp_256_add_one_4,@function
 .align	16
 sp_256_add_one_4:
 #else
@@ -58008,7 +57723,6 @@ _sp_256_add_one_4:
         adcq	$0x00, 24(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_256_add_one_4,.-sp_256_add_one_4
 #endif /* __APPLE__ */
 /* Read big endian unsigned byte array into r.
  * Uses the bswap instruction.
@@ -58021,7 +57735,6 @@ _sp_256_add_one_4:
 #ifndef __APPLE__
 .text
 .globl	sp_256_from_bin_bswap
-.type	sp_256_from_bin_bswap,@function
 .align	16
 sp_256_from_bin_bswap:
 #else
@@ -58102,7 +57815,6 @@ L_256_from_bin_bswap_zero_start:
 L_256_from_bin_bswap_zero_end:
         repz retq
 #ifndef __APPLE__
-.size	sp_256_from_bin_bswap,.-sp_256_from_bin_bswap
 #endif /* __APPLE__ */
 #ifndef NO_MOVBE_SUPPORT
 /* Read big endian unsigned byte array into r.
@@ -58116,7 +57828,6 @@ L_256_from_bin_bswap_zero_end:
 #ifndef __APPLE__
 .text
 .globl	sp_256_from_bin_movbe
-.type	sp_256_from_bin_movbe,@function
 .align	16
 sp_256_from_bin_movbe:
 #else
@@ -58187,7 +57898,6 @@ L_256_from_bin_movbe_zero_start:
 L_256_from_bin_movbe_zero_end:
         repz retq
 #ifndef __APPLE__
-.size	sp_256_from_bin_movbe,.-sp_256_from_bin_movbe
 #endif /* __APPLE__ */
 #endif /* !NO_MOVBE_SUPPORT */
 /* Write r as big endian to byte array.
@@ -58200,7 +57910,6 @@ L_256_from_bin_movbe_zero_end:
 #ifndef __APPLE__
 .text
 .globl	sp_256_to_bin_bswap_4
-.type	sp_256_to_bin_bswap_4,@function
 .align	16
 sp_256_to_bin_bswap_4:
 #else
@@ -58223,7 +57932,6 @@ _sp_256_to_bin_bswap_4:
         movq	%rax, 24(%rsi)
         repz retq
 #ifndef __APPLE__
-.size	sp_256_to_bin_bswap_4,.-sp_256_to_bin_bswap_4
 #endif /* __APPLE__ */
 #ifndef NO_MOVBE_SUPPORT
 /* Write r as big endian to byte array.
@@ -58236,7 +57944,6 @@ _sp_256_to_bin_bswap_4:
 #ifndef __APPLE__
 .text
 .globl	sp_256_to_bin_movbe_4
-.type	sp_256_to_bin_movbe_4,@function
 .align	16
 sp_256_to_bin_movbe_4:
 #else
@@ -58255,7 +57962,6 @@ _sp_256_to_bin_movbe_4:
         movq	%rax, 24(%rsi)
         repz retq
 #ifndef __APPLE__
-.size	sp_256_to_bin_movbe_4,.-sp_256_to_bin_movbe_4
 #endif /* __APPLE__ */
 #endif /* NO_MOVBE_SUPPORT */
 /* Sub b from a into a. (a -= b)
@@ -58266,7 +57972,6 @@ _sp_256_to_bin_movbe_4:
 #ifndef __APPLE__
 .text
 .globl	sp_256_sub_in_place_4
-.type	sp_256_sub_in_place_4,@function
 .align	16
 sp_256_sub_in_place_4:
 #else
@@ -58286,7 +57991,6 @@ _sp_256_sub_in_place_4:
         sbbq	%rax, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_256_sub_in_place_4,.-sp_256_sub_in_place_4
 #endif /* __APPLE__ */
 /* Mul a by digit b into r. (r = a * b)
  *
@@ -58297,7 +58001,6 @@ _sp_256_sub_in_place_4:
 #ifndef __APPLE__
 .text
 .globl	sp_256_mul_d_4
-.type	sp_256_mul_d_4,@function
 .align	16
 sp_256_mul_d_4:
 #else
@@ -58339,7 +58042,6 @@ _sp_256_mul_d_4:
         movq	%r9, 32(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_256_mul_d_4,.-sp_256_mul_d_4
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Mul a by digit b into r. (r = a * b)
@@ -58351,7 +58053,6 @@ _sp_256_mul_d_4:
 #ifndef __APPLE__
 .text
 .globl	sp_256_mul_d_avx2_4
-.type	sp_256_mul_d_avx2_4,@function
 .align	16
 sp_256_mul_d_avx2_4:
 #else
@@ -58388,7 +58089,6 @@ _sp_256_mul_d_avx2_4:
         movq	%r9, 32(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_256_mul_d_avx2_4,.-sp_256_mul_d_avx2_4
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #ifdef _WIN64
@@ -58402,7 +58102,6 @@ _sp_256_mul_d_avx2_4:
 #ifndef __APPLE__
 .text
 .globl	div_256_word_asm_4
-.type	div_256_word_asm_4,@function
 .align	16
 div_256_word_asm_4:
 #else
@@ -58417,7 +58116,6 @@ _div_256_word_asm_4:
         divq	%rcx
         repz retq
 #ifndef __APPLE__
-.size	div_256_word_asm_4,.-div_256_word_asm_4
 #endif /* __APPLE__ */
 #endif /* _WIN64 */
 #ifdef HAVE_INTEL_AVX2
@@ -58431,7 +58129,6 @@ _div_256_word_asm_4:
 #ifndef __APPLE__
 .text
 .globl	sp_256_mont_mul_order_avx2_4
-.type	sp_256_mont_mul_order_avx2_4,@function
 .align	16
 sp_256_mont_mul_order_avx2_4:
 #else
@@ -58643,7 +58340,6 @@ _sp_256_mont_mul_order_avx2_4:
         popq	%rbp
         repz retq
 #ifndef __APPLE__
-.size	sp_256_mont_mul_order_avx2_4,.-sp_256_mont_mul_order_avx2_4
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #ifdef HAVE_INTEL_AVX2
@@ -58655,7 +58351,6 @@ _sp_256_mont_mul_order_avx2_4:
 #ifndef __APPLE__
 .text
 .globl	sp_256_mont_sqr_order_avx2_4
-.type	sp_256_mont_sqr_order_avx2_4,@function
 .align	16
 sp_256_mont_sqr_order_avx2_4:
 #else
@@ -58852,7 +58547,6 @@ _sp_256_mont_sqr_order_avx2_4:
         popq	%rbp
         repz retq
 #ifndef __APPLE__
-.size	sp_256_mont_sqr_order_avx2_4,.-sp_256_mont_sqr_order_avx2_4
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 /* Non-constant time modular inversion.
@@ -58865,7 +58559,6 @@ _sp_256_mont_sqr_order_avx2_4:
 #ifndef __APPLE__
 .text
 .globl	sp_256_mod_inv_4
-.type	sp_256_mod_inv_4,@function
 .align	16
 sp_256_mod_inv_4:
 #else
@@ -59080,7 +58773,6 @@ L_256_mod_inv_4_store_end:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_256_mod_inv_4,.-sp_256_mod_inv_4
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 #ifndef __APPLE__
@@ -59164,7 +58856,6 @@ L_sp256_mod_inv_avx2_4_mask26:
 #ifndef __APPLE__
 .text
 .globl	sp_256_mod_inv_avx2_4
-.type	sp_256_mod_inv_avx2_4,@function
 .align	16
 sp_256_mod_inv_avx2_4:
 #else
@@ -59451,7 +59142,6 @@ L_256_mod_inv_avx2_4_3_no_add_order:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_256_mod_inv_avx2_4,.-sp_256_mod_inv_avx2_4
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #endif /* !WOLFSSL_SP_NO_256 */
@@ -59465,7 +59155,6 @@ L_256_mod_inv_avx2_4_3_no_add_order:
 #ifndef __APPLE__
 .text
 .globl	sp_384_mul_6
-.type	sp_384_mul_6,@function
 .align	16
 sp_384_mul_6:
 #else
@@ -59726,7 +59415,6 @@ _sp_384_mul_6:
         addq	$48, %rsp
         repz retq
 #ifndef __APPLE__
-.size	sp_384_mul_6,.-sp_384_mul_6
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Multiply a and b into r. (r = a * b)
@@ -59738,7 +59426,6 @@ _sp_384_mul_6:
 #ifndef __APPLE__
 .text
 .globl	sp_384_mul_avx2_6
-.type	sp_384_mul_avx2_6,@function
 .align	16
 sp_384_mul_avx2_6:
 #else
@@ -59949,7 +59636,6 @@ _sp_384_mul_avx2_6:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_384_mul_avx2_6,.-sp_384_mul_avx2_6
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 /* Square a and put result in r. (r = a * a)
@@ -59960,7 +59646,6 @@ _sp_384_mul_avx2_6:
 #ifndef __APPLE__
 .text
 .globl	sp_384_sqr_6
-.type	sp_384_sqr_6,@function
 .align	16
 sp_384_sqr_6:
 #else
@@ -60174,7 +59859,6 @@ _sp_384_sqr_6:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_384_sqr_6,.-sp_384_sqr_6
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Square a and put result in r. (r = a * a)
@@ -60185,7 +59869,6 @@ _sp_384_sqr_6:
 #ifndef __APPLE__
 .text
 .globl	sp_384_sqr_avx2_6
-.type	sp_384_sqr_avx2_6,@function
 .align	16
 sp_384_sqr_avx2_6:
 #else
@@ -60337,7 +60020,6 @@ _sp_384_sqr_avx2_6:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_384_sqr_avx2_6,.-sp_384_sqr_avx2_6
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 /* Add b to a into r. (r = a + b)
@@ -60349,7 +60031,6 @@ _sp_384_sqr_avx2_6:
 #ifndef __APPLE__
 .text
 .globl	sp_384_add_6
-.type	sp_384_add_6,@function
 .align	16
 sp_384_add_6:
 #else
@@ -60382,7 +60063,6 @@ _sp_384_add_6:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_384_add_6,.-sp_384_add_6
 #endif /* __APPLE__ */
 /* Sub b from a into r. (r = a - b)
  *
@@ -60393,7 +60073,6 @@ _sp_384_add_6:
 #ifndef __APPLE__
 .text
 .globl	sp_384_sub_6
-.type	sp_384_sub_6,@function
 .align	16
 sp_384_sub_6:
 #else
@@ -60426,7 +60105,6 @@ _sp_384_sub_6:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_384_sub_6,.-sp_384_sub_6
 #endif /* __APPLE__ */
 /* Conditionally copy a into r using the mask m.
  * m is -1 to copy and 0 when not.
@@ -60438,7 +60116,6 @@ _sp_384_sub_6:
 #ifndef __APPLE__
 .text
 .globl	sp_384_cond_copy_6
-.type	sp_384_cond_copy_6,@function
 .align	16
 sp_384_cond_copy_6:
 #else
@@ -60473,7 +60150,6 @@ _sp_384_cond_copy_6:
         xorq	%r11, 40(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_384_cond_copy_6,.-sp_384_cond_copy_6
 #endif /* __APPLE__ */
 /* Conditionally subtract b from a using the mask m.
  * m is -1 to subtract and 0 when not copying.
@@ -60486,7 +60162,6 @@ _sp_384_cond_copy_6:
 #ifndef __APPLE__
 .text
 .globl	sp_384_cond_sub_6
-.type	sp_384_cond_sub_6,@function
 .align	16
 sp_384_cond_sub_6:
 #else
@@ -60542,7 +60217,6 @@ _sp_384_cond_sub_6:
         addq	$48, %rsp
         repz retq
 #ifndef __APPLE__
-.size	sp_384_cond_sub_6,.-sp_384_cond_sub_6
 #endif /* __APPLE__ */
 /* Reduce the number back to 384 bits using Montgomery reduction.
  *
@@ -60553,7 +60227,6 @@ _sp_384_cond_sub_6:
 #ifndef __APPLE__
 .text
 .globl	sp_384_mont_reduce_6
-.type	sp_384_mont_reduce_6,@function
 .align	16
 sp_384_mont_reduce_6:
 #else
@@ -60722,7 +60395,6 @@ _sp_384_mont_reduce_6:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_384_mont_reduce_6,.-sp_384_mont_reduce_6
 #endif /* __APPLE__ */
 /* Reduce the number back to 384 bits using Montgomery reduction.
  *
@@ -60733,7 +60405,6 @@ _sp_384_mont_reduce_6:
 #ifndef __APPLE__
 .text
 .globl	sp_384_mont_reduce_order_6
-.type	sp_384_mont_reduce_order_6,@function
 .align	16
 sp_384_mont_reduce_order_6:
 #else
@@ -60840,7 +60511,6 @@ L_384_mont_reduce_order_6_loop:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_384_mont_reduce_order_6,.-sp_384_mont_reduce_order_6
 #endif /* __APPLE__ */
 /* Compare a with b in constant time.
  *
@@ -60852,7 +60522,6 @@ L_384_mont_reduce_order_6_loop:
 #ifndef __APPLE__
 .text
 .globl	sp_384_cmp_6
-.type	sp_384_cmp_6,@function
 .align	16
 sp_384_cmp_6:
 #else
@@ -60916,7 +60585,6 @@ _sp_384_cmp_6:
         xorq	%rdx, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_384_cmp_6,.-sp_384_cmp_6
 #endif /* __APPLE__ */
 /* Add two Montgomery form numbers (r = a + b % m).
  *
@@ -60928,7 +60596,6 @@ _sp_384_cmp_6:
 #ifndef __APPLE__
 .text
 .globl	sp_384_mont_add_6
-.type	sp_384_mont_add_6,@function
 .align	16
 sp_384_mont_add_6:
 #else
@@ -60986,7 +60653,6 @@ _sp_384_mont_add_6:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_384_mont_add_6,.-sp_384_mont_add_6
 #endif /* __APPLE__ */
 /* Double a Montgomery form number (r = a + a % m).
  *
@@ -60997,7 +60663,6 @@ _sp_384_mont_add_6:
 #ifndef __APPLE__
 .text
 .globl	sp_384_mont_dbl_6
-.type	sp_384_mont_dbl_6,@function
 .align	16
 sp_384_mont_dbl_6:
 #else
@@ -61055,7 +60720,6 @@ _sp_384_mont_dbl_6:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_384_mont_dbl_6,.-sp_384_mont_dbl_6
 #endif /* __APPLE__ */
 /* Double a Montgomery form number (r = a + a % m).
  *
@@ -61066,7 +60730,6 @@ _sp_384_mont_dbl_6:
 #ifndef __APPLE__
 .text
 .globl	sp_384_mont_tpl_6
-.type	sp_384_mont_tpl_6,@function
 .align	16
 sp_384_mont_tpl_6:
 #else
@@ -61154,7 +60817,6 @@ _sp_384_mont_tpl_6:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_384_mont_tpl_6,.-sp_384_mont_tpl_6
 #endif /* __APPLE__ */
 /* Subtract two Montgomery form numbers (r = a - b % m).
  *
@@ -61166,7 +60828,6 @@ _sp_384_mont_tpl_6:
 #ifndef __APPLE__
 .text
 .globl	sp_384_mont_sub_6
-.type	sp_384_mont_sub_6,@function
 .align	16
 sp_384_mont_sub_6:
 #else
@@ -61224,7 +60885,6 @@ _sp_384_mont_sub_6:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_384_mont_sub_6,.-sp_384_mont_sub_6
 #endif /* __APPLE__ */
 /* Subtract two Montgomery form numbers (r = a - b % m).
  *
@@ -61238,7 +60898,6 @@ _sp_384_mont_sub_6:
 #ifndef __APPLE__
 .text
 .globl	sp_384_mont_sub_lower_6
-.type	sp_384_mont_sub_lower_6,@function
 .align	16
 sp_384_mont_sub_lower_6:
 #else
@@ -61286,7 +60945,6 @@ _sp_384_mont_sub_lower_6:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_384_mont_sub_lower_6,.-sp_384_mont_sub_lower_6
 #endif /* __APPLE__ */
 /* Divide the number by 2 mod the modulus (prime). (r = a / 2 % m)
  *
@@ -61297,7 +60955,6 @@ _sp_384_mont_sub_lower_6:
 #ifndef __APPLE__
 .text
 .globl	sp_384_div2_6
-.type	sp_384_div2_6,@function
 .align	16
 sp_384_div2_6:
 #else
@@ -61363,7 +61020,6 @@ _sp_384_div2_6:
         addq	$48, %rsp
         repz retq
 #ifndef __APPLE__
-.size	sp_384_div2_6,.-sp_384_div2_6
 #endif /* __APPLE__ */
 /* Double a Montgomery form number (r = a + a % m).
  *
@@ -61376,7 +61032,6 @@ _sp_384_div2_6:
 #ifndef __APPLE__
 .text
 .globl	sp_384_mont_dbl_lower_6
-.type	sp_384_mont_dbl_lower_6,@function
 .align	16
 sp_384_mont_dbl_lower_6:
 #else
@@ -61424,7 +61079,6 @@ _sp_384_mont_dbl_lower_6:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_384_mont_dbl_lower_6,.-sp_384_mont_dbl_lower_6
 #endif /* __APPLE__ */
 /* Double a Montgomery form number (r = a + a % m).
  *
@@ -61437,7 +61091,6 @@ _sp_384_mont_dbl_lower_6:
 #ifndef __APPLE__
 .text
 .globl	sp_384_mont_tpl_lower_6
-.type	sp_384_mont_tpl_lower_6,@function
 .align	16
 sp_384_mont_tpl_lower_6:
 #else
@@ -61515,7 +61168,6 @@ _sp_384_mont_tpl_lower_6:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_384_mont_tpl_lower_6,.-sp_384_mont_tpl_lower_6
 #endif /* __APPLE__ */
 #ifndef WC_NO_CACHE_RESISTANT
 /* Touch each possible point that could be being copied.
@@ -61527,7 +61179,6 @@ _sp_384_mont_tpl_lower_6:
 #ifndef __APPLE__
 .text
 .globl	sp_384_get_point_33_6
-.type	sp_384_get_point_33_6,@function
 .align	16
 sp_384_get_point_33_6:
 #else
@@ -61615,7 +61266,6 @@ L_384_get_point_33_6_start_2:
         movdqu	%xmm2, 224(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_384_get_point_33_6,.-sp_384_get_point_33_6
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Touch each possible point that could be being copied.
@@ -61627,7 +61277,6 @@ L_384_get_point_33_6_start_2:
 #ifndef __APPLE__
 .text
 .globl	sp_384_get_point_33_avx2_6
-.type	sp_384_get_point_33_avx2_6,@function
 .align	16
 sp_384_get_point_33_avx2_6:
 #else
@@ -61683,7 +61332,6 @@ L_384_get_point_33_avx2_6_start:
         vmovdqu	%xmm5, 224(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_384_get_point_33_avx2_6,.-sp_384_get_point_33_avx2_6
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #endif /* !WC_NO_CACHE_RESISTANT */
@@ -61697,7 +61345,6 @@ L_384_get_point_33_avx2_6_start:
 #ifndef __APPLE__
 .text
 .globl	sp_384_mont_reduce_order_avx2_6
-.type	sp_384_mont_reduce_order_avx2_6,@function
 .align	16
 sp_384_mont_reduce_order_avx2_6:
 #else
@@ -62014,7 +61661,6 @@ L_mont_loop_order_avx2_6:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_384_mont_reduce_order_avx2_6,.-sp_384_mont_reduce_order_avx2_6
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #ifdef HAVE_INTEL_AVX2
@@ -62029,7 +61675,6 @@ L_mont_loop_order_avx2_6:
 #ifndef __APPLE__
 .text
 .globl	sp_384_cond_sub_avx2_6
-.type	sp_384_cond_sub_avx2_6,@function
 .align	16
 sp_384_cond_sub_avx2_6:
 #else
@@ -62071,7 +61716,6 @@ _sp_384_cond_sub_avx2_6:
         sbbq	%rax, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_384_cond_sub_avx2_6,.-sp_384_cond_sub_avx2_6
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #ifdef HAVE_INTEL_AVX2
@@ -62084,7 +61728,6 @@ _sp_384_cond_sub_avx2_6:
 #ifndef __APPLE__
 .text
 .globl	sp_384_div2_avx2_6
-.type	sp_384_div2_avx2_6,@function
 .align	16
 sp_384_div2_avx2_6:
 #else
@@ -62149,7 +61792,6 @@ _sp_384_div2_avx2_6:
         movq	%r9, 40(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_384_div2_avx2_6,.-sp_384_div2_avx2_6
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #ifndef WC_NO_CACHE_RESISTANT
@@ -62162,7 +61804,6 @@ _sp_384_div2_avx2_6:
 #ifndef __APPLE__
 .text
 .globl	sp_384_get_entry_64_6
-.type	sp_384_get_entry_64_6,@function
 .align	16
 sp_384_get_entry_64_6:
 #else
@@ -62220,7 +61861,6 @@ L_384_get_entry_64_6_start_0:
         movdqu	%xmm5, 128(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_384_get_entry_64_6,.-sp_384_get_entry_64_6
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Touch each possible entry that could be being copied.
@@ -62232,7 +61872,6 @@ L_384_get_entry_64_6_start_0:
 #ifndef __APPLE__
 .text
 .globl	sp_384_get_entry_64_avx2_6
-.type	sp_384_get_entry_64_avx2_6,@function
 .align	16
 sp_384_get_entry_64_avx2_6:
 #else
@@ -62278,7 +61917,6 @@ L_384_get_entry_64_avx2_6_start:
         vmovdqu	%xmm3, 128(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_384_get_entry_64_avx2_6,.-sp_384_get_entry_64_avx2_6
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #endif /* !WC_NO_CACHE_RESISTANT */
@@ -62292,7 +61930,6 @@ L_384_get_entry_64_avx2_6_start:
 #ifndef __APPLE__
 .text
 .globl	sp_384_get_entry_65_6
-.type	sp_384_get_entry_65_6,@function
 .align	16
 sp_384_get_entry_65_6:
 #else
@@ -62350,7 +61987,6 @@ L_384_get_entry_65_6_start_0:
         movdqu	%xmm5, 128(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_384_get_entry_65_6,.-sp_384_get_entry_65_6
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Touch each possible entry that could be being copied.
@@ -62362,7 +61998,6 @@ L_384_get_entry_65_6_start_0:
 #ifndef __APPLE__
 .text
 .globl	sp_384_get_entry_65_avx2_6
-.type	sp_384_get_entry_65_avx2_6,@function
 .align	16
 sp_384_get_entry_65_avx2_6:
 #else
@@ -62408,7 +62043,6 @@ L_384_get_entry_65_avx2_6_start:
         vmovdqu	%xmm3, 128(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_384_get_entry_65_avx2_6,.-sp_384_get_entry_65_avx2_6
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #endif /* !WC_NO_CACHE_RESISTANT */
@@ -62419,7 +62053,6 @@ L_384_get_entry_65_avx2_6_start:
 #ifndef __APPLE__
 .text
 .globl	sp_384_add_one_6
-.type	sp_384_add_one_6,@function
 .align	16
 sp_384_add_one_6:
 #else
@@ -62436,7 +62069,6 @@ _sp_384_add_one_6:
         adcq	$0x00, 40(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_384_add_one_6,.-sp_384_add_one_6
 #endif /* __APPLE__ */
 /* Read big endian unsigned byte array into r.
  * Uses the bswap instruction.
@@ -62449,7 +62081,6 @@ _sp_384_add_one_6:
 #ifndef __APPLE__
 .text
 .globl	sp_384_from_bin_bswap
-.type	sp_384_from_bin_bswap,@function
 .align	16
 sp_384_from_bin_bswap:
 #else
@@ -62530,7 +62161,6 @@ L_384_from_bin_bswap_zero_start:
 L_384_from_bin_bswap_zero_end:
         repz retq
 #ifndef __APPLE__
-.size	sp_384_from_bin_bswap,.-sp_384_from_bin_bswap
 #endif /* __APPLE__ */
 #ifndef NO_MOVBE_SUPPORT
 /* Read big endian unsigned byte array into r.
@@ -62544,7 +62174,6 @@ L_384_from_bin_bswap_zero_end:
 #ifndef __APPLE__
 .text
 .globl	sp_384_from_bin_movbe
-.type	sp_384_from_bin_movbe,@function
 .align	16
 sp_384_from_bin_movbe:
 #else
@@ -62615,7 +62244,6 @@ L_384_from_bin_movbe_zero_start:
 L_384_from_bin_movbe_zero_end:
         repz retq
 #ifndef __APPLE__
-.size	sp_384_from_bin_movbe,.-sp_384_from_bin_movbe
 #endif /* __APPLE__ */
 #endif /* !NO_MOVBE_SUPPORT */
 /* Write r as big endian to byte array.
@@ -62628,7 +62256,6 @@ L_384_from_bin_movbe_zero_end:
 #ifndef __APPLE__
 .text
 .globl	sp_384_to_bin_bswap_6
-.type	sp_384_to_bin_bswap_6,@function
 .align	16
 sp_384_to_bin_bswap_6:
 #else
@@ -62657,7 +62284,6 @@ _sp_384_to_bin_bswap_6:
         movq	%rax, 40(%rsi)
         repz retq
 #ifndef __APPLE__
-.size	sp_384_to_bin_bswap_6,.-sp_384_to_bin_bswap_6
 #endif /* __APPLE__ */
 #ifndef NO_MOVBE_SUPPORT
 /* Write r as big endian to byte array.
@@ -62670,7 +62296,6 @@ _sp_384_to_bin_bswap_6:
 #ifndef __APPLE__
 .text
 .globl	sp_384_to_bin_movbe_6
-.type	sp_384_to_bin_movbe_6,@function
 .align	16
 sp_384_to_bin_movbe_6:
 #else
@@ -62693,7 +62318,6 @@ _sp_384_to_bin_movbe_6:
         movq	%rax, 40(%rsi)
         repz retq
 #ifndef __APPLE__
-.size	sp_384_to_bin_movbe_6,.-sp_384_to_bin_movbe_6
 #endif /* __APPLE__ */
 #endif /* NO_MOVBE_SUPPORT */
 /* Sub b from a into a. (a -= b)
@@ -62704,7 +62328,6 @@ _sp_384_to_bin_movbe_6:
 #ifndef __APPLE__
 .text
 .globl	sp_384_sub_in_place_6
-.type	sp_384_sub_in_place_6,@function
 .align	16
 sp_384_sub_in_place_6:
 #else
@@ -62728,7 +62351,6 @@ _sp_384_sub_in_place_6:
         sbbq	%rax, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_384_sub_in_place_6,.-sp_384_sub_in_place_6
 #endif /* __APPLE__ */
 /* Mul a by digit b into r. (r = a * b)
  *
@@ -62739,7 +62361,6 @@ _sp_384_sub_in_place_6:
 #ifndef __APPLE__
 .text
 .globl	sp_384_mul_d_6
-.type	sp_384_mul_d_6,@function
 .align	16
 sp_384_mul_d_6:
 #else
@@ -62797,7 +62418,6 @@ _sp_384_mul_d_6:
         movq	%r8, 48(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_384_mul_d_6,.-sp_384_mul_d_6
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Mul a by digit b into r. (r = a * b)
@@ -62809,7 +62429,6 @@ _sp_384_mul_d_6:
 #ifndef __APPLE__
 .text
 .globl	sp_384_mul_d_avx2_6
-.type	sp_384_mul_d_avx2_6,@function
 .align	16
 sp_384_mul_d_avx2_6:
 #else
@@ -62858,7 +62477,6 @@ _sp_384_mul_d_avx2_6:
         movq	%r9, 48(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_384_mul_d_avx2_6,.-sp_384_mul_d_avx2_6
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #ifdef _WIN64
@@ -62872,7 +62490,6 @@ _sp_384_mul_d_avx2_6:
 #ifndef __APPLE__
 .text
 .globl	div_384_word_asm_6
-.type	div_384_word_asm_6,@function
 .align	16
 div_384_word_asm_6:
 #else
@@ -62887,7 +62504,6 @@ _div_384_word_asm_6:
         divq	%rcx
         repz retq
 #ifndef __APPLE__
-.size	div_384_word_asm_6,.-div_384_word_asm_6
 #endif /* __APPLE__ */
 #endif /* _WIN64 */
 /* Shift number right by 1 bit. (r = a >> 1)
@@ -62898,7 +62514,6 @@ _div_384_word_asm_6:
 #ifndef __APPLE__
 .text
 .globl	sp_384_rshift1_6
-.type	sp_384_rshift1_6,@function
 .align	16
 sp_384_rshift1_6:
 #else
@@ -62927,7 +62542,6 @@ _sp_384_rshift1_6:
         movq	%r10, 40(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_384_rshift1_6,.-sp_384_rshift1_6
 #endif /* __APPLE__ */
 /* Divide the number by 2 mod the prime. (r = a / 2 % m)
  *
@@ -62938,7 +62552,6 @@ _sp_384_rshift1_6:
 #ifndef __APPLE__
 .text
 .globl	sp_384_div2_mod_6
-.type	sp_384_div2_mod_6,@function
 .align	16
 sp_384_div2_mod_6:
 #else
@@ -62997,12 +62610,10 @@ L_384_mod_inv_6_div2_mod_no_add:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_384_div2_mod_6,.-sp_384_div2_mod_6
 #endif /* __APPLE__ */
 #ifndef __APPLE__
 .text
 .globl	sp_384_num_bits_6
-.type	sp_384_num_bits_6,@function
 .align	16
 sp_384_num_bits_6:
 #else
@@ -63063,7 +62674,6 @@ L_384_num_bits_6_end_0:
 L_384_num_bits_6_done:
         repz retq
 #ifndef __APPLE__
-.size	sp_384_num_bits_6,.-sp_384_num_bits_6
 #endif /* __APPLE__ */
 #endif /* WOLFSSL_SP_384 */
 #ifdef WOLFSSL_SP_521
@@ -63076,7 +62686,6 @@ L_384_num_bits_6_done:
 #ifndef __APPLE__
 .text
 .globl	sp_521_mul_9
-.type	sp_521_mul_9,@function
 .align	16
 sp_521_mul_9:
 #else
@@ -63625,7 +63234,6 @@ _sp_521_mul_9:
         addq	$0x48, %rsp
         repz retq
 #ifndef __APPLE__
-.size	sp_521_mul_9,.-sp_521_mul_9
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Multiply a and b into r. (r = a * b)
@@ -63637,7 +63245,6 @@ _sp_521_mul_9:
 #ifndef __APPLE__
 .text
 .globl	sp_521_mul_avx2_9
-.type	sp_521_mul_avx2_9,@function
 .align	16
 sp_521_mul_avx2_9:
 #else
@@ -64208,7 +63815,6 @@ L_end_521_mul_avx2_9:
         popq	%rbx
         repz retq
 #ifndef __APPLE__
-.size	sp_521_mul_avx2_9,.-sp_521_mul_avx2_9
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 /* Square a and put result in r. (r = a * a)
@@ -64219,7 +63825,6 @@ L_end_521_mul_avx2_9:
 #ifndef __APPLE__
 .text
 .globl	sp_521_sqr_9
-.type	sp_521_sqr_9,@function
 .align	16
 sp_521_sqr_9:
 #else
@@ -64631,7 +64236,6 @@ _sp_521_sqr_9:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_521_sqr_9,.-sp_521_sqr_9
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Square a and put result in r. (r = a * a)
@@ -64642,7 +64246,6 @@ _sp_521_sqr_9:
 #ifndef __APPLE__
 .text
 .globl	sp_521_sqr_avx2_9
-.type	sp_521_sqr_avx2_9,@function
 .align	16
 sp_521_sqr_avx2_9:
 #else
@@ -65034,7 +64637,6 @@ L_end_521_sqr_avx2_9:
         popq	%rbp
         repz retq
 #ifndef __APPLE__
-.size	sp_521_sqr_avx2_9,.-sp_521_sqr_avx2_9
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 /* Add b to a into r. (r = a + b)
@@ -65046,7 +64648,6 @@ L_end_521_sqr_avx2_9:
 #ifndef __APPLE__
 .text
 .globl	sp_521_add_9
-.type	sp_521_add_9,@function
 .align	16
 sp_521_add_9:
 #else
@@ -65087,7 +64688,6 @@ _sp_521_add_9:
         adcq	$0x00, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_521_add_9,.-sp_521_add_9
 #endif /* __APPLE__ */
 /* Sub b from a into r. (r = a - b)
  *
@@ -65098,7 +64698,6 @@ _sp_521_add_9:
 #ifndef __APPLE__
 .text
 .globl	sp_521_sub_9
-.type	sp_521_sub_9,@function
 .align	16
 sp_521_sub_9:
 #else
@@ -65137,7 +64736,6 @@ _sp_521_sub_9:
         sbbq	%rax, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_521_sub_9,.-sp_521_sub_9
 #endif /* __APPLE__ */
 /* Conditionally copy a into r using the mask m.
  * m is -1 to copy and 0 when not.
@@ -65149,7 +64747,6 @@ _sp_521_sub_9:
 #ifndef __APPLE__
 .text
 .globl	sp_521_cond_copy_9
-.type	sp_521_cond_copy_9,@function
 .align	16
 sp_521_cond_copy_9:
 #else
@@ -65196,7 +64793,6 @@ _sp_521_cond_copy_9:
         xorq	%r9, 64(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_521_cond_copy_9,.-sp_521_cond_copy_9
 #endif /* __APPLE__ */
 /* Multiply two Montgomery form numbers mod the modulus (prime).
  * (r = a * b mod m)
@@ -65210,7 +64806,6 @@ _sp_521_cond_copy_9:
 #ifndef __APPLE__
 .text
 .globl	sp_521_mont_mul_9
-.type	sp_521_mont_mul_9,@function
 .align	16
 sp_521_mont_mul_9:
 #else
@@ -65795,7 +65390,6 @@ _sp_521_mont_mul_9:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_521_mont_mul_9,.-sp_521_mont_mul_9
 #endif /* __APPLE__ */
 /* Square the Montgomery form number mod the modulus (prime). (r = a * a mod m)
  *
@@ -65807,7 +65401,6 @@ _sp_521_mont_mul_9:
 #ifndef __APPLE__
 .text
 .globl	sp_521_mont_sqr_9
-.type	sp_521_mont_sqr_9,@function
 .align	16
 sp_521_mont_sqr_9:
 #else
@@ -66253,7 +65846,6 @@ _sp_521_mont_sqr_9:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_521_mont_sqr_9,.-sp_521_mont_sqr_9
 #endif /* __APPLE__ */
 /* Compare a with b in constant time.
  *
@@ -66265,7 +65857,6 @@ _sp_521_mont_sqr_9:
 #ifndef __APPLE__
 .text
 .globl	sp_521_cmp_9
-.type	sp_521_cmp_9,@function
 .align	16
 sp_521_cmp_9:
 #else
@@ -66353,7 +65944,6 @@ _sp_521_cmp_9:
         xorq	%rdx, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_521_cmp_9,.-sp_521_cmp_9
 #endif /* __APPLE__ */
 /* Conditionally subtract b from a using the mask m.
  * m is -1 to subtract and 0 when not copying.
@@ -66366,7 +65956,6 @@ _sp_521_cmp_9:
 #ifndef __APPLE__
 .text
 .globl	sp_521_cond_sub_9
-.type	sp_521_cond_sub_9,@function
 .align	16
 sp_521_cond_sub_9:
 #else
@@ -66443,7 +66032,6 @@ _sp_521_cond_sub_9:
         addq	$0x48, %rsp
         repz retq
 #ifndef __APPLE__
-.size	sp_521_cond_sub_9,.-sp_521_cond_sub_9
 #endif /* __APPLE__ */
 /* Reduce the number back to 521 bits using Montgomery reduction.
  *
@@ -66454,7 +66042,6 @@ _sp_521_cond_sub_9:
 #ifndef __APPLE__
 .text
 .globl	sp_521_mont_reduce_9
-.type	sp_521_mont_reduce_9,@function
 .align	16
 sp_521_mont_reduce_9:
 #else
@@ -66521,7 +66108,6 @@ _sp_521_mont_reduce_9:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_521_mont_reduce_9,.-sp_521_mont_reduce_9
 #endif /* __APPLE__ */
 /* Reduce the number back to 521 bits using Montgomery reduction.
  *
@@ -66532,7 +66118,6 @@ _sp_521_mont_reduce_9:
 #ifndef __APPLE__
 .text
 .globl	sp_521_mont_reduce_order_9
-.type	sp_521_mont_reduce_order_9,@function
 .align	16
 sp_521_mont_reduce_order_9:
 #else
@@ -66707,7 +66292,6 @@ L_521_mont_reduce_order_9_nomask:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_521_mont_reduce_order_9,.-sp_521_mont_reduce_order_9
 #endif /* __APPLE__ */
 /* Add two Montgomery form numbers (r = a + b % m).
  *
@@ -66719,7 +66303,6 @@ L_521_mont_reduce_order_9_nomask:
 #ifndef __APPLE__
 .text
 .globl	sp_521_mont_add_9
-.type	sp_521_mont_add_9,@function
 .align	16
 sp_521_mont_add_9:
 #else
@@ -66777,7 +66360,6 @@ _sp_521_mont_add_9:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_521_mont_add_9,.-sp_521_mont_add_9
 #endif /* __APPLE__ */
 /* Double a Montgomery form number (r = a + a % m).
  *
@@ -66788,7 +66370,6 @@ _sp_521_mont_add_9:
 #ifndef __APPLE__
 .text
 .globl	sp_521_mont_dbl_9
-.type	sp_521_mont_dbl_9,@function
 .align	16
 sp_521_mont_dbl_9:
 #else
@@ -66844,7 +66425,6 @@ _sp_521_mont_dbl_9:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_521_mont_dbl_9,.-sp_521_mont_dbl_9
 #endif /* __APPLE__ */
 /* Triple a Montgomery form number (r = a + a + a % m).
  *
@@ -66855,7 +66435,6 @@ _sp_521_mont_dbl_9:
 #ifndef __APPLE__
 .text
 .globl	sp_521_mont_tpl_9
-.type	sp_521_mont_tpl_9,@function
 .align	16
 sp_521_mont_tpl_9:
 #else
@@ -66920,7 +66499,6 @@ _sp_521_mont_tpl_9:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_521_mont_tpl_9,.-sp_521_mont_tpl_9
 #endif /* __APPLE__ */
 /* Subtract two Montgomery form numbers (r = a - b % m).
  *
@@ -66932,7 +66510,6 @@ _sp_521_mont_tpl_9:
 #ifndef __APPLE__
 .text
 .globl	sp_521_mont_sub_9
-.type	sp_521_mont_sub_9,@function
 .align	16
 sp_521_mont_sub_9:
 #else
@@ -66991,7 +66568,6 @@ _sp_521_mont_sub_9:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_521_mont_sub_9,.-sp_521_mont_sub_9
 #endif /* __APPLE__ */
 /* Divide the number by 2 mod the modulus (prime). (r = a / 2 % m)
  *
@@ -67002,7 +66578,6 @@ _sp_521_mont_sub_9:
 #ifndef __APPLE__
 .text
 .globl	sp_521_div2_9
-.type	sp_521_div2_9,@function
 .align	16
 sp_521_div2_9:
 #else
@@ -67059,7 +66634,6 @@ _sp_521_div2_9:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_521_div2_9,.-sp_521_div2_9
 #endif /* __APPLE__ */
 #ifndef WC_NO_CACHE_RESISTANT
 /* Touch each possible point that could be being copied.
@@ -67071,7 +66645,6 @@ _sp_521_div2_9:
 #ifndef __APPLE__
 .text
 .globl	sp_521_get_point_33_9
-.type	sp_521_get_point_33_9,@function
 .align	16
 sp_521_get_point_33_9:
 #else
@@ -67204,7 +66777,6 @@ L_521_get_point_33_9_start_2:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_521_get_point_33_9,.-sp_521_get_point_33_9
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Touch each possible point that could be being copied.
@@ -67216,7 +66788,6 @@ L_521_get_point_33_9_start_2:
 #ifndef __APPLE__
 .text
 .globl	sp_521_get_point_33_avx2_9
-.type	sp_521_get_point_33_avx2_9,@function
 .align	16
 sp_521_get_point_33_avx2_9:
 #else
@@ -67299,7 +66870,6 @@ L_521_get_point_33_avx2_9_start:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_521_get_point_33_avx2_9,.-sp_521_get_point_33_avx2_9
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #endif /* !WC_NO_CACHE_RESISTANT */
@@ -67316,7 +66886,6 @@ L_521_get_point_33_avx2_9_start:
 #ifndef __APPLE__
 .text
 .globl	sp_521_mont_mul_avx2_9
-.type	sp_521_mont_mul_avx2_9,@function
 .align	16
 sp_521_mont_mul_avx2_9:
 #else
@@ -67917,7 +67486,6 @@ _sp_521_mont_mul_avx2_9:
         popq	%rbx
         repz retq
 #ifndef __APPLE__
-.size	sp_521_mont_mul_avx2_9,.-sp_521_mont_mul_avx2_9
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #ifdef HAVE_INTEL_AVX2
@@ -67931,7 +67499,6 @@ _sp_521_mont_mul_avx2_9:
 #ifndef __APPLE__
 .text
 .globl	sp_521_mont_sqr_avx2_9
-.type	sp_521_mont_sqr_avx2_9,@function
 .align	16
 sp_521_mont_sqr_avx2_9:
 #else
@@ -68364,7 +67931,6 @@ _sp_521_mont_sqr_avx2_9:
         popq	%rbp
         repz retq
 #ifndef __APPLE__
-.size	sp_521_mont_sqr_avx2_9,.-sp_521_mont_sqr_avx2_9
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #ifdef HAVE_INTEL_AVX2
@@ -68379,7 +67945,6 @@ _sp_521_mont_sqr_avx2_9:
 #ifndef __APPLE__
 .text
 .globl	sp_521_cond_sub_avx2_9
-.type	sp_521_cond_sub_avx2_9,@function
 .align	16
 sp_521_cond_sub_avx2_9:
 #else
@@ -68436,7 +68001,6 @@ _sp_521_cond_sub_avx2_9:
         sbbq	%rax, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_521_cond_sub_avx2_9,.-sp_521_cond_sub_avx2_9
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #ifdef HAVE_INTEL_AVX2
@@ -68449,7 +68013,6 @@ _sp_521_cond_sub_avx2_9:
 #ifndef __APPLE__
 .text
 .globl	sp_521_mont_reduce_order_avx2_9
-.type	sp_521_mont_reduce_order_avx2_9,@function
 .align	16
 sp_521_mont_reduce_order_avx2_9:
 #else
@@ -68755,7 +68318,6 @@ L_521_mont_reduce_order_avx2_9_loop:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_521_mont_reduce_order_avx2_9,.-sp_521_mont_reduce_order_avx2_9
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #ifdef HAVE_INTEL_AVX2
@@ -68768,7 +68330,6 @@ L_521_mont_reduce_order_avx2_9_loop:
 #ifndef __APPLE__
 .text
 .globl	sp_521_div2_avx2_9
-.type	sp_521_div2_avx2_9,@function
 .align	16
 sp_521_div2_avx2_9:
 #else
@@ -68825,7 +68386,6 @@ _sp_521_div2_avx2_9:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_521_div2_avx2_9,.-sp_521_div2_avx2_9
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #ifndef WC_NO_CACHE_RESISTANT
@@ -68838,7 +68398,6 @@ _sp_521_div2_avx2_9:
 #ifndef __APPLE__
 .text
 .globl	sp_521_get_entry_64_9
-.type	sp_521_get_entry_64_9,@function
 .align	16
 sp_521_get_entry_64_9:
 #else
@@ -68945,7 +68504,6 @@ L_521_get_entry_64_9_start_1:
         movq	%r9, 208(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_521_get_entry_64_9,.-sp_521_get_entry_64_9
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Touch each possible entry that could be being copied.
@@ -68957,7 +68515,6 @@ L_521_get_entry_64_9_start_1:
 #ifndef __APPLE__
 .text
 .globl	sp_521_get_entry_64_avx2_9
-.type	sp_521_get_entry_64_avx2_9,@function
 .align	16
 sp_521_get_entry_64_avx2_9:
 #else
@@ -69021,7 +68578,6 @@ L_521_get_entry_64_avx2_9_start:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_521_get_entry_64_avx2_9,.-sp_521_get_entry_64_avx2_9
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #endif /* !WC_NO_CACHE_RESISTANT */
@@ -69035,7 +68591,6 @@ L_521_get_entry_64_avx2_9_start:
 #ifndef __APPLE__
 .text
 .globl	sp_521_get_entry_65_9
-.type	sp_521_get_entry_65_9,@function
 .align	16
 sp_521_get_entry_65_9:
 #else
@@ -69142,7 +68697,6 @@ L_521_get_entry_65_9_start_1:
         movq	%r9, 208(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_521_get_entry_65_9,.-sp_521_get_entry_65_9
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Touch each possible entry that could be being copied.
@@ -69154,7 +68708,6 @@ L_521_get_entry_65_9_start_1:
 #ifndef __APPLE__
 .text
 .globl	sp_521_get_entry_65_avx2_9
-.type	sp_521_get_entry_65_avx2_9,@function
 .align	16
 sp_521_get_entry_65_avx2_9:
 #else
@@ -69218,7 +68771,6 @@ L_521_get_entry_65_avx2_9_start:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_521_get_entry_65_avx2_9,.-sp_521_get_entry_65_avx2_9
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #endif /* !WC_NO_CACHE_RESISTANT */
@@ -69229,7 +68781,6 @@ L_521_get_entry_65_avx2_9_start:
 #ifndef __APPLE__
 .text
 .globl	sp_521_add_one_9
-.type	sp_521_add_one_9,@function
 .align	16
 sp_521_add_one_9:
 #else
@@ -69249,7 +68800,6 @@ _sp_521_add_one_9:
         adcq	$0x00, 64(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_521_add_one_9,.-sp_521_add_one_9
 #endif /* __APPLE__ */
 /* Read big endian unsigned byte array into r.
  * Uses the bswap instruction.
@@ -69262,7 +68812,6 @@ _sp_521_add_one_9:
 #ifndef __APPLE__
 .text
 .globl	sp_521_from_bin_bswap
-.type	sp_521_from_bin_bswap,@function
 .align	16
 sp_521_from_bin_bswap:
 #else
@@ -69343,7 +68892,6 @@ L_521_from_bin_bswap_zero_start:
 L_521_from_bin_bswap_zero_end:
         repz retq
 #ifndef __APPLE__
-.size	sp_521_from_bin_bswap,.-sp_521_from_bin_bswap
 #endif /* __APPLE__ */
 #ifndef NO_MOVBE_SUPPORT
 /* Read big endian unsigned byte array into r.
@@ -69357,7 +68905,6 @@ L_521_from_bin_bswap_zero_end:
 #ifndef __APPLE__
 .text
 .globl	sp_521_from_bin_movbe
-.type	sp_521_from_bin_movbe,@function
 .align	16
 sp_521_from_bin_movbe:
 #else
@@ -69428,7 +68975,6 @@ L_521_from_bin_movbe_zero_start:
 L_521_from_bin_movbe_zero_end:
         repz retq
 #ifndef __APPLE__
-.size	sp_521_from_bin_movbe,.-sp_521_from_bin_movbe
 #endif /* __APPLE__ */
 #endif /* !NO_MOVBE_SUPPORT */
 /* Write r as big endian to byte array.
@@ -69441,7 +68987,6 @@ L_521_from_bin_movbe_zero_end:
 #ifndef __APPLE__
 .text
 .globl	sp_521_to_bin_bswap_9
-.type	sp_521_to_bin_bswap_9,@function
 .align	16
 sp_521_to_bin_bswap_9:
 #else
@@ -69480,7 +69025,6 @@ _sp_521_to_bin_bswap_9:
         movq	%rax, 58(%rsi)
         repz retq
 #ifndef __APPLE__
-.size	sp_521_to_bin_bswap_9,.-sp_521_to_bin_bswap_9
 #endif /* __APPLE__ */
 #ifndef NO_MOVBE_SUPPORT
 /* Write r as big endian to byte array.
@@ -69493,7 +69037,6 @@ _sp_521_to_bin_bswap_9:
 #ifndef __APPLE__
 .text
 .globl	sp_521_to_bin_movbe_9
-.type	sp_521_to_bin_movbe_9,@function
 .align	16
 sp_521_to_bin_movbe_9:
 #else
@@ -69524,7 +69067,6 @@ _sp_521_to_bin_movbe_9:
         movq	%rax, 58(%rsi)
         repz retq
 #ifndef __APPLE__
-.size	sp_521_to_bin_movbe_9,.-sp_521_to_bin_movbe_9
 #endif /* __APPLE__ */
 #endif /* NO_MOVBE_SUPPORT */
 /* Shift number right by 1 bit. (r = a >> 1)
@@ -69535,7 +69077,6 @@ _sp_521_to_bin_movbe_9:
 #ifndef __APPLE__
 .text
 .globl	sp_521_rshift_9
-.type	sp_521_rshift_9,@function
 .align	16
 sp_521_rshift_9:
 #else
@@ -69574,7 +69115,6 @@ _sp_521_rshift_9:
         movq	%rdx, 64(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_521_rshift_9,.-sp_521_rshift_9
 #endif /* __APPLE__ */
 /* Shift number left by n bit. (r = a << n)
  *
@@ -69585,7 +69125,6 @@ _sp_521_rshift_9:
 #ifndef __APPLE__
 .text
 .globl	sp_521_lshift_9
-.type	sp_521_lshift_9,@function
 .align	16
 sp_521_lshift_9:
 #else
@@ -69627,7 +69166,6 @@ _sp_521_lshift_9:
         movq	%r9, (%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_521_lshift_9,.-sp_521_lshift_9
 #endif /* __APPLE__ */
 /* Shift number left by n bit. (r = a << n)
  *
@@ -69638,7 +69176,6 @@ _sp_521_lshift_9:
 #ifndef __APPLE__
 .text
 .globl	sp_521_lshift_18
-.type	sp_521_lshift_18,@function
 .align	16
 sp_521_lshift_18:
 #else
@@ -69707,7 +69244,6 @@ _sp_521_lshift_18:
         movq	%r9, 8(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_521_lshift_18,.-sp_521_lshift_18
 #endif /* __APPLE__ */
 /* Sub b from a into a. (a -= b)
  *
@@ -69717,7 +69253,6 @@ _sp_521_lshift_18:
 #ifndef __APPLE__
 .text
 .globl	sp_521_sub_in_place_9
-.type	sp_521_sub_in_place_9,@function
 .align	16
 sp_521_sub_in_place_9:
 #else
@@ -69756,7 +69291,6 @@ _sp_521_sub_in_place_9:
         sbbq	%rax, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_521_sub_in_place_9,.-sp_521_sub_in_place_9
 #endif /* __APPLE__ */
 /* Mul a by digit b into r. (r = a * b)
  *
@@ -69767,7 +69301,6 @@ _sp_521_sub_in_place_9:
 #ifndef __APPLE__
 .text
 .globl	sp_521_mul_d_9
-.type	sp_521_mul_d_9,@function
 .align	16
 sp_521_mul_d_9:
 #else
@@ -69849,7 +69382,6 @@ _sp_521_mul_d_9:
         movq	%r8, 72(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_521_mul_d_9,.-sp_521_mul_d_9
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Mul a by digit b into r. (r = a * b)
@@ -69861,7 +69393,6 @@ _sp_521_mul_d_9:
 #ifndef __APPLE__
 .text
 .globl	sp_521_mul_d_avx2_9
-.type	sp_521_mul_d_avx2_9,@function
 .align	16
 sp_521_mul_d_avx2_9:
 #else
@@ -69928,7 +69459,6 @@ _sp_521_mul_d_avx2_9:
         movq	%r10, 72(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_521_mul_d_avx2_9,.-sp_521_mul_d_avx2_9
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #ifdef _WIN64
@@ -69942,7 +69472,6 @@ _sp_521_mul_d_avx2_9:
 #ifndef __APPLE__
 .text
 .globl	div_521_word_asm_9
-.type	div_521_word_asm_9,@function
 .align	16
 div_521_word_asm_9:
 #else
@@ -69957,7 +69486,6 @@ _div_521_word_asm_9:
         divq	%rcx
         repz retq
 #ifndef __APPLE__
-.size	div_521_word_asm_9,.-div_521_word_asm_9
 #endif /* __APPLE__ */
 #endif /* _WIN64 */
 /* Shift number right by 1 bit. (r = a >> 1)
@@ -69968,7 +69496,6 @@ _div_521_word_asm_9:
 #ifndef __APPLE__
 .text
 .globl	sp_521_rshift1_9
-.type	sp_521_rshift1_9,@function
 .align	16
 sp_521_rshift1_9:
 #else
@@ -70006,7 +69533,6 @@ _sp_521_rshift1_9:
         movq	%rdx, 64(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_521_rshift1_9,.-sp_521_rshift1_9
 #endif /* __APPLE__ */
 /* Divide the number by 2 mod the prime. (r = a / 2 % m)
  *
@@ -70017,7 +69543,6 @@ _sp_521_rshift1_9:
 #ifndef __APPLE__
 .text
 .globl	sp_521_div2_mod_9
-.type	sp_521_div2_mod_9,@function
 .align	16
 sp_521_div2_mod_9:
 #else
@@ -70095,12 +69620,10 @@ L_521_mod_inv_9_div2_mod_no_add:
         movq	%rax, 64(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_521_div2_mod_9,.-sp_521_div2_mod_9
 #endif /* __APPLE__ */
 #ifndef __APPLE__
 .text
 .globl	sp_521_num_bits_9
-.type	sp_521_num_bits_9,@function
 .align	16
 sp_521_num_bits_9:
 #else
@@ -70185,7 +69708,6 @@ L_521_num_bits_9_end_0:
 L_521_num_bits_9_done:
         repz retq
 #ifndef __APPLE__
-.size	sp_521_num_bits_9,.-sp_521_num_bits_9
 #endif /* __APPLE__ */
 #endif /* WOLFSSL_SP_521 */
 #ifdef WOLFSSL_SP_1024
@@ -70198,7 +69720,6 @@ L_521_num_bits_9_done:
 #ifndef __APPLE__
 .text
 .globl	sp_1024_mul_16
-.type	sp_1024_mul_16,@function
 .align	16
 sp_1024_mul_16:
 #else
@@ -71839,7 +71360,6 @@ _sp_1024_mul_16:
         addq	$0x80, %rsp
         repz retq
 #ifndef __APPLE__
-.size	sp_1024_mul_16,.-sp_1024_mul_16
 #endif /* __APPLE__ */
 /* Square a and put result in r. (r = a * a)
  *
@@ -71849,7 +71369,6 @@ _sp_1024_mul_16:
 #ifndef __APPLE__
 .text
 .globl	sp_1024_sqr_16
-.type	sp_1024_sqr_16,@function
 .align	16
 sp_1024_sqr_16:
 #else
@@ -72933,7 +72452,6 @@ _sp_1024_sqr_16:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_1024_sqr_16,.-sp_1024_sqr_16
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Multiply a and b into r. (r = a * b)
@@ -72945,7 +72463,6 @@ _sp_1024_sqr_16:
 #ifndef __APPLE__
 .text
 .globl	sp_1024_mul_avx2_16
-.type	sp_1024_mul_avx2_16,@function
 .align	16
 sp_1024_mul_avx2_16:
 #else
@@ -74609,7 +74126,6 @@ L_end_1024_mul_avx2_16:
         popq	%rbx
         repz retq
 #ifndef __APPLE__
-.size	sp_1024_mul_avx2_16,.-sp_1024_mul_avx2_16
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #ifdef HAVE_INTEL_AVX2
@@ -74621,7 +74137,6 @@ L_end_1024_mul_avx2_16:
 #ifndef __APPLE__
 .text
 .globl	sp_1024_sqr_avx2_16
-.type	sp_1024_sqr_avx2_16,@function
 .align	16
 sp_1024_sqr_avx2_16:
 #else
@@ -75668,7 +75183,6 @@ L_end_1024_sqr_avx2_16:
         popq	%rbp
         repz retq
 #ifndef __APPLE__
-.size	sp_1024_sqr_avx2_16,.-sp_1024_sqr_avx2_16
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 /* Add b to a into r. (r = a + b)
@@ -75680,7 +75194,6 @@ L_end_1024_sqr_avx2_16:
 #ifndef __APPLE__
 .text
 .globl	sp_1024_add_16
-.type	sp_1024_add_16,@function
 .align	16
 sp_1024_add_16:
 #else
@@ -75742,7 +75255,6 @@ _sp_1024_add_16:
         adcq	$0x00, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_1024_add_16,.-sp_1024_add_16
 #endif /* __APPLE__ */
 /* Sub b from a into a. (a -= b)
  *
@@ -75752,7 +75264,6 @@ _sp_1024_add_16:
 #ifndef __APPLE__
 .text
 .globl	sp_1024_sub_in_place_16
-.type	sp_1024_sub_in_place_16,@function
 .align	16
 sp_1024_sub_in_place_16:
 #else
@@ -75812,7 +75323,6 @@ _sp_1024_sub_in_place_16:
         sbbq	%rax, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_1024_sub_in_place_16,.-sp_1024_sub_in_place_16
 #endif /* __APPLE__ */
 /* Conditionally subtract b from a using the mask m.
  * m is -1 to subtract and 0 when not copying.
@@ -75825,7 +75335,6 @@ _sp_1024_sub_in_place_16:
 #ifndef __APPLE__
 .text
 .globl	sp_1024_cond_sub_16
-.type	sp_1024_cond_sub_16,@function
 .align	16
 sp_1024_cond_sub_16:
 #else
@@ -75951,7 +75460,6 @@ _sp_1024_cond_sub_16:
         addq	$0x80, %rsp
         repz retq
 #ifndef __APPLE__
-.size	sp_1024_cond_sub_16,.-sp_1024_cond_sub_16
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Conditionally subtract b from a using the mask m.
@@ -75965,7 +75473,6 @@ _sp_1024_cond_sub_16:
 #ifndef __APPLE__
 .text
 .globl	sp_1024_cond_sub_avx2_16
-.type	sp_1024_cond_sub_avx2_16,@function
 .align	16
 sp_1024_cond_sub_avx2_16:
 #else
@@ -76057,7 +75564,6 @@ _sp_1024_cond_sub_avx2_16:
         sbbq	%rax, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_1024_cond_sub_avx2_16,.-sp_1024_cond_sub_avx2_16
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 /* Mul a by digit b into r. (r = a * b)
@@ -76069,7 +75575,6 @@ _sp_1024_cond_sub_avx2_16:
 #ifndef __APPLE__
 .text
 .globl	sp_1024_mul_d_16
-.type	sp_1024_mul_d_16,@function
 .align	16
 sp_1024_mul_d_16:
 #else
@@ -76207,7 +75712,6 @@ _sp_1024_mul_d_16:
         movq	%r9, 128(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_1024_mul_d_16,.-sp_1024_mul_d_16
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Mul a by digit b into r. (r = a * b)
@@ -76219,7 +75723,6 @@ _sp_1024_mul_d_16:
 #ifndef __APPLE__
 .text
 .globl	sp_1024_mul_d_avx2_16
-.type	sp_1024_mul_d_avx2_16,@function
 .align	16
 sp_1024_mul_d_avx2_16:
 #else
@@ -76328,7 +75831,6 @@ _sp_1024_mul_d_avx2_16:
         movq	%r9, 128(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_1024_mul_d_avx2_16,.-sp_1024_mul_d_avx2_16
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #ifdef _WIN64
@@ -76342,7 +75844,6 @@ _sp_1024_mul_d_avx2_16:
 #ifndef __APPLE__
 .text
 .globl	div_1024_word_asm_16
-.type	div_1024_word_asm_16,@function
 .align	16
 div_1024_word_asm_16:
 #else
@@ -76357,7 +75858,6 @@ _div_1024_word_asm_16:
         divq	%rcx
         repz retq
 #ifndef __APPLE__
-.size	div_1024_word_asm_16,.-div_1024_word_asm_16
 #endif /* __APPLE__ */
 #endif /* _WIN64 */
 /* Compare a with b in constant time.
@@ -76370,7 +75870,6 @@ _div_1024_word_asm_16:
 #ifndef __APPLE__
 .text
 .globl	sp_1024_cmp_16
-.type	sp_1024_cmp_16,@function
 .align	16
 sp_1024_cmp_16:
 #else
@@ -76514,7 +76013,6 @@ _sp_1024_cmp_16:
         xorq	%rdx, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_1024_cmp_16,.-sp_1024_cmp_16
 #endif /* __APPLE__ */
 /* Conditionally copy a into r using the mask m.
  * m is -1 to copy and 0 when not.
@@ -76526,7 +76024,6 @@ _sp_1024_cmp_16:
 #ifndef __APPLE__
 .text
 .globl	sp_1024_cond_copy_16
-.type	sp_1024_cond_copy_16,@function
 .align	16
 sp_1024_cond_copy_16:
 #else
@@ -76601,7 +76098,6 @@ _sp_1024_cond_copy_16:
         xorq	%r9, 120(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_1024_cond_copy_16,.-sp_1024_cond_copy_16
 #endif /* __APPLE__ */
 /* Reduce the number back to 1024 bits using Montgomery reduction.
  *
@@ -76612,7 +76108,6 @@ _sp_1024_cond_copy_16:
 #ifndef __APPLE__
 .text
 .globl	sp_1024_mont_reduce_16
-.type	sp_1024_mont_reduce_16,@function
 .align	16
 sp_1024_mont_reduce_16:
 #else
@@ -76824,7 +76319,6 @@ L_1024_mont_reduce_16_loop:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_1024_mont_reduce_16,.-sp_1024_mont_reduce_16
 #endif /* __APPLE__ */
 /* Add two Montgomery form numbers (r = a + b % m).
  *
@@ -76836,7 +76330,6 @@ L_1024_mont_reduce_16_loop:
 #ifndef __APPLE__
 .text
 .globl	sp_1024_mont_add_16
-.type	sp_1024_mont_add_16,@function
 .align	16
 sp_1024_mont_add_16:
 #else
@@ -76999,7 +76492,6 @@ _sp_1024_mont_add_16:
         addq	$0x80, %rsp
         repz retq
 #ifndef __APPLE__
-.size	sp_1024_mont_add_16,.-sp_1024_mont_add_16
 #endif /* __APPLE__ */
 /* Double a Montgomery form number (r = a + a % m).
  *
@@ -77010,7 +76502,6 @@ _sp_1024_mont_add_16:
 #ifndef __APPLE__
 .text
 .globl	sp_1024_mont_dbl_16
-.type	sp_1024_mont_dbl_16,@function
 .align	16
 sp_1024_mont_dbl_16:
 #else
@@ -77173,7 +76664,6 @@ _sp_1024_mont_dbl_16:
         addq	$0x80, %rsp
         repz retq
 #ifndef __APPLE__
-.size	sp_1024_mont_dbl_16,.-sp_1024_mont_dbl_16
 #endif /* __APPLE__ */
 /* Triple a Montgomery form number (r = a + a + a % m).
  *
@@ -77184,7 +76674,6 @@ _sp_1024_mont_dbl_16:
 #ifndef __APPLE__
 .text
 .globl	sp_1024_mont_tpl_16
-.type	sp_1024_mont_tpl_16,@function
 .align	16
 sp_1024_mont_tpl_16:
 #else
@@ -77497,7 +76986,6 @@ _sp_1024_mont_tpl_16:
         addq	$0x80, %rsp
         repz retq
 #ifndef __APPLE__
-.size	sp_1024_mont_tpl_16,.-sp_1024_mont_tpl_16
 #endif /* __APPLE__ */
 /* Subtract two Montgomery form numbers (r = a - b % m).
  *
@@ -77509,7 +76997,6 @@ _sp_1024_mont_tpl_16:
 #ifndef __APPLE__
 .text
 .globl	sp_1024_mont_sub_16
-.type	sp_1024_mont_sub_16,@function
 .align	16
 sp_1024_mont_sub_16:
 #else
@@ -77668,7 +77155,6 @@ _sp_1024_mont_sub_16:
         addq	$0x80, %rsp
         repz retq
 #ifndef __APPLE__
-.size	sp_1024_mont_sub_16,.-sp_1024_mont_sub_16
 #endif /* __APPLE__ */
 /* Divide the number by 2 mod the modulus (prime). (r = a / 2 % m)
  *
@@ -77679,7 +77165,6 @@ _sp_1024_mont_sub_16:
 #ifndef __APPLE__
 .text
 .globl	sp_1024_div2_16
-.type	sp_1024_div2_16,@function
 .align	16
 sp_1024_div2_16:
 #else
@@ -77825,7 +77310,6 @@ _sp_1024_div2_16:
         addq	$0x80, %rsp
         repz retq
 #ifndef __APPLE__
-.size	sp_1024_div2_16,.-sp_1024_div2_16
 #endif /* __APPLE__ */
 /* Sub b from a into r. (r = a - b)
  *
@@ -77836,7 +77320,6 @@ _sp_1024_div2_16:
 #ifndef __APPLE__
 .text
 .globl	sp_1024_sub_16
-.type	sp_1024_sub_16,@function
 .align	16
 sp_1024_sub_16:
 #else
@@ -77896,7 +77379,6 @@ _sp_1024_sub_16:
         sbbq	%rax, %rax
         repz retq
 #ifndef __APPLE__
-.size	sp_1024_sub_16,.-sp_1024_sub_16
 #endif /* __APPLE__ */
 #ifdef HAVE_INTEL_AVX2
 /* Reduce the number back to 1024 bits using Montgomery reduction.
@@ -77908,7 +77390,6 @@ _sp_1024_sub_16:
 #ifndef __APPLE__
 .text
 .globl	sp_1024_mont_reduce_avx2_16
-.type	sp_1024_mont_reduce_avx2_16,@function
 .align	16
 sp_1024_mont_reduce_avx2_16:
 #else
@@ -78237,7 +77718,6 @@ L_1024_mont_reduce_avx2_16_loop:
         popq	%r12
         repz retq
 #ifndef __APPLE__
-.size	sp_1024_mont_reduce_avx2_16,.-sp_1024_mont_reduce_avx2_16
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #ifdef HAVE_INTEL_AVX2
@@ -78251,7 +77731,6 @@ L_1024_mont_reduce_avx2_16_loop:
 #ifndef __APPLE__
 .text
 .globl	sp_1024_mont_add_avx2_16
-.type	sp_1024_mont_add_avx2_16,@function
 .align	16
 sp_1024_mont_add_avx2_16:
 #else
@@ -78396,7 +77875,6 @@ _sp_1024_mont_add_avx2_16:
         movq	%r8, 120(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_1024_mont_add_avx2_16,.-sp_1024_mont_add_avx2_16
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #ifdef HAVE_INTEL_AVX2
@@ -78409,7 +77887,6 @@ _sp_1024_mont_add_avx2_16:
 #ifndef __APPLE__
 .text
 .globl	sp_1024_mont_dbl_avx2_16
-.type	sp_1024_mont_dbl_avx2_16,@function
 .align	16
 sp_1024_mont_dbl_avx2_16:
 #else
@@ -78554,7 +78031,6 @@ _sp_1024_mont_dbl_avx2_16:
         movq	%rcx, 120(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_1024_mont_dbl_avx2_16,.-sp_1024_mont_dbl_avx2_16
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #ifdef HAVE_INTEL_AVX2
@@ -78567,7 +78043,6 @@ _sp_1024_mont_dbl_avx2_16:
 #ifndef __APPLE__
 .text
 .globl	sp_1024_mont_tpl_avx2_16
-.type	sp_1024_mont_tpl_avx2_16,@function
 .align	16
 sp_1024_mont_tpl_avx2_16:
 #else
@@ -78846,7 +78321,6 @@ _sp_1024_mont_tpl_avx2_16:
         movq	%rcx, 120(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_1024_mont_tpl_avx2_16,.-sp_1024_mont_tpl_avx2_16
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #ifdef HAVE_INTEL_AVX2
@@ -78860,7 +78334,6 @@ _sp_1024_mont_tpl_avx2_16:
 #ifndef __APPLE__
 .text
 .globl	sp_1024_mont_sub_avx2_16
-.type	sp_1024_mont_sub_avx2_16,@function
 .align	16
 sp_1024_mont_sub_avx2_16:
 #else
@@ -79001,7 +78474,6 @@ _sp_1024_mont_sub_avx2_16:
         movq	%r8, 120(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_1024_mont_sub_avx2_16,.-sp_1024_mont_sub_avx2_16
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 #ifdef HAVE_INTEL_AVX2
@@ -79014,7 +78486,6 @@ _sp_1024_mont_sub_avx2_16:
 #ifndef __APPLE__
 .text
 .globl	sp_1024_div2_avx2_16
-.type	sp_1024_div2_avx2_16,@function
 .align	16
 sp_1024_div2_avx2_16:
 #else
@@ -79159,7 +78630,6 @@ _sp_1024_div2_avx2_16:
         movq	%r9, 120(%rdi)
         repz retq
 #ifndef __APPLE__
-.size	sp_1024_div2_avx2_16,.-sp_1024_div2_avx2_16
 #endif /* __APPLE__ */
 #endif /* HAVE_INTEL_AVX2 */
 /* Read big endian unsigned byte array into r.
@@ -79173,7 +78643,6 @@ _sp_1024_div2_avx2_16:
 #ifndef __APPLE__
 .text
 .globl	sp_1024_from_bin_bswap
-.type	sp_1024_from_bin_bswap,@function
 .align	16
 sp_1024_from_bin_bswap:
 #else
@@ -79254,7 +78723,6 @@ L_1024_from_bin_bswap_zero_start:
 L_1024_from_bin_bswap_zero_end:
         repz retq
 #ifndef __APPLE__
-.size	sp_1024_from_bin_bswap,.-sp_1024_from_bin_bswap
 #endif /* __APPLE__ */
 #ifndef NO_MOVBE_SUPPORT
 /* Read big endian unsigned byte array into r.
@@ -79268,7 +78736,6 @@ L_1024_from_bin_bswap_zero_end:
 #ifndef __APPLE__
 .text
 .globl	sp_1024_from_bin_movbe
-.type	sp_1024_from_bin_movbe,@function
 .align	16
 sp_1024_from_bin_movbe:
 #else
@@ -79339,7 +78806,6 @@ L_1024_from_bin_movbe_zero_start:
 L_1024_from_bin_movbe_zero_end:
         repz retq
 #ifndef __APPLE__
-.size	sp_1024_from_bin_movbe,.-sp_1024_from_bin_movbe
 #endif /* __APPLE__ */
 #endif /* !NO_MOVBE_SUPPORT */
 #endif /* WOLFSSL_SP_1024 */
@@ -79348,3 +78814,6 @@ L_1024_from_bin_movbe_zero_end:
 #if defined(__linux__) && defined(__ELF__)
 .section	.note.GNU-stack,"",%progbits
 #endif
+
+
+
