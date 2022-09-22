@@ -10912,7 +10912,11 @@ static WARN_UNUSED_RESULT int _AesEcbEncrypt(
         return DCPAesEcbEncrypt(aes, out, in, sz);
 #endif
     while (blocks > 0) {
+      #ifdef HAVE_FIPS
       int ret = wc_AesEncryptDirect(aes, out, in);
+      #else
+      int ret = wc_AesEcbEncrypt(aes, out, in, AES_BLOCK_SIZE);
+      #endif
       if (ret != 0)
         return ret;
       out += AES_BLOCK_SIZE;
@@ -10940,7 +10944,11 @@ static WARN_UNUSED_RESULT int _AesEcbDecrypt(
         return DCPAesEcbDecrypt(aes, out, in, sz);
 #endif
     while (blocks > 0) {
+      #ifdef HAVE_FIPS
       int ret = wc_AesDecryptDirect(aes, out, in);
+      #else
+      int ret = wc_AesEcbDecrypt(aes, out, in, AES_BLOCK_SIZE);
+      #endif
       if (ret != 0)
         return ret;
       out += AES_BLOCK_SIZE;
@@ -11030,7 +11038,11 @@ static WARN_UNUSED_RESULT int wc_AesFeedbackEncrypt(
 
     while (sz >= AES_BLOCK_SIZE) {
         /* Using aes->tmp here for inline case i.e. in=out */
+      #ifdef HAVE_FIPS
         ret = wc_AesEncryptDirect(aes, (byte*)aes->tmp, (byte*)aes->reg);
+      #else
+        ret = wc_AesEcbEncrypt(aes, (byte*)aes->tmp, (byte*)aes->reg, AES_BLOCK_SIZE);
+      #endif
         if (ret != 0)
             break;
     #ifdef WOLFSSL_AES_OFB
@@ -11053,7 +11065,11 @@ static WARN_UNUSED_RESULT int wc_AesFeedbackEncrypt(
 
     /* encrypt left over data */
     if ((ret == 0) && sz) {
+      #ifdef HAVE_FIPS
         ret = wc_AesEncryptDirect(aes, (byte*)aes->tmp, (byte*)aes->reg);
+      #else
+        ret = wc_AesEcbEncrypt(aes, (byte*)aes->tmp, (byte*)aes->reg, AES_BLOCK_SIZE);
+      #endif
     }
     if ((ret == 0) && sz) {
         aes->left = AES_BLOCK_SIZE;

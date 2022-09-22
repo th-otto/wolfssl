@@ -1,30 +1,4 @@
-/*
-./configure --disable-jobserver --enable-opensslextra --enable-supportedcurves --enable-sp --enable-sp-asm --enable-intelasm --enable-ed25519 --enable-des3 --enable-ripemd --enable-aesni
-*/
-
-/* benchmark.c
- *
- * Copyright (C) 2006-2022 wolfSSL Inc.
- *
- * This file is part of wolfSSL.
- *
- * wolfSSL is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * wolfSSL is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1335, USA
- */
-
-
-/* wolfCrypt benchmark */
+/* openssl benchmark, ported from wolfSSL */
 
 
 #include <errno.h>
@@ -958,7 +932,7 @@ static void bench_aesgcm(void)
 /* GMAC */
 static void bench_gmac(void)
 {
-#if 0
+#if 0 /* not supported in openSSL 1.1 */
 	int ret;
 	int count = 0;
 	AES_KEY gmac;
@@ -971,7 +945,7 @@ static void bench_gmac(void)
 	/* init keys */
 	memset(bench_plain, 0, bench_size);
 	memset(tag, 0, sizeof(tag));
-	memset(&gmac, 0, sizeof(Gmac));	/* clear context */
+	memset(&gmac, 0, sizeof(gmac));	/* clear context */
 	AES_set_encrypt_key(bench_key, 16, &gmac);
 
 	bench_stats_start(&count, &start);
@@ -988,9 +962,96 @@ static void bench_gmac(void)
 
 
 
+static void bench_aesecb_internal(const uint8_t * key, uint32_t keySz, const char* encLabel, const char* decLabel)
+{
+	int ret = 1;
+	int i;
+	int count = 0;
+	int times;
+	AES_KEY enc[BENCH_MAX_PENDING];
+	double start;
+
+	/* clear for done cleanup */
+	memset(enc, 0, sizeof(enc));
+
+	/* init keys */
+	for (i = 0; i < BENCH_MAX_PENDING; i++)
+	{
+		ret = AES_set_encrypt_key(key, keySz, &enc[i]);
+		ret = 1 - ret;
+		if (ret <= 0)
+		{
+			fprintf(stderr, "AesSetKey failed, ret = %d\n", ret);
+			goto exit;
+		}
+	}
+
+	bench_stats_start(&count, &start);
+	do {
+		for (times = 0; times < numBlocks; )
+		{
+			/* while free pending slots in queue, submit ops */
+			for (i = 0; i < BENCH_MAX_PENDING; i++)
+			{
+				AES_ecb_encrypt(bench_cipher, bench_plain, &enc[i], AES_ENCRYPT);
+				if (!bench_async_handle(&ret, &times))
+				{
+					goto exit_aes_enc;
+				}
+			}
+		}
+		count += times;
+	} while (bench_stats_sym_check(start));
+exit_aes_enc:
+	bench_stats_sym_finish(encLabel, count, AES_BLOCK_SIZE, start, ret);
+
+	/* init keys */
+	for (i = 0; i < BENCH_MAX_PENDING; i++)
+	{
+		ret = AES_set_encrypt_key(key, keySz, &enc[i]);
+		ret = 1 - ret;
+		if (ret <= 0)
+		{
+			printf("AesSetKey failed, ret = %d\n", ret);
+			goto exit;
+		}
+	}
+
+	bench_stats_start(&count, &start);
+	do {
+		for (times = 0; times < numBlocks; )
+		{
+			/* while free pending slots in queue, submit ops */
+			for (i = 0; i < BENCH_MAX_PENDING; i++)
+			{
+				AES_ecb_encrypt(bench_cipher, bench_plain, &enc[i], AES_DECRYPT);
+				if (!bench_async_handle(&ret, &times))
+				{
+					goto exit_aes_dec;
+				}
+			}
+		}
+		count += times;
+	} while (bench_stats_sym_check(start));
+exit_aes_dec:
+	bench_stats_sym_finish(decLabel, count, AES_BLOCK_SIZE, start, ret);
+
+exit:
+	;
+}
+
+
+static void bench_aesecb(void)
+{
+	bench_aesecb_internal(bench_key, 16, "AES-128-ECB-enc", "AES-128-ECB-dec");
+	bench_aesecb_internal(bench_key, 24, "AES-192-ECB-enc", "AES-192-ECB-dec");
+	bench_aesecb_internal(bench_key, 32, "AES-256-ECB-enc", "AES-256-ECB-dec");
+}
+
+
 static void bench_poly1305(void)
 {
-#if 0
+#if 0 /* not supported in openSSL 1.1 */
 	Poly1305 enc;
 	uint8_t mac[16];
 	double start;
@@ -1052,32 +1113,34 @@ static void bench_poly1305(void)
 }
 
 
-static void bench_des(void)
+static void bench_encrypt(const EVP_CIPHER *cipher, const char *label)
 {
-#if 0
 	int ret = 0;
 	int i;
 	int count = 0;
 	int times;
-	Des3 enc[BENCH_MAX_PENDING];
+	const EVP_CIPHER *enc[BENCH_MAX_PENDING];
 	double start;
-
+	int outl;
+	EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
+	
 	/* clear for done cleanup */
 	memset(enc, 0, sizeof(enc));
 
 	/* init keys */
 	for (i = 0; i < BENCH_MAX_PENDING; i++)
 	{
-		if ((ret = wc_Des3Init(&enc[i], HEAP_HINT, INVALID_DEVID)) != 0)
+		enc[i] = cipher;
+		if (enc[i] == NULL)
 		{
-			fprintf(stderr, "Des3Init failed, ret = %d\n", ret);
+			fprintf(stderr, "cipher %s failed\n", label);
 			goto exit;
 		}
 
-		ret = wc_Des3_SetKey(&enc[i], bench_key, bench_iv, DES_ENCRYPTION);
-		if (ret != 0)
+		ret = EVP_EncryptInit(ctx, enc[i], bench_key, bench_iv);
+		if (ret <= 0)
 		{
-			fprintf(stderr, "Des3_SetKey failed, ret = %d\n", ret);
+			fprintf(stderr, "EVP_EncryptInit failed, ret = %d\n", ret);
 			goto exit;
 		}
 	}
@@ -1090,81 +1153,132 @@ static void bench_des(void)
 			/* while free pending slots in queue, submit ops */
 			for (i = 0; i < BENCH_MAX_PENDING; i++)
 			{
-				ret = wc_Des3_CbcEncrypt(&enc[i], bench_cipher, bench_plain, BENCH_SIZE);
+				ret = EVP_CipherUpdate(ctx, bench_cipher, &outl, bench_plain, BENCH_SIZE);
 				if (!bench_async_handle(&ret, &times))
 				{
-					goto exit_3des;
+					goto exit_encrypt;
 				}
 			}
 		}
 		count += times;
 	} while (bench_stats_sym_check(start));
-  exit_3des:
-	bench_stats_sym_finish("3DES", count, bench_size, start, ret);
+  exit_encrypt:
+	bench_stats_sym_finish(label, count, bench_size, start, ret);
 
   exit:
 
-	for (i = 0; i < BENCH_MAX_PENDING; i++)
-	{
-		wc_Des3Free(&enc[i]);
-	}
-#endif
+	EVP_CIPHER_CTX_free(ctx);
+}
+
+
+
+
+static void bench_des(void)
+{
+	bench_encrypt(EVP_des_ede3(), "3DES");
 }
 
 
 static void bench_chacha(void)
 {
-#if 0
-	ChaCha enc;
-	double start;
-	int i;
-	int count;
-
-	wc_Chacha_SetKey(&enc, bench_key, 16);
-
-	bench_stats_start(&count, &start);
-	do
-	{
-		for (i = 0; i < numBlocks; i++)
-		{
-			wc_Chacha_SetIV(&enc, bench_iv, 0);
-			wc_Chacha_Process(&enc, bench_cipher, bench_plain, BENCH_SIZE);
-		}
-		count += i;
-	} while (bench_stats_sym_check(start));
-	bench_stats_sym_finish("CHACHA", count, bench_size, start, 0);
-#endif
+	bench_encrypt(EVP_chacha20(), "CHACHA");
 }
 
 
 static void bench_chacha20_poly1305_aead(void)
 {
+	bench_encrypt(EVP_chacha20_poly1305(), "CHA-POLY");
+}
+
+
+static void bench_digest(const EVP_MD *md, )
+{
 #if 0
+	const EVP_CIPHER *enc[BENCH_MAX_PENDING];
 	double start;
 	int ret = 0;
 	int i;
-	int count;
+	int count = 0;
+	int times;
+	EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
 
-	uint8_t authTag[CHACHA20_POLY1305_AEAD_AUTHTAG_SIZE];
+	uint8_t digest[BENCH_MAX_PENDING][64];
 
-	memset(authTag, 0, sizeof(authTag));
+	/* clear for done cleanup */
+	memset(enc, 0, sizeof(enc));
 
-	bench_stats_start(&count, &start);
-	do
+	for (i = 0; i < BENCH_MAX_PENDING; i++)
 	{
-		for (i = 0; i < numBlocks; i++)
+		enc[i] = cipher;
+		if (enc[i] == NULL)
 		{
-			ret = wc_ChaCha20Poly1305_Encrypt(bench_key, bench_iv, NULL, 0,
-											  bench_plain, BENCH_SIZE, bench_cipher, authTag);
-			if (ret < 0)
-			{
-				fprintf(stderr, "wc_ChaCha20Poly1305_Encrypt error: %d\n", ret);
-				break;
-			}
+			fprintf(stderr, "cipher %s failed\n", label);
+			goto exit;
 		}
-		count += i;
-	} while (bench_stats_sym_check(start));
-	bench_stats_sym_finish("CHA-POLY", count, bench_size, start, ret);
+
+		ret = EVP_EncryptInit(ctx, enc[i], bench_key, bench_iv);
+		if (ret <= 0)
+		{
+			fprintf(stderr, "EVP_EncryptInit failed, ret = %d\n", ret);
+			goto exit;
+		}
+	}
+		
+	if (digest_stream)
+	{
+		bench_stats_start(&count, &start);
+		do
+		{
+			for (times = 0; times < numBlocks;)
+			{
+				/* while free pending slots in queue, submit ops */
+				for (i = 0; i < BENCH_MAX_PENDING; i++)
+				{
+					ret = wc_Md5Update(&hash[i], bench_plain, BENCH_SIZE);
+					if (!bench_async_handle(&ret, &times))
+					{
+						goto exit_md5;
+					}
+				}
+			}
+			count += times;
+
+			times = 0;
+			do
+			{
+				for (i = 0; i < BENCH_MAX_PENDING; i++)
+				{
+					ret = wc_Md5Final(&hash[i], digest[i]);
+					if (!bench_async_handle(&ret, &times))
+					{
+						goto exit_md5;
+					}
+				}
+			} while (0);
+		} while (bench_stats_sym_check(start));
+	} else
+	{
+		bench_stats_start(&count, &start);
+		do
+		{
+			for (times = 0; times < numBlocks; times++)
+			{
+				ret = wc_InitMd5_ex(hash, HEAP_HINT, INVALID_DEVID);
+				if (ret == 0)
+					ret = wc_Md5Update(hash, bench_plain, BENCH_SIZE);
+				if (ret == 0)
+					ret = wc_Md5Final(hash, digest[0]);
+				if (ret != 0)
+					goto exit_md5;
+			}
+			count += times;
+		} while (bench_stats_sym_check(start));
+	}
+  exit_md5:
+	bench_stats_sym_finish("MD5", count, bench_size, start, ret);
+
+  exit:
+	;
 #endif
 }
 
@@ -3038,6 +3152,8 @@ static void *benchmarks_do(void)
 		bench_aesgcm();
 		bench_gmac();
 	}
+	if (bench_all || (bench_cipher_algs & BENCH_AES_ECB))
+		bench_aesecb();
 
 	if (bench_all || (bench_cipher_algs & BENCH_CHACHA20))
 		bench_chacha();
