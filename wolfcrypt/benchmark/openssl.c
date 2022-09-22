@@ -1,5 +1,5 @@
 /*
-./configure --disable-jobserver --enable-opensslextra --enable-supportedcurves --enable-sp --enable-sp-asm --enable-ed25519 --enable-des3 --enable-ripemd --enable-aesni
+./configure --disable-jobserver --enable-opensslextra --enable-supportedcurves --enable-sp --enable-sp-asm --enable-intelasm --enable-ed25519 --enable-des3 --enable-ripemd --enable-aesni
 */
 
 /* benchmark.c
@@ -55,7 +55,7 @@
         if (_libcall_ret < 0) {                               \
             fprintf(stderr, "%s L%d error %d for \"%s\"\n",   \
                     __FILE__, __LINE__, errno, #__VA_ARGS__); \
-            _exit(1);                                         \
+            exit(1);                                          \
         }                                                     \
     } while(0)
 
@@ -640,11 +640,11 @@ static void bench_stats_sym_finish(const char *desc, int count, int countSz, dou
 	/* format and print to terminal */
 	if (csv_format == 1)
 	{
-		(void) snprintf(msg, sizeof(msg), "%s,%.3f,", desc, persec);
+		snprintf(msg, sizeof(msg), "%s,%.3f,", desc, persec);
 		SHOW_INTEL_CYCLES_CSV(msg, sizeof(msg), countSz);
 	} else
 	{
-		(void) snprintf(msg, sizeof(msg), "%-16s %5.0f %s %s %5.3f %s, %8.3f %s/s",
+		snprintf(msg, sizeof(msg), "%-16s %5.0f %s %s %5.3f %s, %8.3f %s/s",
 						 desc, blocks, blockType, word[0], total, word[1], persec, blockType);
 		SHOW_INTEL_CYCLES(msg, sizeof(msg), countSz);
 	}
@@ -686,10 +686,10 @@ static void bench_stats_asym_finish(const char *algo, int strength, const char *
 			printf("Algorithm,avg ms,ops/sec,\n");
 			csv_header_count++;
 		}
-		(void) snprintf(msg, sizeof(msg), "%s %d %s,%.3f,%.3f,\n", algo, strength, desc, milliEach, opsSec);
+		snprintf(msg, sizeof(msg), "%s %d %s,%.3f,%.3f,\n", algo, strength, desc, milliEach, opsSec);
 	} else
 	{
-		(void) snprintf(msg, sizeof(msg), "%-6s %5d %-9s %6d %s %5.3f %s, %s %5.3f ms, %.3f %s\n",
+		snprintf(msg, sizeof(msg), "%-6s %5d %-9s %6d %s %5.3f %s, %s %5.3f ms, %.3f %s\n",
 						 algo, strength, desc, count, word[0], total, word[1], word[2], milliEach, opsSec, word[3]);
 	}
 	printf("%s", msg);
@@ -853,14 +853,14 @@ static void bench_aescbc(void)
 static void bench_aesgcm_internal(const uint8_t * key, uint32_t keySz,
 	const uint8_t * iv, uint32_t ivSz, const char *encLabel, const char *decLabel)
 {
-#if 0
 	int ret = 0;
 	int i;
 	int count = 0;
 	int times;
-	Aes enc[BENCH_MAX_PENDING];
-	Aes dec[BENCH_MAX_PENDING];
+	AES_KEY enc[BENCH_MAX_PENDING];
+	AES_KEY dec[BENCH_MAX_PENDING];
 	double start;
+	XGEN_ALIGN uint8_t iv_buf[sizeof(bench_iv_buf)];
 
 	uint8_t bench_additional[AES_AUTH_ADD_SZ];
 	uint8_t bench_tag[AES_AUTH_TAG_SZ];
@@ -874,19 +874,16 @@ static void bench_aesgcm_internal(const uint8_t * key, uint32_t keySz,
 	/* init keys */
 	for (i = 0; i < BENCH_MAX_PENDING; i++)
 	{
-		if ((ret = wc_AesInit(&enc[i], HEAP_HINT, INVALID_DEVID)) != 0)
-		{
-			fprintf(stderr, "AesInit failed, ret = %d\n", ret);
-			goto exit;
-		}
-
-		ret = wc_AesGcmSetKey(&enc[i], key, keySz);
-		if (ret != 0)
+		ret = AES_set_encrypt_key(key, keySz, &enc[i]);
+		ret = 1 - ret;
+		if (ret <= 0)
 		{
 			fprintf(stderr, "AesGcmSetKey failed, ret = %d\n", ret);
 			goto exit;
 		}
 	}
+
+#define AES_gcm_encrypt AES_ige_encrypt
 
 	/* GCM uses same routine in backend for both encrypt and decrypt */
 	bench_stats_start(&count, &start);
@@ -897,9 +894,8 @@ static void bench_aesgcm_internal(const uint8_t * key, uint32_t keySz,
 			/* while free pending slots in queue, submit ops */
 			for (i = 0; i < BENCH_MAX_PENDING; i++)
 			{
-				ret = wc_AesGcmEncrypt(&enc[i], bench_cipher,
-									   bench_plain, BENCH_SIZE,
-									   iv, ivSz, bench_tag, AES_AUTH_TAG_SZ, bench_additional, aesAuthAddSz);
+				memcpy(iv_buf, iv, sizeof(iv_buf));
+				AES_gcm_encrypt(bench_plain, bench_cipher, BENCH_SIZE, &enc[i], iv_buf, AES_ENCRYPT);
 				if (!bench_async_handle(&ret, &times))
 				{
 					goto exit_aes_gcm;
@@ -914,13 +910,8 @@ static void bench_aesgcm_internal(const uint8_t * key, uint32_t keySz,
 	/* init keys */
 	for (i = 0; i < BENCH_MAX_PENDING; i++)
 	{
-		if ((ret = wc_AesInit(&dec[i], HEAP_HINT, INVALID_DEVID)) != 0)
-		{
-			fprintf(stderr, "AesInit failed, ret = %d\n", ret);
-			goto exit;
-		}
-
-		ret = wc_AesGcmSetKey(&dec[i], key, keySz);
+		ret = AES_set_encrypt_key(key, keySz, &dec[i]);
+		ret = 1 - ret;
 		if (ret != 0)
 		{
 			fprintf(stderr, "AesGcmSetKey failed, ret = %d\n", ret);
@@ -936,9 +927,8 @@ static void bench_aesgcm_internal(const uint8_t * key, uint32_t keySz,
 			/* while free pending slots in queue, submit ops */
 			for (i = 0; i < BENCH_MAX_PENDING; i++)
 			{
-				ret = wc_AesGcmDecrypt(&dec[i], bench_plain,
-									   bench_cipher, BENCH_SIZE,
-									   iv, ivSz, bench_tag, AES_AUTH_TAG_SZ, bench_additional, aesAuthAddSz);
+				memcpy(iv_buf, iv, sizeof(iv_buf));
+				AES_gcm_encrypt(bench_plain, bench_cipher, BENCH_SIZE, &enc[i], iv_buf, AES_DECRYPT);
 				if (!bench_async_handle(&ret, &times))
 				{
 					goto exit_aes_gcm_dec;
@@ -950,30 +940,19 @@ static void bench_aesgcm_internal(const uint8_t * key, uint32_t keySz,
   exit_aes_gcm_dec:
 	bench_stats_sym_finish(decLabel, count, bench_size, start, ret);
 
-	(void) decLabel;
-
   exit:
 
 	if (ret < 0)
 	{
 		fprintf(stderr, "bench_aesgcm failed: %d\n", ret);
 	}
-	for (i = 0; i < BENCH_MAX_PENDING; i++)
-	{
-		wc_AesFree(&dec[i]);
-	}
-	for (i = 0; i < BENCH_MAX_PENDING; i++)
-	{
-		wc_AesFree(&enc[i]);
-	}
-#endif
 }
 
 static void bench_aesgcm(void)
 {
-	bench_aesgcm_internal(bench_key, 16, bench_iv, 12, "AES-128-GCM-enc", "AES-128-GCM-dec");
-	bench_aesgcm_internal(bench_key, 24, bench_iv, 12, "AES-192-GCM-enc", "AES-192-GCM-dec");
-	bench_aesgcm_internal(bench_key, 32, bench_iv, 12, "AES-256-GCM-enc", "AES-256-GCM-dec");
+	bench_aesgcm_internal(bench_key, 128, bench_iv, 12, "AES-128-GCM-enc", "AES-128-GCM-dec");
+	bench_aesgcm_internal(bench_key, 192, bench_iv, 12, "AES-192-GCM-enc", "AES-192-GCM-dec");
+	bench_aesgcm_internal(bench_key, 256, bench_iv, 12, "AES-256-GCM-enc", "AES-256-GCM-dec");
 }
 
 /* GMAC */
@@ -982,7 +961,7 @@ static void bench_gmac(void)
 #if 0
 	int ret;
 	int count = 0;
-	Gmac gmac;
+	AES_KEY gmac;
 	double start;
 	uint8_t tag[AES_AUTH_TAG_SZ];
 
@@ -993,8 +972,7 @@ static void bench_gmac(void)
 	memset(bench_plain, 0, bench_size);
 	memset(tag, 0, sizeof(tag));
 	memset(&gmac, 0, sizeof(Gmac));	/* clear context */
-	(void) wc_AesInit((Aes *) & gmac, HEAP_HINT, INVALID_DEVID);
-	wc_GmacSetKey(&gmac, bench_key, 16);
+	AES_set_encrypt_key(bench_key, 16, &gmac);
 
 	bench_stats_start(&count, &start);
 	do
@@ -1003,7 +981,6 @@ static void bench_gmac(void)
 
 		count++;
 	} while (bench_stats_sym_check(start));
-	wc_AesFree((Aes *) & gmac);
 
 	bench_stats_sym_finish(gmacStr, count, bench_size, start, ret);
 #endif
@@ -1203,7 +1180,6 @@ static void bench_md5(void)
 	int times;
 
 	uint8_t digest[BENCH_MAX_PENDING][MD5_DIGEST_LENGTH];
-	WC_INIT_ARRAY(digest, uint8_t, BENCH_MAX_PENDING, MD5_DIGEST_LENGTH, HEAP_HINT);
 
 	/* clear for done cleanup */
 	memset(hash, 0, sizeof(hash));
@@ -1289,7 +1265,6 @@ static void bench_sha(void)
 	int times;
 
 	uint8_t digest[BENCH_MAX_PENDING][WC_SHA_DIGEST_SIZE];
-	WC_INIT_ARRAY(digest, uint8_t, BENCH_MAX_PENDING, WC_SHA_DIGEST_SIZE, HEAP_HINT);
 
 	/* clear for done cleanup */
 	memset(hash, 0, sizeof(hash));
@@ -1379,7 +1354,6 @@ static void bench_sha224(void)
 	int times;
 
 	uint8_t digest[BENCH_MAX_PENDING][WC_SHA224_DIGEST_SIZE];
-	WC_INIT_ARRAY(digest, uint8_t, BENCH_MAX_PENDING, WC_SHA224_DIGEST_SIZE, HEAP_HINT);
 
 	/* clear for done cleanup */
 	memset(hash, 0, sizeof(hash));
@@ -1468,7 +1442,6 @@ static void bench_sha256(void)
 	int times;
 
 	uint8_t digest[BENCH_MAX_PENDING][WC_SHA256_DIGEST_SIZE];
-	WC_INIT_ARRAY(digest, uint8_t, BENCH_MAX_PENDING, WC_SHA256_DIGEST_SIZE, HEAP_HINT);
 
 	/* clear for done cleanup */
 	memset(hash, 0, sizeof(hash));
@@ -1558,7 +1531,6 @@ static void bench_sha384(void)
 	int times;
 
 	uint8_t digest[BENCH_MAX_PENDING][WC_SHA384_DIGEST_SIZE];
-	WC_INIT_ARRAY(digest, uint8_t, BENCH_MAX_PENDING, WC_SHA384_DIGEST_SIZE, HEAP_HINT);
 
 	/* clear for done cleanup */
 	memset(hash, 0, sizeof(hash));
@@ -1648,7 +1620,6 @@ static void bench_sha512(void)
 	int times;
 
 	uint8_t digest[BENCH_MAX_PENDING][WC_SHA512_DIGEST_SIZE];
-	WC_INIT_ARRAY(digest, uint8_t, BENCH_MAX_PENDING, WC_SHA512_DIGEST_SIZE, HEAP_HINT);
 
 	/* clear for done cleanup */
 	memset(hash, 0, sizeof(hash));
@@ -1738,7 +1709,6 @@ static void bench_sha3_224(void)
 	int times;
 
 	uint8_t digest[BENCH_MAX_PENDING][WC_SHA3_224_DIGEST_SIZE];
-	WC_INIT_ARRAY(digest, uint8_t, BENCH_MAX_PENDING, WC_SHA3_224_DIGEST_SIZE, HEAP_HINT);
 
 	/* clear for done cleanup */
 	memset(hash, 0, sizeof(hash));
@@ -1828,7 +1798,6 @@ static void bench_sha3_256(void)
 	int times;
 
 	uint8_t digest[BENCH_MAX_PENDING][WC_SHA3_256_DIGEST_SIZE];
-	WC_INIT_ARRAY(digest, uint8_t, BENCH_MAX_PENDING, WC_SHA3_256_DIGEST_SIZE, HEAP_HINT);
 
 	/* clear for done cleanup */
 	memset(hash, 0, sizeof(hash));
@@ -1918,7 +1887,6 @@ static void bench_sha3_384(void)
 	int times;
 
 	uint8_t digest[BENCH_MAX_PENDING][WC_SHA3_384_DIGEST_SIZE];
-	WC_INIT_ARRAY(digest, uint8_t, BENCH_MAX_PENDING, WC_SHA3_384_DIGEST_SIZE, HEAP_HINT);
 
 	/* clear for done cleanup */
 	memset(hash, 0, sizeof(hash));
@@ -2008,7 +1976,6 @@ static void bench_sha3_512(void)
 	int times;
 
 	uint8_t digest[BENCH_MAX_PENDING][WC_SHA3_512_DIGEST_SIZE];
-	WC_INIT_ARRAY(digest, uint8_t, BENCH_MAX_PENDING, WC_SHA3_512_DIGEST_SIZE, HEAP_HINT);
 
 	/* clear for done cleanup */
 	memset(hash, 0, sizeof(hash));
@@ -2342,18 +2309,47 @@ static void bench_rsa_helper(RSA *rsaKey[BENCH_MAX_PENDING], int rsaKeySz)
 	const char **desc = bench_desc_words[lng_index];
 
 	uint8_t message[TEST_STRING_SZ];
-	WC_DECLARE_ARRAY_DYNAMIC_DEC(enc, uint8_t, BENCH_MAX_PENDING, rsaKeySz, HEAP_HINT);
-	WC_DECLARE_ARRAY_DYNAMIC_DEC(out, uint8_t, BENCH_MAX_PENDING, rsaKeySz, HEAP_HINT);
+	uint8_t *enc[BENCH_MAX_PENDING]);
+	uint8_t *out[BENCH_MAX_PENDING];
 
-	WC_DECLARE_ARRAY_DYNAMIC_EXE(enc, uint8_t, BENCH_MAX_PENDING, rsaKeySz, HEAP_HINT);
-	WC_DECLARE_ARRAY_DYNAMIC_EXE(out, uint8_t, BENCH_MAX_PENDING, rsaKeySz, HEAP_HINT);
-	if (out[0] == NULL)
+	for (i = 0; i < BENCH_MAX_PENDING; i++)
 	{
-		fprintf(stderr, "bench_rsa_helper: alloc memory failed\n");
-		ret = MEMORY_E;
-		goto exit;
+		enc[i] = malloc(rsaKeySz);
+		if (enc[i] == NULL)
+		{
+			int j;
+			for (j = 0; j < i; j++)
+			{
+				free(enc[j]);
+				enc[j] = NULL;
+			}
+			for (j = i + 1; j < BENCH_MAX_PENDING; j++)
+			{
+				enc[j] = NULL;
+			}
+			break;
+		}
 	}
-	if (enc[0] == NULL)
+	for (i = 0; i < BENCH_MAX_PENDING; i++)
+	{
+		out[i] = malloc(rsaKeySz);
+		if (out[i] == NULL)
+		{
+			int j;
+			for (j = 0; j < i; j++)
+			{
+				free(out[j]);
+				out[j] = NULL;
+			}
+			for (j = i + 1; j < BENCH_MAX_PENDING; j++)
+			{
+				out[j] = NULL;
+			}
+			break;
+		}
+	}
+	
+	if (out[0] == NULL || enc[0] == NULL)
 	{
 		fprintf(stderr, "bench_rsa_helper: alloc memory failed\n");
 		ret = MEMORY_E;
@@ -2541,8 +2537,7 @@ static void bench_dh(void)
 	int i;
 	int count = 0;
 	int times;
-	const uint8_t *tmp = NULL;
-	double start = 0.0F;
+	double start = 0.0;
 	DhKey dhKey[BENCH_MAX_PENDING];
 	int dhKeySz = BENCH_DH_KEY_SIZE * 8;	/* used in printf */
 	const char **desc = bench_desc_words[lng_index];
@@ -2561,15 +2556,8 @@ static void bench_dh(void)
 	uint8_t priv[BENCH_MAX_PENDING][BENCH_DH_PRIV_SIZE];
 	uint8_t priv2[BENCH_DH_PRIV_SIZE];
 
-	WC_INIT_ARRAY(pub, uint8_t, BENCH_MAX_PENDING, BENCH_DH_KEY_SIZE, HEAP_HINT);
-	WC_INIT_ARRAY(agree, uint8_t, BENCH_MAX_PENDING, BENCH_DH_KEY_SIZE, HEAP_HINT);
-	WC_INIT_ARRAY(priv, uint8_t, BENCH_MAX_PENDING, BENCH_DH_PRIV_SIZE, HEAP_HINT);
-
-	(void) tmp;
-
 	if (!use_ffdhe)
 	{
-		tmp = dh_key_der_2048;
 		bytes = sizeof_dh_key_der_2048;
 		dhKeySz = 2048;
 	} else if (use_ffdhe == 2048)
@@ -2593,7 +2581,7 @@ static void bench_dh(void)
 		if (!use_ffdhe)
 		{
 			idx = 0;
-			ret = wc_DhKeyDecode(tmp, &idx, &dhKey[i], (uint32_t) bytes);
+			ret = wc_DhKeyDecode(dh_key_der_2048, &idx, &dhKey[i], (uint32_t) bytes);
 		} else if (params != NULL)
 		{
 			ret = wc_DhSetKey(&dhKey[i], params->p, params->p_len, params->g, params->g_len);
@@ -2719,7 +2707,7 @@ static void bench_eccMakeKey(int curveId)
 		count += times;
 	} while (bench_stats_sym_check(start));
   exit:
-	(void) snprintf(name, BENCH_ECC_NAME_SZ, "ECC   [%15s]", wc_ecc_get_name(curveId));
+	snprintf(name, BENCH_ECC_NAME_SZ, "ECC   [%15s]", wc_ecc_get_name(curveId));
 	bench_stats_asym_finish(name, keySize * 8, desc[2], count, start, ret);
 
 	/* cleanup */
@@ -2747,8 +2735,6 @@ static void bench_ecc(int curveId)
 	const char **desc = bench_desc_words[lng_index];
 
 	uint8_t shared[BENCH_MAX_PENDING][MAX_ECC_BYTES];
-
-	WC_INIT_ARRAY(shared, uint8_t, BENCH_MAX_PENDING, MAX_ECC_BYTES, HEAP_HINT);
 
 	/* clear for done cleanup */
 	memset(&genKey, 0, sizeof(genKey));
@@ -2781,7 +2767,7 @@ static void bench_ecc(int curveId)
 
 	for (i = 0; i < BENCH_MAX_PENDING; i++)
 	{
-		(void) wc_ecc_set_rng(&genKey[i], &gRng);
+		wc_ecc_set_rng(&genKey[i], &gRng);
 	}
 
 	/* ECC Shared Secret */
@@ -2806,7 +2792,7 @@ static void bench_ecc(int curveId)
 	} while (bench_stats_sym_check(start));
 	PRIVATE_KEY_UNLOCK();
   exit_ecdhe:
-	(void) snprintf(name, BENCH_ECC_NAME_SZ, "ECDHE [%15s]", wc_ecc_get_name(curveId));
+	snprintf(name, BENCH_ECC_NAME_SZ, "ECDHE [%15s]", wc_ecc_get_name(curveId));
 
 	bench_stats_asym_finish(name, keySize * 8, desc[3], count, start, ret);
 
@@ -2857,7 +2843,7 @@ static void bench_ed25519KeyGen(void)
 		for (i = 0; i < genTimes; i++)
 		{
 			wc_ed25519_init(&genKey);
-			(void) wc_ed25519_make_key(&gRng, 32, &genKey);
+			wc_ed25519_make_key(&gRng, 32, &genKey);
 			wc_ed25519_free(&genKey);
 		}
 		count += i;
