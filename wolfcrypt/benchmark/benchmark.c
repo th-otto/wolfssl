@@ -2623,12 +2623,8 @@ static void bench_rsa(void)
 	RsaKey rsaKey[BENCH_MAX_PENDING];
 	int ret = 0;
 	int rsaKeySz;
-	const byte *tmp;
-	size_t bytes;
 	word32 idx;
 
-	tmp = rsa_key_der_2048;
-	bytes = (size_t) sizeof_rsa_key_der_2048;
 	rsaKeySz = 2048;
 
 	/* clear for done cleanup */
@@ -2654,7 +2650,7 @@ static void bench_rsa(void)
 	
 		/* decode the private key */
 		idx = 0;
-		if ((ret = wc_RsaPrivateKeyDecode(tmp, &idx, &rsaKey[i], (word32) bytes)) != 0)
+		if ((ret = wc_RsaPrivateKeyDecode(rsa_key_der_2048, &idx, &rsaKey[i], sizeof_rsa_key_der_2048)) != 0)
 		{
 			fprintf(stderr, "wc_RsaPrivateKeyDecode failed! %d\n", ret);
 			goto exit_bench_rsa;

@@ -15,7 +15,11 @@
 #include <openssl/sha.h>
 #include <openssl/rand.h>
 #include <openssl/aes.h>
+#include <openssl/rsa.h>
 #include <openssl/err.h>
+#include <openssl/tls1.h>
+#define USE_CERT_BUFFERS_2048			/* default to 2048 */
+#include "../../wolfssl/certs_test.h"
 
 #define RNG_MAX_BLOCK_LEN (0x10000l)
 
@@ -34,8 +38,13 @@
     } while(0)
 
 #define TEST_STRING    "Everyone gets Friday off."
-#define TEST_STRING_SZ 25
+#define TEST_STRING_SZ (int)sizeof(TEST_STRING) - 1
 
+#define ECC_MAXNAME 16
+#define MAX_ECC_BYTES     (1024 / 8)
+#define ED25519_SIG_SIZE     64
+
+ 
 
 /* Bit values for each algorithm that is able to be benchmarked.
  * Common grouping of algorithms also.
@@ -267,7 +276,7 @@ static const bench_alg bench_other_opt[] = {
 
 static const char *bench_Usage_msg1[][18] = {
 	/* 0 English  */
-	{"-? <num>    Help, print this usage\n            0: English, 1: Japanese\n",
+	{"-? <num>    Help, print this usage\n",
 	 "-csv        Print terminal output in csv format\n",
 	 "-base10     Display bytes as power of 10 (eg 1 kB = 1000 Bytes)\n",
 	 "-no_aad     No additional authentication data passed.\n",
@@ -827,7 +836,7 @@ static void bench_aescbc(void)
 static void bench_aesgcm_internal(const uint8_t * key, uint32_t keySz,
 	const uint8_t * iv, uint32_t ivSz, const char *encLabel, const char *decLabel)
 {
-	int ret = 0;
+	int ret = 1;
 	int i;
 	int count = 0;
 	int times;
@@ -863,7 +872,7 @@ static void bench_aesgcm_internal(const uint8_t * key, uint32_t keySz,
 	bench_stats_start(&count, &start);
 	do
 	{
-		for (times = 0; times < numBlocks;)
+		for (times = 0; times < numBlocks; )
 		{
 			/* while free pending slots in queue, submit ops */
 			for (i = 0; i < BENCH_MAX_PENDING; i++)
@@ -886,7 +895,7 @@ static void bench_aesgcm_internal(const uint8_t * key, uint32_t keySz,
 	{
 		ret = AES_set_encrypt_key(key, keySz, &dec[i]);
 		ret = 1 - ret;
-		if (ret != 0)
+		if (ret <= 0)
 		{
 			fprintf(stderr, "AesGcmSetKey failed, ret = %d\n", ret);
 			goto exit;
@@ -962,14 +971,16 @@ static void bench_gmac(void)
 
 
 
-static void bench_aesecb_internal(const uint8_t * key, uint32_t keySz, const char* encLabel, const char* decLabel)
+static void bench_aesecb_internal(const EVP_CIPHER *cipher, uint32_t keySz, const char* encLabel, const char* decLabel)
 {
 	int ret = 1;
 	int i;
 	int count = 0;
 	int times;
-	AES_KEY enc[BENCH_MAX_PENDING];
+	const EVP_CIPHER *enc[BENCH_MAX_PENDING];
 	double start;
+	int outl;
+	EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
 
 	/* clear for done cleanup */
 	memset(enc, 0, sizeof(enc));
@@ -977,23 +988,30 @@ static void bench_aesecb_internal(const uint8_t * key, uint32_t keySz, const cha
 	/* init keys */
 	for (i = 0; i < BENCH_MAX_PENDING; i++)
 	{
-		ret = AES_set_encrypt_key(key, keySz, &enc[i]);
-		ret = 1 - ret;
+		enc[i] = cipher;
+		if (enc[i] == NULL)
+		{
+			fprintf(stderr, "cipher %s failed\n", encLabel);
+			goto exit;
+		}
+
+		ret = EVP_EncryptInit(ctx, enc[i], bench_key, bench_iv);
 		if (ret <= 0)
 		{
-			fprintf(stderr, "AesSetKey failed, ret = %d\n", ret);
+			fprintf(stderr, "EVP_EncryptInit failed, ret = %d\n", ret);
 			goto exit;
 		}
 	}
 
 	bench_stats_start(&count, &start);
-	do {
+	do
+	{
 		for (times = 0; times < numBlocks; )
 		{
 			/* while free pending slots in queue, submit ops */
 			for (i = 0; i < BENCH_MAX_PENDING; i++)
 			{
-				AES_ecb_encrypt(bench_cipher, bench_plain, &enc[i], AES_ENCRYPT);
+				ret = EVP_EncryptUpdate(ctx, bench_cipher, &outl, bench_plain, BENCH_SIZE);
 				if (!bench_async_handle(&ret, &times))
 				{
 					goto exit_aes_enc;
@@ -1008,11 +1026,10 @@ exit_aes_enc:
 	/* init keys */
 	for (i = 0; i < BENCH_MAX_PENDING; i++)
 	{
-		ret = AES_set_encrypt_key(key, keySz, &enc[i]);
-		ret = 1 - ret;
+		ret = EVP_DecryptInit(ctx, enc[i], bench_key, bench_iv);
 		if (ret <= 0)
 		{
-			printf("AesSetKey failed, ret = %d\n", ret);
+			fprintf(stderr, "EVP_DecryptInit failed, ret = %d\n", ret);
 			goto exit;
 		}
 	}
@@ -1024,7 +1041,7 @@ exit_aes_enc:
 			/* while free pending slots in queue, submit ops */
 			for (i = 0; i < BENCH_MAX_PENDING; i++)
 			{
-				AES_ecb_encrypt(bench_cipher, bench_plain, &enc[i], AES_DECRYPT);
+				ret = EVP_DecryptUpdate(ctx, bench_cipher, &outl, bench_plain, BENCH_SIZE);
 				if (!bench_async_handle(&ret, &times))
 				{
 					goto exit_aes_dec;
@@ -1043,9 +1060,9 @@ exit:
 
 static void bench_aesecb(void)
 {
-	bench_aesecb_internal(bench_key, 16, "AES-128-ECB-enc", "AES-128-ECB-dec");
-	bench_aesecb_internal(bench_key, 24, "AES-192-ECB-enc", "AES-192-ECB-dec");
-	bench_aesecb_internal(bench_key, 32, "AES-256-ECB-enc", "AES-256-ECB-dec");
+	bench_aesecb_internal(EVP_aes_128_ecb(), 128, "AES-128-ECB-enc", "AES-128-ECB-dec");
+	bench_aesecb_internal(EVP_aes_192_ecb(), 192, "AES-192-ECB-enc", "AES-192-ECB-dec");
+	bench_aesecb_internal(EVP_aes_256_ecb(), 256, "AES-256-ECB-enc", "AES-256-ECB-dec");
 }
 
 
@@ -1055,7 +1072,7 @@ static void bench_poly1305(void)
 	Poly1305 enc;
 	uint8_t mac[16];
 	double start;
-	int ret = 0;
+	int ret = 1;
 	int i;
 	int count;
 
@@ -1115,7 +1132,7 @@ static void bench_poly1305(void)
 
 static void bench_encrypt(const EVP_CIPHER *cipher, const char *label)
 {
-	int ret = 0;
+	int ret = 1;
 	int i;
 	int count = 0;
 	int times;
@@ -1153,7 +1170,7 @@ static void bench_encrypt(const EVP_CIPHER *cipher, const char *label)
 			/* while free pending slots in queue, submit ops */
 			for (i = 0; i < BENCH_MAX_PENDING; i++)
 			{
-				ret = EVP_CipherUpdate(ctx, bench_cipher, &outl, bench_plain, BENCH_SIZE);
+				ret = EVP_EncryptUpdate(ctx, bench_cipher, &outl, bench_plain, BENCH_SIZE);
 				if (!bench_async_handle(&ret, &times))
 				{
 					goto exit_encrypt;
@@ -1191,18 +1208,18 @@ static void bench_chacha20_poly1305_aead(void)
 }
 
 
-static void bench_digest(const EVP_MD *md, )
+static void bench_digest(const EVP_MD *cipher, const char *label)
 {
-#if 0
-	const EVP_CIPHER *enc[BENCH_MAX_PENDING];
+	const EVP_MD *enc[BENCH_MAX_PENDING];
 	double start;
-	int ret = 0;
+	int ret = 1;
 	int i;
 	int count = 0;
 	int times;
-	EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
+	unsigned int outl;
+	EVP_MD_CTX *ctx = EVP_MD_CTX_new();
 
-	uint8_t digest[BENCH_MAX_PENDING][64];
+	uint8_t digest[BENCH_MAX_PENDING][EVP_MAX_MD_SIZE];
 
 	/* clear for done cleanup */
 	memset(enc, 0, sizeof(enc));
@@ -1215,29 +1232,32 @@ static void bench_digest(const EVP_MD *md, )
 			fprintf(stderr, "cipher %s failed\n", label);
 			goto exit;
 		}
-
-		ret = EVP_EncryptInit(ctx, enc[i], bench_key, bench_iv);
-		if (ret <= 0)
-		{
-			fprintf(stderr, "EVP_EncryptInit failed, ret = %d\n", ret);
-			goto exit;
-		}
 	}
 		
 	if (digest_stream)
 	{
+		/* init keys */
 		bench_stats_start(&count, &start);
 		do
 		{
+			for (i = 0; i < BENCH_MAX_PENDING; i++)
+			{
+				ret = EVP_DigestInit(ctx, enc[i]);
+				if (ret <= 0)
+				{
+					fprintf(stderr, "EVP_DigestInit failed, ret = %d\n", ret);
+					goto exit;
+				}
+			}
 			for (times = 0; times < numBlocks;)
 			{
 				/* while free pending slots in queue, submit ops */
 				for (i = 0; i < BENCH_MAX_PENDING; i++)
 				{
-					ret = wc_Md5Update(&hash[i], bench_plain, BENCH_SIZE);
+					ret = EVP_DigestUpdate(ctx, bench_plain, BENCH_SIZE);
 					if (!bench_async_handle(&ret, &times))
 					{
-						goto exit_md5;
+						goto exit_digest;
 					}
 				}
 			}
@@ -1248,10 +1268,10 @@ static void bench_digest(const EVP_MD *md, )
 			{
 				for (i = 0; i < BENCH_MAX_PENDING; i++)
 				{
-					ret = wc_Md5Final(&hash[i], digest[i]);
+					ret = EVP_DigestFinal(ctx, digest[i], &outl);
 					if (!bench_async_handle(&ret, &times))
 					{
-						goto exit_md5;
+						goto exit_digest;
 					}
 				}
 			} while (0);
@@ -1263,976 +1283,87 @@ static void bench_digest(const EVP_MD *md, )
 		{
 			for (times = 0; times < numBlocks; times++)
 			{
-				ret = wc_InitMd5_ex(hash, HEAP_HINT, INVALID_DEVID);
-				if (ret == 0)
-					ret = wc_Md5Update(hash, bench_plain, BENCH_SIZE);
-				if (ret == 0)
-					ret = wc_Md5Final(hash, digest[0]);
-				if (ret != 0)
-					goto exit_md5;
+				ret = EVP_DigestInit(ctx, enc[i]);
+				if (ret > 0)
+					ret = EVP_DigestUpdate(ctx, bench_plain, BENCH_SIZE);
+				if (ret > 0)
+					ret = EVP_DigestFinal(ctx, digest[i], &outl);
+				if (ret <= 0)
+					goto exit_digest;
 			}
 			count += times;
 		} while (bench_stats_sym_check(start));
 	}
-  exit_md5:
-	bench_stats_sym_finish("MD5", count, bench_size, start, ret);
+  exit_digest:
+	bench_stats_sym_finish(label, count, bench_size, start, ret);
 
   exit:
-	;
-#endif
+	EVP_MD_CTX_free(ctx);
 }
 
 
 static void bench_md5(void)
 {
-#if 0
-	wc_Md5 hash[BENCH_MAX_PENDING];
-	double start;
-	int ret = 0;
-	int i;
-	int count = 0;
-	int times;
-
-	uint8_t digest[BENCH_MAX_PENDING][MD5_DIGEST_LENGTH];
-
-	/* clear for done cleanup */
-	memset(hash, 0, sizeof(hash));
-
-	if (digest_stream)
-	{
-		/* init keys */
-		for (i = 0; i < BENCH_MAX_PENDING; i++)
-		{
-			ret = wc_InitMd5_ex(&hash[i], HEAP_HINT, INVALID_DEVID);
-			if (ret != 0)
-			{
-				fprintf(stderr, "InitMd5_ex failed, ret = %d\n", ret);
-				goto exit;
-			}
-		}
-
-		bench_stats_start(&count, &start);
-		do
-		{
-			for (times = 0; times < numBlocks;)
-			{
-				/* while free pending slots in queue, submit ops */
-				for (i = 0; i < BENCH_MAX_PENDING; i++)
-				{
-					ret = wc_Md5Update(&hash[i], bench_plain, BENCH_SIZE);
-					if (!bench_async_handle(&ret, &times))
-					{
-						goto exit_md5;
-					}
-				}
-			}
-			count += times;
-
-			times = 0;
-			do
-			{
-				for (i = 0; i < BENCH_MAX_PENDING; i++)
-				{
-					ret = wc_Md5Final(&hash[i], digest[i]);
-					if (!bench_async_handle(&ret, &times))
-					{
-						goto exit_md5;
-					}
-				}
-			} while (0);
-		} while (bench_stats_sym_check(start));
-	} else
-	{
-		bench_stats_start(&count, &start);
-		do
-		{
-			for (times = 0; times < numBlocks; times++)
-			{
-				ret = wc_InitMd5_ex(hash, HEAP_HINT, INVALID_DEVID);
-				if (ret == 0)
-					ret = wc_Md5Update(hash, bench_plain, BENCH_SIZE);
-				if (ret == 0)
-					ret = wc_Md5Final(hash, digest[0]);
-				if (ret != 0)
-					goto exit_md5;
-			}
-			count += times;
-		} while (bench_stats_sym_check(start));
-	}
-  exit_md5:
-	bench_stats_sym_finish("MD5", count, bench_size, start, ret);
-
-  exit:
-	;
-#endif
+	bench_digest(EVP_md5(), "MD5");
 }
 
 
 static void bench_sha(void)
 {
-#if 0
-	wc_Sha hash[BENCH_MAX_PENDING];
-	double start;
-	int ret = 0;
-	int i;
-	int count = 0;
-	int times;
-
-	uint8_t digest[BENCH_MAX_PENDING][WC_SHA_DIGEST_SIZE];
-
-	/* clear for done cleanup */
-	memset(hash, 0, sizeof(hash));
-
-	if (digest_stream)
-	{
-		/* init keys */
-		for (i = 0; i < BENCH_MAX_PENDING; i++)
-		{
-			ret = wc_InitSha_ex(&hash[i], HEAP_HINT, INVALID_DEVID);
-			if (ret != 0)
-			{
-				fprintf(stderr, "InitSha failed, ret = %d\n", ret);
-				goto exit;
-			}
-		}
-
-		bench_stats_start(&count, &start);
-		do
-		{
-			for (times = 0; times < numBlocks;)
-			{
-				/* while free pending slots in queue, submit ops */
-				for (i = 0; i < BENCH_MAX_PENDING; i++)
-				{
-					ret = wc_ShaUpdate(&hash[i], bench_plain, BENCH_SIZE);
-					if (!bench_async_handle(&ret, &times))
-					{
-						goto exit_sha;
-					}
-				}
-			}
-			count += times;
-
-			times = 0;
-			do
-			{
-				for (i = 0; i < BENCH_MAX_PENDING; i++)
-				{
-					ret = wc_ShaFinal(&hash[i], digest[i]);
-					if (!bench_async_handle(&ret, &times))
-					{
-						goto exit_sha;
-					}
-				}
-			} while (0);
-		} while (bench_stats_sym_check(start));
-	} else
-	{
-		bench_stats_start(&count, &start);
-		do
-		{
-			for (times = 0; times < numBlocks; times++)
-			{
-				ret = wc_InitSha_ex(hash, HEAP_HINT, INVALID_DEVID);
-				if (ret == 0)
-					ret = wc_ShaUpdate(hash, bench_plain, BENCH_SIZE);
-				if (ret == 0)
-					ret = wc_ShaFinal(hash, digest[0]);
-				if (ret != 0)
-					goto exit_sha;
-			}
-			count += times;
-		} while (bench_stats_sym_check(start));
-	}
-  exit_sha:
-	bench_stats_sym_finish("SHA", count, bench_size, start, ret);
-
-  exit:
-
-	for (i = 0; i < BENCH_MAX_PENDING; i++)
-	{
-		wc_ShaFree(&hash[i]);
-	}
-#endif
+	bench_digest(EVP_sha1(), "SHA1");
 }
 
 
 static void bench_sha224(void)
 {
-#if 0
-	wc_Sha224 hash[BENCH_MAX_PENDING];
-	double start;
-	int ret = 0;
-	int i;
-	int count = 0;
-	int times;
-
-	uint8_t digest[BENCH_MAX_PENDING][WC_SHA224_DIGEST_SIZE];
-
-	/* clear for done cleanup */
-	memset(hash, 0, sizeof(hash));
-
-	if (digest_stream)
-	{
-		/* init keys */
-		for (i = 0; i < BENCH_MAX_PENDING; i++)
-		{
-			ret = wc_InitSha224_ex(&hash[i], HEAP_HINT, INVALID_DEVID);
-			if (ret != 0)
-			{
-				fprintf(stderr, "InitSha224_ex failed, ret = %d\n", ret);
-				goto exit;
-			}
-		}
-
-		bench_stats_start(&count, &start);
-		do
-		{
-			for (times = 0; times < numBlocks;)
-			{
-				/* while free pending slots in queue, submit ops */
-				for (i = 0; i < BENCH_MAX_PENDING; i++)
-				{
-					ret = wc_Sha224Update(&hash[i], bench_plain, BENCH_SIZE);
-					if (!bench_async_handle(&ret, &times))
-					{
-						goto exit_sha224;
-					}
-				}
-			}
-			count += times;
-
-			times = 0;
-			do
-			{
-				for (i = 0; i < BENCH_MAX_PENDING; i++)
-				{
-					ret = wc_Sha224Final(&hash[i], digest[i]);
-					if (!bench_async_handle(&ret, &times))
-					{
-						goto exit_sha224;
-					}
-				}
-			} while (0);
-		} while (bench_stats_sym_check(start));
-	} else
-	{
-		bench_stats_start(&count, &start);
-		do
-		{
-			for (times = 0; times < numBlocks; times++)
-			{
-				ret = wc_InitSha224_ex(hash, HEAP_HINT, INVALID_DEVID);
-				if (ret == 0)
-					ret = wc_Sha224Update(hash, bench_plain, BENCH_SIZE);
-				if (ret == 0)
-					ret = wc_Sha224Final(hash, digest[0]);
-				if (ret != 0)
-					goto exit_sha224;
-			}
-			count += times;
-		} while (bench_stats_sym_check(start));
-	}
-  exit_sha224:
-	bench_stats_sym_finish("SHA-224", count, bench_size, start, ret);
-
-  exit:
-
-	for (i = 0; i < BENCH_MAX_PENDING; i++)
-	{
-		wc_Sha224Free(&hash[i]);
-	}
-#endif
+	bench_digest(EVP_sha224(), "SHA-224");
 }
 
 static void bench_sha256(void)
 {
-#if 0
-	wc_Sha256 hash[BENCH_MAX_PENDING];
-	double start;
-	int ret = 0;
-	int i;
-	int count = 0;
-	int times;
-
-	uint8_t digest[BENCH_MAX_PENDING][WC_SHA256_DIGEST_SIZE];
-
-	/* clear for done cleanup */
-	memset(hash, 0, sizeof(hash));
-
-	if (digest_stream)
-	{
-		/* init keys */
-		for (i = 0; i < BENCH_MAX_PENDING; i++)
-		{
-			ret = wc_InitSha256_ex(&hash[i], HEAP_HINT, INVALID_DEVID);
-			if (ret != 0)
-			{
-				fprintf(stderr, "InitSha256_ex failed, ret = %d\n", ret);
-				goto exit;
-			}
-		}
-
-		bench_stats_start(&count, &start);
-		do
-		{
-			for (times = 0; times < numBlocks;)
-			{
-				/* while free pending slots in queue, submit ops */
-				for (i = 0; i < BENCH_MAX_PENDING; i++)
-				{
-					ret = wc_Sha256Update(&hash[i], bench_plain, BENCH_SIZE);
-					if (!bench_async_handle(&ret, &times))
-					{
-						goto exit_sha256;
-					}
-				}
-			}
-			count += times;
-
-			times = 0;
-			do
-			{
-				for (i = 0; i < BENCH_MAX_PENDING; i++)
-				{
-					ret = wc_Sha256Final(&hash[i], digest[i]);
-					if (!bench_async_handle(&ret, &times))
-					{
-						goto exit_sha256;
-					}
-				}
-			} while (0);
-		} while (bench_stats_sym_check(start));
-	} else
-	{
-		bench_stats_start(&count, &start);
-		do
-		{
-			for (times = 0; times < numBlocks; times++)
-			{
-				ret = wc_InitSha256_ex(hash, HEAP_HINT, INVALID_DEVID);
-				if (ret == 0)
-					ret = wc_Sha256Update(hash, bench_plain, BENCH_SIZE);
-				if (ret == 0)
-					ret = wc_Sha256Final(hash, digest[0]);
-				if (ret != 0)
-					goto exit_sha256;
-			}
-			count += times;
-		} while (bench_stats_sym_check(start));
-	}
-  exit_sha256:
-	bench_stats_sym_finish("SHA-256", count, bench_size, start, ret);
-
-  exit:
-
-	for (i = 0; i < BENCH_MAX_PENDING; i++)
-	{
-		wc_Sha256Free(&hash[i]);
-	}
-#endif
+	bench_digest(EVP_sha256(), "SHA-256");
 }
 
 
 static void bench_sha384(void)
 {
-#if 0
-	wc_Sha384 hash[BENCH_MAX_PENDING];
-	double start;
-	int ret = 0;
-	int i;
-	int count = 0;
-	int times;
-
-	uint8_t digest[BENCH_MAX_PENDING][WC_SHA384_DIGEST_SIZE];
-
-	/* clear for done cleanup */
-	memset(hash, 0, sizeof(hash));
-
-	if (digest_stream)
-	{
-		/* init keys */
-		for (i = 0; i < BENCH_MAX_PENDING; i++)
-		{
-			ret = wc_InitSha384_ex(&hash[i], HEAP_HINT, INVALID_DEVID);
-			if (ret != 0)
-			{
-				fprintf(stderr, "InitSha384_ex failed, ret = %d\n", ret);
-				goto exit;
-			}
-		}
-
-		bench_stats_start(&count, &start);
-		do
-		{
-			for (times = 0; times < numBlocks;)
-			{
-				/* while free pending slots in queue, submit ops */
-				for (i = 0; i < BENCH_MAX_PENDING; i++)
-				{
-					ret = wc_Sha384Update(&hash[i], bench_plain, BENCH_SIZE);
-					if (!bench_async_handle(&ret, &times))
-					{
-						goto exit_sha384;
-					}
-				}
-			}
-			count += times;
-
-			times = 0;
-			do
-			{
-				for (i = 0; i < BENCH_MAX_PENDING; i++)
-				{
-					ret = wc_Sha384Final(&hash[i], digest[i]);
-					if (!bench_async_handle(&ret, &times))
-					{
-						goto exit_sha384;
-					}
-				}
-			} while (0);
-		} while (bench_stats_sym_check(start));
-	} else
-	{
-		bench_stats_start(&count, &start);
-		do
-		{
-			for (times = 0; times < numBlocks; times++)
-			{
-				ret = wc_InitSha384_ex(hash, HEAP_HINT, INVALID_DEVID);
-				if (ret == 0)
-					ret = wc_Sha384Update(hash, bench_plain, BENCH_SIZE);
-				if (ret == 0)
-					ret = wc_Sha384Final(hash, digest[0]);
-				if (ret != 0)
-					goto exit_sha384;
-			}
-			count += times;
-		} while (bench_stats_sym_check(start));
-	}
-  exit_sha384:
-	bench_stats_sym_finish("SHA-384", count, bench_size, start, ret);
-
-  exit:
-
-	for (i = 0; i < BENCH_MAX_PENDING; i++)
-	{
-		wc_Sha384Free(&hash[i]);
-	}
-#endif
+	bench_digest(EVP_sha384(), "SHA-384");
 }
 
 
 static void bench_sha512(void)
 {
-#if 0
-	wc_Sha512 hash[BENCH_MAX_PENDING];
-	double start;
-	int ret = 0;
-	int i;
-	int count = 0;
-	int times;
-
-	uint8_t digest[BENCH_MAX_PENDING][WC_SHA512_DIGEST_SIZE];
-
-	/* clear for done cleanup */
-	memset(hash, 0, sizeof(hash));
-
-	if (digest_stream)
-	{
-		/* init keys */
-		for (i = 0; i < BENCH_MAX_PENDING; i++)
-		{
-			ret = wc_InitSha512_ex(&hash[i], HEAP_HINT, INVALID_DEVID);
-			if (ret != 0)
-			{
-				fprintf(stderr, "InitSha512_ex failed, ret = %d\n", ret);
-				goto exit;
-			}
-		}
-
-		bench_stats_start(&count, &start);
-		do
-		{
-			for (times = 0; times < numBlocks;)
-			{
-				/* while free pending slots in queue, submit ops */
-				for (i = 0; i < BENCH_MAX_PENDING; i++)
-				{
-					ret = wc_Sha512Update(&hash[i], bench_plain, BENCH_SIZE);
-					if (!bench_async_handle(&ret, &times))
-					{
-						goto exit_sha512;
-					}
-				}
-			}
-			count += times;
-
-			times = 0;
-			do
-			{
-				for (i = 0; i < BENCH_MAX_PENDING; i++)
-				{
-					ret = wc_Sha512Final(&hash[i], digest[i]);
-					if (!bench_async_handle(&ret, &times))
-					{
-						goto exit_sha512;
-					}
-				}
-			} while (0);
-		} while (bench_stats_sym_check(start));
-	} else
-	{
-		bench_stats_start(&count, &start);
-		do
-		{
-			for (times = 0; times < numBlocks; times++)
-			{
-				ret = wc_InitSha512_ex(hash, HEAP_HINT, INVALID_DEVID);
-				if (ret == 0)
-					ret = wc_Sha512Update(hash, bench_plain, BENCH_SIZE);
-				if (ret == 0)
-					ret = wc_Sha512Final(hash, digest[0]);
-				if (ret != 0)
-					goto exit_sha512;
-			}
-			count += times;
-		} while (bench_stats_sym_check(start));
-	}
-  exit_sha512:
-	bench_stats_sym_finish("SHA-512", count, bench_size, start, ret);
-
-  exit:
-
-	for (i = 0; i < BENCH_MAX_PENDING; i++)
-	{
-		wc_Sha512Free(&hash[i]);
-	}
-#endif
+	bench_digest(EVP_sha512(), "SHA-512");
 }
 
 
 static void bench_sha3_224(void)
 {
-#if 0
-	wc_Sha3 hash[BENCH_MAX_PENDING];
-	double start;
-	int ret = 0;
-	int i;
-	int count = 0;
-	int times;
-
-	uint8_t digest[BENCH_MAX_PENDING][WC_SHA3_224_DIGEST_SIZE];
-
-	/* clear for done cleanup */
-	memset(hash, 0, sizeof(hash));
-
-	if (digest_stream)
-	{
-		/* init keys */
-		for (i = 0; i < BENCH_MAX_PENDING; i++)
-		{
-			ret = wc_InitSha3_224(&hash[i], HEAP_HINT, INVALID_DEVID);
-			if (ret != 0)
-			{
-				fprintf(stderr, "InitSha3_224 failed, ret = %d\n", ret);
-				goto exit;
-			}
-		}
-
-		bench_stats_start(&count, &start);
-		do
-		{
-			for (times = 0; times < numBlocks;)
-			{
-				/* while free pending slots in queue, submit ops */
-				for (i = 0; i < BENCH_MAX_PENDING; i++)
-				{
-					ret = wc_Sha3_224_Update(&hash[i], bench_plain, BENCH_SIZE);
-					if (!bench_async_handle(&ret, &times))
-					{
-						goto exit_sha3_224;
-					}
-				}
-			}
-			count += times;
-
-			times = 0;
-			do
-			{
-				for (i = 0; i < BENCH_MAX_PENDING; i++)
-				{
-					ret = wc_Sha3_224_Final(&hash[i], digest[i]);
-					if (!bench_async_handle(&ret, &times))
-					{
-						goto exit_sha3_224;
-					}
-				}
-			} while (0);
-		} while (bench_stats_sym_check(start));
-	} else
-	{
-		bench_stats_start(&count, &start);
-		do
-		{
-			for (times = 0; times < numBlocks; times++)
-			{
-				ret = wc_InitSha3_224(hash, HEAP_HINT, INVALID_DEVID);
-				if (ret == 0)
-					ret = wc_Sha3_224_Update(hash, bench_plain, BENCH_SIZE);
-				if (ret == 0)
-					ret = wc_Sha3_224_Final(hash, digest[0]);
-				if (ret != 0)
-					goto exit_sha3_224;
-			}
-			count += times;
-		} while (bench_stats_sym_check(start));
-	}
-  exit_sha3_224:
-	bench_stats_sym_finish("SHA3-224", count, bench_size, start, ret);
-
-  exit:
-
-	for (i = 0; i < BENCH_MAX_PENDING; i++)
-	{
-		wc_Sha3_224_Free(&hash[i]);
-	}
-#endif
+	bench_digest(EVP_sha3_224(), "SHA3-224");
 }
 
 
 static void bench_sha3_256(void)
 {
-#if 0
-	wc_Sha3 hash[BENCH_MAX_PENDING];
-	double start;
-	int ret = 0;
-	int i;
-	int count = 0;
-	int times;
-
-	uint8_t digest[BENCH_MAX_PENDING][WC_SHA3_256_DIGEST_SIZE];
-
-	/* clear for done cleanup */
-	memset(hash, 0, sizeof(hash));
-
-	if (digest_stream)
-	{
-		/* init keys */
-		for (i = 0; i < BENCH_MAX_PENDING; i++)
-		{
-			ret = wc_InitSha3_256(&hash[i], HEAP_HINT, INVALID_DEVID);
-			if (ret != 0)
-			{
-				fprintf(stderr, "InitSha3_256 failed, ret = %d\n", ret);
-				goto exit;
-			}
-		}
-
-		bench_stats_start(&count, &start);
-		do
-		{
-			for (times = 0; times < numBlocks;)
-			{
-				/* while free pending slots in queue, submit ops */
-				for (i = 0; i < BENCH_MAX_PENDING; i++)
-				{
-					ret = wc_Sha3_256_Update(&hash[i], bench_plain, BENCH_SIZE);
-					if (!bench_async_handle(&ret, &times))
-					{
-						goto exit_sha3_256;
-					}
-				}
-			}
-			count += times;
-
-			times = 0;
-			do
-			{
-				for (i = 0; i < BENCH_MAX_PENDING; i++)
-				{
-					ret = wc_Sha3_256_Final(&hash[i], digest[i]);
-					if (!bench_async_handle(&ret, &times))
-					{
-						goto exit_sha3_256;
-					}
-				}
-			} while (0);
-		} while (bench_stats_sym_check(start));
-	} else
-	{
-		bench_stats_start(&count, &start);
-		do
-		{
-			for (times = 0; times < numBlocks; times++)
-			{
-				ret = wc_InitSha3_256(hash, HEAP_HINT, INVALID_DEVID);
-				if (ret == 0)
-					ret = wc_Sha3_256_Update(hash, bench_plain, BENCH_SIZE);
-				if (ret == 0)
-					ret = wc_Sha3_256_Final(hash, digest[0]);
-				if (ret != 0)
-					goto exit_sha3_256;
-			}
-			count += times;
-		} while (bench_stats_sym_check(start));
-	}
-  exit_sha3_256:
-	bench_stats_sym_finish("SHA3-256", count, bench_size, start, ret);
-
-  exit:
-
-	for (i = 0; i < BENCH_MAX_PENDING; i++)
-	{
-		wc_Sha3_256_Free(&hash[i]);
-	}
-#endif
+	bench_digest(EVP_sha3_256(), "SHA3-256");
 }
 
 
 static void bench_sha3_384(void)
 {
-#if 0
-	wc_Sha3 hash[BENCH_MAX_PENDING];
-	double start;
-	int ret = 0;
-	int i;
-	int count = 0;
-	int times;
-
-	uint8_t digest[BENCH_MAX_PENDING][WC_SHA3_384_DIGEST_SIZE];
-
-	/* clear for done cleanup */
-	memset(hash, 0, sizeof(hash));
-
-	if (digest_stream)
-	{
-		/* init keys */
-		for (i = 0; i < BENCH_MAX_PENDING; i++)
-		{
-			ret = wc_InitSha3_384(&hash[i], HEAP_HINT, INVALID_DEVID);
-			if (ret != 0)
-			{
-				fprintf(stderr, "InitSha3_384 failed, ret = %d\n", ret);
-				goto exit;
-			}
-		}
-
-		bench_stats_start(&count, &start);
-		do
-		{
-			for (times = 0; times < numBlocks;)
-			{
-				/* while free pending slots in queue, submit ops */
-				for (i = 0; i < BENCH_MAX_PENDING; i++)
-				{
-					ret = wc_Sha3_384_Update(&hash[i], bench_plain, BENCH_SIZE);
-					if (!bench_async_handle(&ret, &times))
-					{
-						goto exit_sha3_384;
-					}
-				}
-			}
-			count += times;
-
-			times = 0;
-			do
-			{
-				for (i = 0; i < BENCH_MAX_PENDING; i++)
-				{
-					ret = wc_Sha3_384_Final(&hash[i], digest[i]);
-					if (!bench_async_handle(&ret, &times))
-					{
-						goto exit_sha3_384;
-					}
-				}
-			} while (0);
-		} while (bench_stats_sym_check(start));
-	} else
-	{
-		bench_stats_start(&count, &start);
-		do
-		{
-			for (times = 0; times < numBlocks; times++)
-			{
-				ret = wc_InitSha3_384(hash, HEAP_HINT, INVALID_DEVID);
-				if (ret == 0)
-					ret = wc_Sha3_384_Update(hash, bench_plain, BENCH_SIZE);
-				if (ret == 0)
-					ret = wc_Sha3_384_Final(hash, digest[0]);
-				if (ret != 0)
-					goto exit_sha3_384;
-			}
-			count += times;
-		} while (bench_stats_sym_check(start));
-	}
-  exit_sha3_384:
-	bench_stats_sym_finish("SHA3-384", count, bench_size, start, ret);
-
-  exit:
-
-	for (i = 0; i < BENCH_MAX_PENDING; i++)
-	{
-		wc_Sha3_384_Free(&hash[i]);
-	}
-#endif
+	bench_digest(EVP_sha3_384(), "SHA3-384");
 }
 
 
 static void bench_sha3_512(void)
 {
-#if 0
-	wc_Sha3 hash[BENCH_MAX_PENDING];
-	double start;
-	int ret = 0;
-	int i;
-	int count = 0;
-	int times;
-
-	uint8_t digest[BENCH_MAX_PENDING][WC_SHA3_512_DIGEST_SIZE];
-
-	/* clear for done cleanup */
-	memset(hash, 0, sizeof(hash));
-
-	if (digest_stream)
-	{
-		/* init keys */
-		for (i = 0; i < BENCH_MAX_PENDING; i++)
-		{
-			ret = wc_InitSha3_512(&hash[i], HEAP_HINT, INVALID_DEVID);
-			if (ret != 0)
-			{
-				fprintf(stderr, "InitSha3_512 failed, ret = %d\n", ret);
-				goto exit;
-			}
-		}
-
-		bench_stats_start(&count, &start);
-		do
-		{
-			for (times = 0; times < numBlocks;)
-			{
-				/* while free pending slots in queue, submit ops */
-				for (i = 0; i < BENCH_MAX_PENDING; i++)
-				{
-					ret = wc_Sha3_512_Update(&hash[i], bench_plain, BENCH_SIZE);
-					if (!bench_async_handle(&ret, &times))
-					{
-						goto exit_sha3_512;
-					}
-				}
-			}
-			count += times;
-
-			times = 0;
-			do
-			{
-				for (i = 0; i < BENCH_MAX_PENDING; i++)
-				{
-					ret = wc_Sha3_512_Final(&hash[i], digest[i]);
-					if (!bench_async_handle(&ret, &times))
-					{
-						goto exit_sha3_512;
-					}
-				}
-			} while (0);
-		} while (bench_stats_sym_check(start));
-	} else
-	{
-		bench_stats_start(&count, &start);
-		do
-		{
-			for (times = 0; times < numBlocks; times++)
-			{
-				ret = wc_InitSha3_512(hash, HEAP_HINT, INVALID_DEVID);
-				if (ret == 0)
-					ret = wc_Sha3_512_Update(hash, bench_plain, BENCH_SIZE);
-				if (ret == 0)
-					ret = wc_Sha3_512_Final(hash, digest[0]);
-				if (ret != 0)
-					goto exit_sha3_512;
-			}
-			count += times;
-		} while (bench_stats_sym_check(start));
-	}
-  exit_sha3_512:
-	bench_stats_sym_finish("SHA3-512", count, bench_size, start, ret);
-
-  exit:
-
-	for (i = 0; i < BENCH_MAX_PENDING; i++)
-	{
-		wc_Sha3_512_Free(&hash[i]);
-	}
-#endif
+	bench_digest(EVP_sha3_512(), "SHA3-512");
 }
 
 
 static void bench_ripemd(void)
 {
-#if 0
-	RipeMd hash;
-	uint8_t digest[RIPEMD_DIGEST_SIZE];
-	double start;
-	int i;
-	int count;
-	int ret = 0;
-
-	if (digest_stream)
-	{
-		ret = wc_InitRipeMd(&hash);
-		if (ret != 0)
-		{
-			return;
-		}
-
-		bench_stats_start(&count, &start);
-		do
-		{
-			for (i = 0; i < numBlocks; i++)
-			{
-				ret = wc_RipeMdUpdate(&hash, bench_plain, BENCH_SIZE);
-				if (ret != 0)
-				{
-					return;
-				}
-			}
-			ret = wc_RipeMdFinal(&hash, digest);
-			if (ret != 0)
-			{
-				return;
-			}
-
-			count += i;
-		} while (bench_stats_sym_check(start));
-	} else
-	{
-		bench_stats_start(&count, &start);
-		do
-		{
-			for (i = 0; i < numBlocks; i++)
-			{
-				ret = wc_InitRipeMd(&hash);
-				if (ret != 0)
-				{
-					return;
-				}
-				ret = wc_RipeMdUpdate(&hash, bench_plain, BENCH_SIZE);
-				if (ret != 0)
-				{
-					return;
-				}
-				ret = wc_RipeMdFinal(&hash, digest);
-				if (ret != 0)
-				{
-					return;
-				}
-			}
-			count += i;
-		} while (bench_stats_sym_check(start));
-	}
-	bench_stats_sym_finish("RIPEMD", count, bench_size, start, ret);
-#endif
+	bench_digest(EVP_ripemd160(), "RIPEMD");
 }
 
 
@@ -2240,11 +1371,11 @@ static void bench_hmac(const EVP_MD *md, unsigned int digestSz, uint8_t * key, u
 {
 	HMAC_CTX *hmac[BENCH_MAX_PENDING];
 	double start;
-	int ret = 0;
+	int ret = 1;
 	int i;
 	int count = 0;
 	int times;
-	uint8_t digest[BENCH_MAX_PENDING][64];
+	uint8_t digest[BENCH_MAX_PENDING][EVP_MAX_MD_SIZE];
 
 	/* clear for done cleanup */
 	memset(hmac, 0, sizeof(hmac));
@@ -2381,9 +1512,8 @@ static void bench_hmac_sha512(void)
 
 static void bench_pbkdf2(void)
 {
-#if 0
 	double start;
-	int ret = 0;
+	int ret;
 	int count = 0;
 	const char *passwd32 = "passwordpasswordpasswordpassword";
 
@@ -2393,37 +1523,35 @@ static void bench_pbkdf2(void)
 		0x78, 0x57, 0x8E, 0x5a, 0x5d, 0x63, 0xcb, 0x06,
 		0x78, 0x57, 0x8E, 0x5a, 0x5d, 0x63, 0xcb, 0x06
 	};
-	uint8_t derived[32];
+	uint8_t derived[EVP_MAX_MD_SIZE];
 
 	bench_stats_start(&count, &start);
 	do
 	{
-		ret = wc_PBKDF2(derived, (const uint8_t *) passwd32, (int) strlen(passwd32),
-						salt32, (int) sizeof(salt32), 1000, 32, WC_SHA256);
+		ret = PKCS5_PBKDF2_HMAC(passwd32, (int) strlen(passwd32),
+						salt32, (int) sizeof(salt32), 1000, EVP_sha256(), 32, derived);
 		count++;
 	} while (bench_stats_sym_check(start));
 	bench_stats_sym_finish("PBKDF2", count, 32, start, ret);
-#endif
 }
 
 #define RSA_BUF_SIZE 384				/* for up to 3072 bit */
 
 static void bench_rsa_helper(RSA *rsaKey[BENCH_MAX_PENDING], int rsaKeySz)
 {
-#if 0
-	int ret = 0;
+	int ret = 1;
 	int i;
 	int times;
 	int count = 0;
-	uint32_t idx = 0;
-
+	unsigned int siglen[BENCH_MAX_PENDING];
+	
 	const char *messageStr = TEST_STRING;
-	const int len = (int) TEST_STRING_SZ;
+	const int len = TEST_STRING_SZ;
 	double start = 0.0;
 	const char **desc = bench_desc_words[lng_index];
 
 	uint8_t message[TEST_STRING_SZ];
-	uint8_t *enc[BENCH_MAX_PENDING]);
+	uint8_t *enc[BENCH_MAX_PENDING];
 	uint8_t *out[BENCH_MAX_PENDING];
 
 	for (i = 0; i < BENCH_MAX_PENDING; i++)
@@ -2466,7 +1594,7 @@ static void bench_rsa_helper(RSA *rsaKey[BENCH_MAX_PENDING], int rsaKeySz)
 	if (out[0] == NULL || enc[0] == NULL)
 	{
 		fprintf(stderr, "bench_rsa_helper: alloc memory failed\n");
-		ret = MEMORY_E;
+		ret = 0;
 		goto exit;
 	}
 	memcpy(message, messageStr, len);
@@ -2482,7 +1610,7 @@ static void bench_rsa_helper(RSA *rsaKey[BENCH_MAX_PENDING], int rsaKeySz)
 				/* while free pending slots in queue, submit ops */
 				for (i = 0; i < BENCH_MAX_PENDING; i++)
 				{
-					ret = wc_RsaPublicEncrypt(message, (uint32_t) len, enc[i], rsaKeySz / 8, &rsaKey[i], GLOBAL_RNG);
+					ret = RSA_public_encrypt(len, message, enc[i], rsaKey[i], RSA_PKCS1_PADDING);
 					if (!bench_async_handle(&ret, &times))
 					{
 						goto exit_rsa_verify;
@@ -2494,13 +1622,10 @@ static void bench_rsa_helper(RSA *rsaKey[BENCH_MAX_PENDING], int rsaKeySz)
 	  exit_rsa_verify:
 		bench_stats_asym_finish("RSA", rsaKeySz, desc[0], count, start, ret);
 
-		if (ret < 0)
+		if (ret <= 0)
 		{
 			goto exit;
 		}
-
-		/* capture resulting encrypt length */
-		idx = (uint32_t) (rsaKeySz / 8);
 
 		/* begin private async RSA */
 		bench_stats_start(&count, &start);
@@ -2511,7 +1636,7 @@ static void bench_rsa_helper(RSA *rsaKey[BENCH_MAX_PENDING], int rsaKeySz)
 				/* while free pending slots in queue, submit ops */
 				for (i = 0; i < BENCH_MAX_PENDING; i++)
 				{
-					ret = wc_RsaPrivateDecrypt(enc[i], idx, out[i], rsaKeySz / 8, &rsaKey[i]);
+					ret = RSA_private_decrypt(rsaKeySz / 8, enc[i], out[i], rsaKey[i], RSA_PKCS1_PADDING);
 					if (!bench_async_handle(&ret, &times))
 					{
 						goto exit_rsa_pub;
@@ -2533,7 +1658,7 @@ static void bench_rsa_helper(RSA *rsaKey[BENCH_MAX_PENDING], int rsaKeySz)
 				/* while free pending slots in queue, submit ops */
 				for (i = 0; i < BENCH_MAX_PENDING; i++)
 				{
-					ret = wc_RsaSSL_Sign(message, len, enc[i], rsaKeySz / 8, &rsaKey[i], &gRng);
+					ret = RSA_sign(NID_md5_sha1, message, len, enc[i], &siglen[i], rsaKey[i]);
 					if (!bench_async_handle(&ret, &times))
 					{
 						goto exit_rsa_sign;
@@ -2545,13 +1670,10 @@ static void bench_rsa_helper(RSA *rsaKey[BENCH_MAX_PENDING], int rsaKeySz)
 	  exit_rsa_sign:
 		bench_stats_asym_finish("RSA", rsaKeySz, desc[4], count, start, ret);
 
-		if (ret < 0)
+		if (ret <= 0)
 		{
 			goto exit;
 		}
-
-		/* capture resulting encrypt length */
-		idx = rsaKeySz / 8;
 
 		/* begin RSA verify */
 		bench_stats_start(&count, &start);
@@ -2562,7 +1684,7 @@ static void bench_rsa_helper(RSA *rsaKey[BENCH_MAX_PENDING], int rsaKeySz)
 				/* while free pending slots in queue, submit ops */
 				for (i = 0; i < BENCH_MAX_PENDING; i++)
 				{
-					ret = wc_RsaSSL_Verify(enc[i], idx, out[i], rsaKeySz / 8, &rsaKey[i]);
+					ret = RSA_verify(NID_md5_sha1, message, len, enc[i], siglen[i], rsaKey[i]);
 					if (!bench_async_handle(&ret, &times))
 					{
 						goto exit_rsa_verifyinline;
@@ -2577,23 +1699,16 @@ static void bench_rsa_helper(RSA *rsaKey[BENCH_MAX_PENDING], int rsaKeySz)
 
   exit:
 	;
-#endif
 }
 
 
 static void bench_rsa(void)
 {
-#if 0
 	int i;
 	RSA *rsaKey[BENCH_MAX_PENDING];
-	int ret = 0;
+	EVP_PKEY *key[BENCH_MAX_PENDING];
 	int rsaKeySz;
-	const uint8_t *tmp;
-	size_t bytes;
-	uint32_t idx;
 
-	tmp = rsa_key_der_2048;
-	bytes = sizeof_rsa_key_der_2048;
 	rsaKeySz = 2048;
 
 	/* clear for done cleanup */
@@ -2603,41 +1718,32 @@ static void bench_rsa(void)
 	for (i = 0; i < BENCH_MAX_PENDING; i++)
 	{
 		/* setup an async context for each key */
-		ret = wc_InitRsaKey_ex(&rsaKey[i], HEAP_HINT, INVALID_DEVID);
-		if (ret < 0)
-		{
-			fprintf(stderr, "wc_InitRsaKey_ex failed! %d\n", ret);
-			goto exit_bench_rsa;
-		}
-
-		ret = wc_RsaSetRNG(&rsaKey[i], &gRng);
-		if (ret != 0)
-		{
-			fprintf(stderr, "wc_RsaSetRNG failed! %d\n", ret);
-			goto exit_bench_rsa;
-		}
-	
+		const unsigned char *p = rsa_key_der_2048;
+		
 		/* decode the private key */
-		idx = 0;
-		if ((ret = wc_RsaPrivateKeyDecode(tmp, &idx, &rsaKey[i], (uint32_t) bytes)) != 0)
+		key[i] = NULL;
+		key[i] = d2i_PrivateKey(EVP_PKEY_RSA, &key[i], &p, sizeof_rsa_key_der_2048);
+		if (key[i] == NULL)
 		{
-			fprintf(stderr, "wc_RsaPrivateKeyDecode failed! %d\n", ret);
+			fprintf(stderr, "EVP_PKEY_new_raw_private_key failed: %s\n", ERR_func_error_string(ERR_get_error()));
+			goto exit_bench_rsa;
+		}
+		rsaKey[i] = EVP_PKEY_get1_RSA(key[i]);
+		if (rsaKey[i] == NULL)
+		{
+			fprintf(stderr, "RSA_new failed! %s\n", ERR_func_error_string(ERR_get_error()));
 			goto exit_bench_rsa;
 		}
 	}
 
-	if (rsaKeySz > 0)
-	{
-		bench_rsa_helper(rsaKey, rsaKeySz);
-	}
+	bench_rsa_helper(rsaKey, rsaKeySz);
 
   exit_bench_rsa:
 	/* cleanup */
 	for (i = 0; i < BENCH_MAX_PENDING; i++)
 	{
-		wc_FreeRsaKey(&rsaKey[i]);
+		EVP_PKEY_free(key[i]);
 	}
-#endif
 }
 
 
@@ -2646,8 +1752,8 @@ static void bench_rsa(void)
 
 static void bench_dh(void)
 {
-#if 0
-	int ret = 0;
+#if 0 /* not supported in openSSL 1.1 */
+	int ret = 1;
 	int i;
 	int count = 0;
 	int times;
@@ -2709,7 +1815,6 @@ static void bench_dh(void)
 
 	/* Key Gen */
 	bench_stats_start(&count, &start);
-	PRIVATE_KEY_UNLOCK();
 	do
 	{
 		/* while free pending slots in queue, submit ops */
@@ -2728,7 +1833,6 @@ static void bench_dh(void)
 		}
 		count += times;
 	} while (bench_stats_sym_check(start));
-	PRIVATE_KEY_LOCK();
   exit_dh_gen:
 	bench_stats_asym_finish("DH", dhKeySz, desc[2], count, start, ret);
 
@@ -2738,13 +1842,10 @@ static void bench_dh(void)
 	}
 
 	/* Generate key to use as other public */
-	PRIVATE_KEY_UNLOCK();
 	ret = wc_DhGenerateKeyPair(&dhKey[0], &gRng, priv2, &privSz2, pub2, &pubSz2);
-	PRIVATE_KEY_LOCK();
 
 	/* Key Agree */
 	bench_stats_start(&count, &start);
-	PRIVATE_KEY_UNLOCK();
 	do
 	{
 		for (times = 0; times < agreeTimes;)
@@ -2761,7 +1862,6 @@ static void bench_dh(void)
 		}
 		count += times;
 	} while (bench_stats_sym_check(start));
-	PRIVATE_KEY_LOCK();
   exit:
 	bench_stats_asym_finish("DH", dhKeySz, desc[3], count, start, ret);
 
@@ -2777,20 +1877,17 @@ static void bench_dh(void)
 /* +8 for 'ECDSA [%s]' and null terminator */
 #define BENCH_ECC_NAME_SZ (ECC_MAXNAME + 8)
 
-static void bench_eccMakeKey(int curveId)
+static void bench_eccMakeKey(int nid, int keySize, const char *label)
 {
-#if 0
-	int ret = 0;
+	int ret = 1;
 	int i;
 	int times;
 	int count;
-	int keySize;
-	ecc_key genKey[BENCH_MAX_PENDING];
+	EC_KEY *genKey[BENCH_MAX_PENDING];
+	EC_GROUP *group;
 	char name[BENCH_ECC_NAME_SZ];
 	double start;
 	const char **desc = bench_desc_words[lng_index];
-
-	keySize = wc_ecc_get_curve_size_from_id(curveId);
 
 	/* clear for done cleanup */
 	memset(&genKey, 0, sizeof(genKey));
@@ -2804,14 +1901,17 @@ static void bench_eccMakeKey(int curveId)
 		{
 			for (i = 0; i < BENCH_MAX_PENDING; i++)
 			{
-				wc_ecc_free(&genKey[i]);
-				ret = wc_ecc_init_ex(&genKey[i], HEAP_HINT, INVALID_DEVID);
-				if (ret < 0)
+				group = EC_GROUP_new_by_curve_name(nid);
+				genKey[i] = EC_KEY_new();
+				if (group == NULL || genKey[i] == NULL)
 				{
+					ret = 0;
 					goto exit;
 				}
 
-				ret = wc_ecc_make_key_ex(&gRng, keySize, &genKey[i], curveId);
+				ret = EC_KEY_set_group(genKey[i], group);
+				if (ret != 0)
+					ret = EC_KEY_generate_key(genKey[i]);
 				if (!bench_async_handle(&ret, &times))
 				{
 					goto exit;
@@ -2821,30 +1921,25 @@ static void bench_eccMakeKey(int curveId)
 		count += times;
 	} while (bench_stats_sym_check(start));
   exit:
-	snprintf(name, BENCH_ECC_NAME_SZ, "ECC   [%15s]", wc_ecc_get_name(curveId));
-	bench_stats_asym_finish(name, keySize * 8, desc[2], count, start, ret);
+	snprintf(name, BENCH_ECC_NAME_SZ, "ECC   [%15s]", label);
+	bench_stats_asym_finish(name, keySize, desc[2], count, start, ret);
 
 	/* cleanup */
 	for (i = 0; i < BENCH_MAX_PENDING; i++)
-	{
-		wc_ecc_free(&genKey[i]);
-	}
-#endif
+		EC_KEY_free(genKey[i]);
 }
 
 
-static void bench_ecc(int curveId)
+static void bench_ecc(int nid, int keySize, const char *label)
 {
-#if 0
-	int ret = 0;
+	int ret = 1;
 	int i;
 	int times;
 	int count;
-	int keySize;
 	char name[BENCH_ECC_NAME_SZ];
-	ecc_key genKey[BENCH_MAX_PENDING];
-	ecc_key genKey2[BENCH_MAX_PENDING];
-	uint32_t x[BENCH_MAX_PENDING];
+	EC_KEY *genKey[BENCH_MAX_PENDING];
+	EC_KEY *genKey2[BENCH_MAX_PENDING];
+	EC_GROUP *group;
 	double start = 0;
 	const char **desc = bench_desc_words[lng_index];
 
@@ -2853,40 +1948,38 @@ static void bench_ecc(int curveId)
 	/* clear for done cleanup */
 	memset(&genKey, 0, sizeof(genKey));
 	memset(&genKey2, 0, sizeof(genKey2));
-	keySize = wc_ecc_get_curve_size_from_id(curveId);
 
 	/* init keys */
 	for (i = 0; i < BENCH_MAX_PENDING; i++)
 	{
 		/* setup an context for each key */
-		if ((ret = wc_ecc_init_ex(&genKey[i], HEAP_HINT, INVALID_DEVID)) < 0)
+		group = EC_GROUP_new_by_curve_name(nid);
+		genKey[i] = EC_KEY_new();
+		if (group == NULL || genKey[i] == NULL)
 		{
+			ret = 0;
 			goto exit;
 		}
-		ret = wc_ecc_make_key_ex(&gRng, keySize, &genKey[i], curveId);
-		if (ret < 0)
+		ret = EC_KEY_set_group(genKey[i], group);
+		if (ret > 0)
+			ret = EC_KEY_generate_key(genKey[i]);
+		if (ret <= 0)
+			goto exit;
+		genKey2[i] = EC_KEY_new();
+		if (group == NULL || genKey2[i] == NULL)
 		{
+			ret = 0;
 			goto exit;
 		}
-
-		if ((ret = wc_ecc_init_ex(&genKey2[i], HEAP_HINT, INVALID_DEVID)) < 0)
-		{
+		ret = EC_KEY_set_group(genKey2[i], group);
+		if (ret > 0)
+			ret = EC_KEY_generate_key(genKey2[i]);
+		if (ret <= 0)
 			goto exit;
-		}
-		if ((ret = wc_ecc_make_key_ex(&gRng, keySize, &genKey2[i], curveId)) > 0)
-		{
-			goto exit;
-		}
-	}
-
-	for (i = 0; i < BENCH_MAX_PENDING; i++)
-	{
-		wc_ecc_set_rng(&genKey[i], &gRng);
 	}
 
 	/* ECC Shared Secret */
 	bench_stats_start(&count, &start);
-	PRIVATE_KEY_UNLOCK();
 	do
 	{
 		for (times = 0; times < agreeTimes;)
@@ -2894,8 +1987,7 @@ static void bench_ecc(int curveId)
 			/* while free pending slots in queue, submit ops */
 			for (i = 0; i < BENCH_MAX_PENDING; i++)
 			{
-				x[i] = (uint32_t) keySize;
-				ret = wc_ecc_shared_secret(&genKey[i], &genKey2[i], shared[i], &x[i]);
+				ECDH_compute_key(shared[i], MAX_ECC_BYTES, EC_KEY_get0_public_key(genKey2[i]), genKey[i], 0);
 				if (!bench_async_handle(&ret, &times))
 				{
 					goto exit_ecdhe;
@@ -2904,13 +1996,12 @@ static void bench_ecc(int curveId)
 		}
 		count += times;
 	} while (bench_stats_sym_check(start));
-	PRIVATE_KEY_UNLOCK();
   exit_ecdhe:
-	snprintf(name, BENCH_ECC_NAME_SZ, "ECDHE [%15s]", wc_ecc_get_name(curveId));
+	snprintf(name, BENCH_ECC_NAME_SZ, "ECDHE [%15s]", label);
 
-	bench_stats_asym_finish(name, keySize * 8, desc[3], count, start, ret);
+	bench_stats_asym_finish(name, keySize, desc[3], count, start, ret);
 
-	if (ret < 0)
+	if (ret <= 0)
 	{
 		goto exit;
 	}
@@ -2920,35 +2011,36 @@ static void bench_ecc(int curveId)
 	/* cleanup */
 	for (i = 0; i < BENCH_MAX_PENDING; i++)
 	{
-		wc_ecc_free(&genKey[i]);
-		wc_ecc_free(&genKey2[i]);
+		EC_KEY_free(genKey[i]);
+		EC_KEY_free(genKey2[i]);
 	}
-#endif
 }
 
 
 /* run all benchmarks on a curve */
-static void bench_ecc_curve(int curveId)
+static void bench_ecc_curve(int curveId, int keySize, const char *label)
 {
 	if (bench_all || (bench_asym_algs & BENCH_ECC_MAKEKEY))
 	{
-		bench_eccMakeKey(curveId);
+		bench_eccMakeKey(curveId, keySize, label);
 	}
 	if (bench_all || (bench_asym_algs & BENCH_ECC))
 	{
-		bench_ecc(curveId);
+		bench_ecc(curveId, keySize, label);
 	}
 }
 
 
 static void bench_ed25519KeyGen(void)
 {
-#if 0
-	ed25519_key genKey;
+	EVP_PKEY *genKey;
 	double start;
 	int i;
 	int count;
 	const char **desc = bench_desc_words[lng_index];
+	EVP_PKEY_CTX *ctx;
+
+	ctx = EVP_PKEY_CTX_new_id(NID_ED25519, NULL);
 
 	/* Key Gen */
 	bench_stats_start(&count, &start);
@@ -2956,36 +2048,36 @@ static void bench_ed25519KeyGen(void)
 	{
 		for (i = 0; i < genTimes; i++)
 		{
-			wc_ed25519_init(&genKey);
-			wc_ed25519_make_key(&gRng, 32, &genKey);
-			wc_ed25519_free(&genKey);
+			EVP_PKEY_keygen_init(ctx);
+			EVP_PKEY_keygen(ctx, &genKey);
+			EVP_PKEY_free(genKey);
 		}
 		count += i;
 	} while (bench_stats_sym_check(start));
 	bench_stats_asym_finish("ED", 25519, desc[2], count, start, 0);
-#endif
 }
 
 
 static void bench_ed25519KeySign(void)
 {
-#if 0
 	int ret;
-	ed25519_key genKey;
+	EVP_PKEY *genKey = NULL;
 	double start;
 	int i;
 	int count;
 	uint8_t sig[ED25519_SIG_SIZE];
 	uint8_t msg[512];
-	uint32_t x = 0;
+	size_t x = 0;
 	const char **desc = bench_desc_words[lng_index];
+	EVP_PKEY_CTX *ctx;
 
-	wc_ed25519_init(&genKey);
-
-	ret = wc_ed25519_make_key(&gRng, ED25519_KEY_SIZE, &genKey);
-	if (ret != 0)
+	ctx = EVP_PKEY_CTX_new_id(NID_ED25519, NULL);
+	ret = EVP_PKEY_keygen_init(ctx);
+	if (ret > 0)
+		ret = EVP_PKEY_keygen(ctx, &genKey);
+	if (genKey == NULL || ctx == NULL || ret <= 0)
 	{
-		fprintf(stderr, "ed25519_make_key failed\n");
+		fprintf(stderr, "ed25519_make_key failed: %s\n", ERR_func_error_string(ERR_get_error()));
 		return;
 	}
 
@@ -2999,10 +2091,12 @@ static void bench_ed25519KeySign(void)
 		for (i = 0; i < agreeTimes; i++)
 		{
 			x = sizeof(sig);
-			ret = wc_ed25519_sign_msg(msg, sizeof(msg), sig, &x, &genKey);
-			if (ret != 0)
+			ret = EVP_PKEY_sign_init(ctx);
+			if (ret > 0)
+				ret = EVP_PKEY_sign(ctx, sig, &x, msg, sizeof(msg));
+			if (ret <= 0)
 			{
-				fprintf(stderr, "ed25519_sign_msg failed\n");
+				fprintf(stderr, "ed25519_sign_msg failed: %s\n", ERR_func_error_string(ERR_get_error()));
 				goto exit_ed_sign;
 			}
 		}
@@ -3016,12 +2110,12 @@ static void bench_ed25519KeySign(void)
 	{
 		for (i = 0; i < agreeTimes; i++)
 		{
-			int verify = 0;
-
-			ret = wc_ed25519_verify_msg(sig, x, msg, sizeof(msg), &verify, &genKey);
-			if (ret != 0 || verify != 1)
+			ret = EVP_PKEY_verify_init(ctx);
+			if (ret > 0)
+				ret = EVP_PKEY_verify(ctx, sig, sizeof(sig), msg, sizeof(msg));
+			if (ret <= 0)
 			{
-				fprintf(stderr, "ed25519_verify_msg failed\n");
+				fprintf(stderr, "ed25519_verify_msg failed: %s\n", ERR_func_error_string(ERR_get_error()));
 				goto exit_ed_verify;
 			}
 		}
@@ -3030,8 +2124,7 @@ static void bench_ed25519KeySign(void)
   exit_ed_verify:
 	bench_stats_asym_finish("ED", 25519, desc[5], count, start, ret);
 
-	wc_ed25519_free(&genKey);
-#endif
+	EVP_PKEY_CTX_free(ctx);
 }
 
 
@@ -3106,19 +2199,6 @@ static void benchmark_configure(int block_size)
 static void *benchmarks_do(void)
 {
 	int bench_buf_size;
-
-#if 0
-	{
-		int rngRet;
-
-		rngRet = wc_InitRng_ex(&gRng, HEAP_HINT, INVALID_DEVID);
-		if (rngRet < 0)
-		{
-			fprintf(stderr, "InitRNG failed\n");
-			return NULL;
-		}
-	}
-#endif
 
 	/* setup bench plain, cipher, key and iv globals */
 	/* make sure bench buffer is multiple of 16 (AES block size) */
@@ -3210,44 +2290,24 @@ static void *benchmarks_do(void)
 	if (bench_all || (bench_asym_algs & BENCH_ECC_MAKEKEY) ||
 		(bench_asym_algs & BENCH_ECC) || (bench_asym_algs & BENCH_ECC_ALL) || (bench_asym_algs & BENCH_ECC_ENCRYPT))
 	{
-#if 0
 		if (bench_asym_algs & BENCH_ECC_ALL)
 		{
-			int curveId = (int) ECC_SECP192R1;
-
-			/* set make key and encrypt */
-			bench_asym_algs |= BENCH_ECC_MAKEKEY | BENCH_ECC | BENCH_ECC_ENCRYPT;
-			if (csv_format != 1)
-			{
-				printf("\nECC Benchmarks:\n");
-			}
-
-			do
-			{
-				if (wc_ecc_get_curve_size_from_id(curveId) != ECC_BAD_ARG_E)
-				{
-					bench_ecc_curve(curveId);
-					if (csv_format != 1)
-					{
-						printf("\n");
-					}
-				}
-				curveId++;
-			} while (curveId != (int) ECC_CURVE_MAX);
+			bench_ecc_curve(NID_secp256k1, 256, "SECP256R1");
+			bench_ecc_curve(NID_secp384r1, 384, "SECP384R1");
+			bench_ecc_curve(NID_secp521r1, 528, "SECP521R1");
 		} else if (bench_asym_algs & BENCH_ECC_P256)
 		{
-			bench_ecc_curve((int) ECC_SECP256R1);
+			bench_ecc_curve(NID_secp256k1, 256, "SECP256R1");
 		} else if (bench_asym_algs & BENCH_ECC_P384)
 		{
-			bench_ecc_curve((int) ECC_SECP384R1);
+			bench_ecc_curve(NID_secp384r1, 384, "SECP384R1");
 		} else if (bench_asym_algs & BENCH_ECC_P521)
 		{
-			bench_ecc_curve((int) ECC_SECP521R1);
+			bench_ecc_curve(NID_secp521r1, 528, "SECP521R1");
 		} else
 		{
-			bench_ecc_curve((int) ECC_SECP256R1);
+			bench_ecc_curve(NID_secp256k1, 256, "SECP256R1");
 		}
-#endif
 	}
 
 	if (bench_all || (bench_asym_algs & BENCH_ED25519_KEYGEN))
@@ -3270,13 +2330,7 @@ static int benchmark_init(void)
 
 	benchmark_static_init();
 
-#if 0
-	if ((ret = wolfCrypt_Init()) != 0)
-	{
-		fprintf(stderr, "wolfCrypt_Init failed %d\n", ret);
-		return EXIT_FAILURE;
-	}
-#endif
+	OpenSSL_add_all_digests();
 
 	bench_stats_init();
 
@@ -3288,7 +2342,7 @@ static int benchmark_init(void)
 		printf("Algorithm,MB/s,Cycles per byte,\n");
 	} else
 	{
-		printf("wolfCrypt Benchmark (block bytes %d, min %.1f sec each)\n", (int) BENCH_SIZE, BENCH_MIN_RUNTIME_SEC);
+		printf("openSSL Benchmark (block bytes %d, min %.1f sec each)\n", (int) BENCH_SIZE, BENCH_MIN_RUNTIME_SEC);
 	}
 
 	return ret;
@@ -3390,7 +2444,6 @@ static void Usage(void)
 	for (i = 0; bench_other_opt[i].str != NULL; i++)
 		print_alg(bench_other_opt[i].str + 1, &line);
 	printf("\n             ");
-	printf("%s", bench_Usage_msg1[lng_index][14]);	/* option -lng */
 	printf("%s", bench_Usage_msg1[lng_index][15]);	/* option <num> */
 	printf("%s", bench_Usage_msg1[lng_index][17]);	/* option -print */
 }
@@ -3520,7 +2573,6 @@ int main(int argc, char **argv)
 	}
 
 	(void) bench_desc_words;
-	(void) bench_ecc_curve;
 	(void) bench_stats_asym_finish;
 	(void) bench_rsa_helper;
 	
