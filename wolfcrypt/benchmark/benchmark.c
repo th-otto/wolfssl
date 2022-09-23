@@ -620,7 +620,7 @@ static WC_INLINE int bench_stats_sym_check(double start)
 
 /* countSz is number of bytes that 1 count represents. Normally bench_size,
  * except for AES direct that operates on AES_BLOCK_SIZE blocks */
-static void bench_stats_sym_finish(const char *desc, int count, int countSz, double start, int ret)
+static int bench_stats_sym_finish(const char *desc, int count, int countSz, double start, int ret)
 {
 	double total;
 	double persec = 0;
@@ -693,9 +693,11 @@ static void bench_stats_sym_finish(const char *desc, int count, int countSz, dou
 
 	/* Add to thread stats */
 	bench_stats_add(BENCH_STAT_SYM, desc, 0, desc, persec, blockType, ret);
+
+	return ret < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 }
 
-static void bench_stats_asym_finish(const char *algo, int strength, const char *desc, int count, double start, int ret)
+static int bench_stats_asym_finish(const char *algo, int strength, const char *desc, int count, double start, int ret)
 {
 	double total;
 	double each = 0;
@@ -737,6 +739,7 @@ static void bench_stats_asym_finish(const char *algo, int strength, const char *
 
 	/* Add to thread stats */
 	bench_stats_add(BENCH_STAT_ASYM, algo, strength, desc, opsSec, kOpsSec, ret);
+	return ret < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 }
 
 static WC_INLINE void bench_stats_free(void)
@@ -748,7 +751,7 @@ static WC_INLINE void bench_stats_free(void)
 /******************************************************************************/
 
 
-static void bench_rng(void)
+static int bench_rng(void)
 {
 	int ret;
 	int i;
@@ -763,7 +766,7 @@ static void bench_rng(void)
 	if (ret < 0)
 	{
 		fprintf(stderr, "InitRNG failed %d\n", ret);
-		return;
+		return EXIT_FAILURE;
 	}
 
 	bench_stats_start(&count, &start);
@@ -790,9 +793,11 @@ static void bench_rng(void)
 		count += i;
 	} while (bench_stats_sym_check(start));
   exit_rng:
-	bench_stats_sym_finish("RNG", count, bench_size, start, ret);
+	ret = bench_stats_sym_finish("RNG", count, bench_size, start, ret);
 
 	wc_FreeRng(&myrng);
+
+	return ret;
 }
 
 
@@ -2989,13 +2994,14 @@ static void bench_ecc_curve(int curveId)
 }
 
 
-static void bench_ed25519KeyGen(void)
+static int bench_ed25519KeyGen(void)
 {
 	ed25519_key genKey;
 	double start;
 	int i;
 	int count;
 	const char **desc = bench_desc_words[lng_index];
+	int ret;
 
 	/* Key Gen */
 	bench_stats_start(&count, &start);
@@ -3003,18 +3009,20 @@ static void bench_ed25519KeyGen(void)
 	{
 		for (i = 0; i < genTimes; i++)
 		{
-			wc_ed25519_init(&genKey);
-			(void) wc_ed25519_make_key(&gRng, 32, &genKey);
+			ret = wc_ed25519_init(&genKey);
+			if (ret == 0)
+				ret = wc_ed25519_make_key(&gRng, 32, &genKey);
 			wc_ed25519_free(&genKey);
 		}
 		count += i;
 	} while (bench_stats_sym_check(start));
-	bench_stats_asym_finish("ED", 25519, desc[2], count, start, 0);
+	return bench_stats_asym_finish("ED", 25519, desc[2], count, start, ret);
 }
 
 
-static void bench_ed25519KeySign(void)
+static int bench_ed25519KeySign(void)
 {
+	int bench_ret = EXIT_SUCCESS;
 	int ret;
 	ed25519_key genKey;
 	double start;
@@ -3031,7 +3039,7 @@ static void bench_ed25519KeySign(void)
 	if (ret != 0)
 	{
 		fprintf(stderr, "ed25519_make_key failed\n");
-		return;
+		return EXIT_FAILURE;
 	}
 
 	/* make dummy msg */
@@ -3054,7 +3062,7 @@ static void bench_ed25519KeySign(void)
 		count += i;
 	} while (bench_stats_sym_check(start));
   exit_ed_sign:
-	bench_stats_asym_finish("ED", 25519, desc[4], count, start, ret);
+	bench_ret |= bench_stats_asym_finish("ED", 25519, desc[4], count, start, ret);
 
 	bench_stats_start(&count, &start);
 	do
@@ -3073,9 +3081,11 @@ static void bench_ed25519KeySign(void)
 		count += i;
 	} while (bench_stats_sym_check(start));
   exit_ed_verify:
-	bench_stats_asym_finish("ED", 25519, desc[5], count, start, ret);
+	bench_ret |= bench_stats_asym_finish("ED", 25519, desc[5], count, start, ret);
 
 	wc_ed25519_free(&genKey);
+	
+	return bench_ret;
 }
 
 
@@ -3147,8 +3157,9 @@ static void benchmark_configure(int block_size)
 }
 
 
-static void *benchmarks_do(void)
+static int benchmarks_do(void)
 {
+	int ret = EXIT_SUCCESS;
 	int bench_buf_size;
 
 	{
@@ -3158,7 +3169,7 @@ static void *benchmarks_do(void)
 		if (rngRet < 0)
 		{
 			fprintf(stderr, "InitRNG failed\n");
-			return NULL;
+			return EXIT_FAILURE;
 		}
 	}
 
@@ -3177,6 +3188,7 @@ static void *benchmarks_do(void)
 		bench_plain = bench_cipher = NULL;
 
 		fprintf(stderr, "Benchmark block buffer alloc failed!\n");
+		ret = EXIT_FAILURE;
 		goto exit;
 	}
 	memset(bench_plain, 0, (size_t) bench_buf_size);
@@ -3186,7 +3198,7 @@ static void *benchmarks_do(void)
 	bench_iv = (byte *) bench_iv_buf;
 
 	if (bench_all || (bench_other_algs & BENCH_RNG))
-		bench_rng();
+		ret |= bench_rng();
 	if (bench_all || (bench_cipher_algs & BENCH_AES_CBC))
 		bench_aescbc();
 	if (bench_all || (bench_cipher_algs & BENCH_AES_GCM))
@@ -3292,9 +3304,9 @@ static void *benchmarks_do(void)
 	}
 
 	if (bench_all || (bench_asym_algs & BENCH_ED25519_KEYGEN))
-		bench_ed25519KeyGen();
+		ret |= bench_ed25519KeyGen();
 	if (bench_all || (bench_asym_algs & BENCH_ED25519_SIGN))
-		bench_ed25519KeySign();
+		ret |= bench_ed25519KeySign();
 
   exit:
 	/* free benchmark buffers */
@@ -3303,12 +3315,12 @@ static void *benchmarks_do(void)
 
 	wc_FreeRng(&gRng);
 
-	return NULL;
+	return ret;
 }
 
 static int benchmark_init(void)
 {
-	int ret = 0;
+	int ret = EXIT_SUCCESS;
 
 	benchmark_static_init();
 
@@ -3317,18 +3329,19 @@ static int benchmark_init(void)
 		fprintf(stderr, "wolfCrypt_Init failed %d\n", ret);
 		return EXIT_FAILURE;
 	}
+	ret = EXIT_SUCCESS;
 
 	bench_stats_init();
 
 	if (csv_format == 1)
 	{
-		printf("wolfCrypt Benchmark (block bytes %d, min %.1f sec each)\n", (int) BENCH_SIZE, BENCH_MIN_RUNTIME_SEC);
+		printf("wolfCrypt Benchmark (block bytes %d, min %.1f sec each)\n", BENCH_SIZE, BENCH_MIN_RUNTIME_SEC);
 		printf("This format allows you to easily copy the output to a csv file.");
 		printf("\n\nSymmetric Ciphers:\n\n");
 		printf("Algorithm,MB/s,Cycles per byte,\n");
 	} else
 	{
-		printf("wolfCrypt Benchmark (block bytes %d, min %.1f sec each)\n", (int) BENCH_SIZE, BENCH_MIN_RUNTIME_SEC);
+		printf("wolfCrypt Benchmark (block bytes %d, min %.1f sec each)\n", BENCH_SIZE, BENCH_MIN_RUNTIME_SEC);
 	}
 
 	return ret;
@@ -3336,13 +3349,14 @@ static int benchmark_init(void)
 
 static int benchmark_free(void)
 {
-	int ret;
+	int ret = EXIT_SUCCESS;
 
 	bench_stats_free();
 
 	if ((ret = wolfCrypt_Cleanup()) != 0)
 	{
 		fprintf(stderr, "error %d with wolfCrypt_Cleanup\n", ret);
+		ret = EXIT_FAILURE;
 	}
 
 	return ret;
@@ -3355,14 +3369,14 @@ static int benchmark_test(void)
 	int ret;
 
 	ret = benchmark_init();
-	if (ret != 0)
+	if (ret != EXIT_SUCCESS)
 		return ret;
 
-	benchmarks_do();
+	ret = benchmarks_do();
 
 	printf("Benchmark complete\n");
 
-	ret = benchmark_free();
+	ret |= benchmark_free();
 
 	return ret;
 }
@@ -3374,63 +3388,63 @@ static int benchmark_test(void)
  * str   Algorithm string to print.
  * line  Length of line used so far.
  */
-static void print_alg(const char *str, int *line)
+static void print_alg(FILE *fp, const char *str, int *line)
 {
 	int optLen;
 
 	optLen = (int) strlen(str) + 1;
 	if (optLen + *line > 80)
 	{
-		printf("\n             ");
+		fprintf(fp, "\n             ");
 		*line = 13;
 	}
 	*line += optLen;
-	printf(" %s", str);
+	fprintf(fp, " %s", str);
 }
 
 /* Display the usage options of the benchmark program. */
-static void Usage(void)
+static void Usage(FILE *fp)
 {
 	int i;
 	int line;
 
-	printf("benchmark\n");
-	printf("%s", bench_Usage_msg1[lng_index][0]);	/* option -? */
-	printf("%s", bench_Usage_msg1[lng_index][1]);	/* option -csv */
-	printf("%s", bench_Usage_msg1[lng_index][2]);	/* option -base10 */
-	printf("%s", bench_Usage_msg1[lng_index][3]);	/* option -no_add */
-	printf("%s", bench_Usage_msg1[lng_index][4]);	/* option -dgst_full */
-	printf("%s", bench_Usage_msg1[lng_index][5]);	/* option -ras_sign */
-	printf("%s", bench_Usage_msg1[lng_index][7]);	/* option -ffdhe2048 */
-	printf("%s", bench_Usage_msg1[lng_index][9]);	/* option -p256 */
-	printf("%s", bench_Usage_msg1[lng_index][10]);	/* option -p384 */
-	printf("%s", bench_Usage_msg1[lng_index][11]);	/* option -p521 */
-	printf("%s", bench_Usage_msg1[lng_index][12]);	/* option -ecc-all */
-	printf("%s", bench_Usage_msg1[lng_index][13]);	/* option -<alg> */
-	printf("             ");
+	fprintf(fp, "benchmark\n");
+	fprintf(fp, "%s", bench_Usage_msg1[lng_index][0]);	/* option -? */
+	fprintf(fp, "%s", bench_Usage_msg1[lng_index][1]);	/* option -csv */
+	fprintf(fp, "%s", bench_Usage_msg1[lng_index][2]);	/* option -base10 */
+	fprintf(fp, "%s", bench_Usage_msg1[lng_index][3]);	/* option -no_add */
+	fprintf(fp, "%s", bench_Usage_msg1[lng_index][4]);	/* option -dgst_full */
+	fprintf(fp, "%s", bench_Usage_msg1[lng_index][5]);	/* option -ras_sign */
+	fprintf(fp, "%s", bench_Usage_msg1[lng_index][7]);	/* option -ffdhe2048 */
+	fprintf(fp, "%s", bench_Usage_msg1[lng_index][9]);	/* option -p256 */
+	fprintf(fp, "%s", bench_Usage_msg1[lng_index][10]);	/* option -p384 */
+	fprintf(fp, "%s", bench_Usage_msg1[lng_index][11]);	/* option -p521 */
+	fprintf(fp, "%s", bench_Usage_msg1[lng_index][12]);	/* option -ecc-all */
+	fprintf(fp, "%s", bench_Usage_msg1[lng_index][13]);	/* option -<alg> */
+	fprintf(fp, "             ");
 	line = 13;
 	for (i = 0; bench_cipher_opt[i].str != NULL; i++)
-		print_alg(bench_cipher_opt[i].str + 1, &line);
-	printf("\n             ");
+		print_alg(fp, bench_cipher_opt[i].str + 1, &line);
+	fprintf(fp, "\n             ");
 	line = 13;
 	for (i = 0; bench_digest_opt[i].str != NULL; i++)
-		print_alg(bench_digest_opt[i].str + 1, &line);
-	printf("\n             ");
+		print_alg(fp, bench_digest_opt[i].str + 1, &line);
+	fprintf(fp, "\n             ");
 	line = 13;
 	for (i = 0; bench_mac_opt[i].str != NULL; i++)
-		print_alg(bench_mac_opt[i].str + 1, &line);
-	printf("\n             ");
+		print_alg(fp, bench_mac_opt[i].str + 1, &line);
+	fprintf(fp, "\n             ");
 	line = 13;
 	for (i = 0; bench_asym_opt[i].str != NULL; i++)
-		print_alg(bench_asym_opt[i].str + 1, &line);
-	printf("\n             ");
+		print_alg(fp, bench_asym_opt[i].str + 1, &line);
+	fprintf(fp, "\n             ");
 	line = 13;
 	for (i = 0; bench_other_opt[i].str != NULL; i++)
-		print_alg(bench_other_opt[i].str + 1, &line);
-	printf("\n             ");
-	printf("%s", bench_Usage_msg1[lng_index][14]);	/* option -lng */
-	printf("%s", bench_Usage_msg1[lng_index][15]);	/* option <num> */
-	printf("%s", bench_Usage_msg1[lng_index][17]);	/* option -print */
+		print_alg(fp, bench_other_opt[i].str + 1, &line);
+	fprintf(fp, "\n             ");
+	fprintf(fp, "%s", bench_Usage_msg1[lng_index][14]);	/* option -lng */
+	fprintf(fp, "%s", bench_Usage_msg1[lng_index][15]);	/* option <num> */
+	fprintf(fp, "%s", bench_Usage_msg1[lng_index][17]);	/* option -print */
 }
 
 /* Match the command line argument with the string.
@@ -3441,14 +3455,14 @@ static void Usage(void)
  */
 static int string_matches(const char *arg, const char *str)
 {
-	int len = (int) strlen(str) + 1;
+	size_t len = strlen(str) + 1;
 
 	return strncmp(arg, str, len) == 0;
 }
 
 int main(int argc, char **argv)
 {
-	int ret = 0;
+	int ret = EXIT_SUCCESS;
 	int optMatched;
 	int i;
 
@@ -3462,8 +3476,8 @@ int main(int argc, char **argv)
 	{
 		if (string_matches(argv[1], "-?") || string_matches(argv[1], "--help"))
 		{
-			Usage();
-			return 0;
+			Usage(stdout);
+			return EXIT_SUCCESS;
 		} else if (string_matches(argv[1], "-lng"))
 		{
 			argc--;
@@ -3545,7 +3559,7 @@ int main(int argc, char **argv)
 			if (!optMatched)
 			{
 				fprintf(stderr, "Option not recognized: %s\n", argv[1]);
-				Usage();
+				Usage(stderr);
 				return EXIT_FAILURE;
 			}
 		} else
