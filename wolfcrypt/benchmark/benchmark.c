@@ -1,6 +1,5 @@
 /*
-CFLAGS="-DHAVE_AES_DECRYPT -DHAVE_AES_ECB" \
-./configure --disable-jobserver --enable-opensslextra --enable-supportedcurves --enable-sp --enable-sp-asm --enable-intelasm --enable-ed25519 --enable-des3 --enable-ripemd --enable-aesni
+./configure --disable-jobserver --enable-opensslextra --enable-supportedcurves --enable-sp --enable-sp-asm --enable-intelasm --enable-ed25519 --enable-des3 --enable-ripemd --enable-aesni --enable-all-crypto
 */
 
 /* benchmark.c
@@ -258,6 +257,9 @@ static const bench_alg bench_cipher_opt[] = {
 	{ "-cipher", 0xffffffff },
 	{ "-aes-cbc", BENCH_AES_CBC },
 	{ "-aes-gcm", BENCH_AES_GCM },
+#ifdef WOLFSSL_AES_DIRECT
+    { "-aes-ecb", BENCH_AES_ECB },
+#endif
 	{ "-chacha20", BENCH_CHACHA20 },
 	{ "-chacha20-poly1305", BENCH_CHACHA20_POLY1305 },
 	{ "-des", BENCH_DES },
@@ -3206,8 +3208,10 @@ static int benchmarks_do(void)
 		bench_aesgcm();
 		bench_gmac();
 	}
+#ifdef WOLFSSL_AES_DIRECT
 	if (bench_all || (bench_cipher_algs & BENCH_AES_ECB))
 		bench_aesecb();
+#endif
 
 	if (bench_all || (bench_cipher_algs & BENCH_CHACHA20))
 		bench_chacha();

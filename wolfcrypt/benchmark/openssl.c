@@ -210,6 +210,7 @@ static const bench_alg bench_cipher_opt[] = {
 	{ "-cipher", 0xffffffff },
 	{ "-aes-cbc", BENCH_AES_CBC },
 	{ "-aes-gcm", BENCH_AES_GCM },
+    { "-aes-ecb", BENCH_AES_ECB },
 	{ "-chacha20", BENCH_CHACHA20 },
 	{ "-chacha20-poly1305", BENCH_CHACHA20_POLY1305 },
 	{ "-des", BENCH_DES },
@@ -432,13 +433,10 @@ static uint32_t aesAuthAddSz = AES_AUTH_ADD_SZ;
 #define XGEN_ALIGN __attribute__((aligned(4)))
 
 
-enum BenchmarkBounds
-{
-	scryptCnt = 10,
-	ntimes = 100,
-	genTimes = BENCH_MAX_PENDING,		/* must be at least BENCH_MAX_PENDING */
-	agreeTimes = 100
-};
+#define ntimes 100
+#define genTimes BENCH_MAX_PENDING		/* must be at least BENCH_MAX_PENDING */
+#define agreeTimes 100
+
 static int numBlocks = 5;				/* how many megs to test (en/de)cryption */
 static uint32_t bench_size = (1024 * 1024UL);
 static int base2 = 1;
@@ -869,7 +867,7 @@ static void bench_aesgcm_internal(const uint8_t * key, uint32_t keySz,
 		ret = ret == 0 ? 1 : ret < 0 ? ret : -ret;
 		if (ret <= 0)
 		{
-			fprintf(stderr, "AesGcmSetKey failed, ret = %d\n", ret);
+			fprintf(stderr, "AesGcmSetKey failed: %s\n", ERR_reason_error_string(ERR_get_error()));
 			goto exit;
 		}
 	}
@@ -905,7 +903,7 @@ static void bench_aesgcm_internal(const uint8_t * key, uint32_t keySz,
 		ret = ret == 0 ? 1 : ret < 0 ? ret : -ret;
 		if (ret <= 0)
 		{
-			fprintf(stderr, "AesGcmSetKey failed, ret = %d\n", ret);
+			fprintf(stderr, "AesGcmSetKey failed: %s\n", ERR_reason_error_string(ERR_get_error()));
 			goto exit;
 		}
 	}
@@ -935,7 +933,7 @@ static void bench_aesgcm_internal(const uint8_t * key, uint32_t keySz,
 
 	if (ret < 0)
 	{
-		fprintf(stderr, "bench_aesgcm failed: %d\n", ret);
+		fprintf(stderr, "bench_aesgcm failed: %s\n", ERR_reason_error_string(ERR_get_error()));
 	}
 }
 
@@ -1006,7 +1004,7 @@ static void bench_aesecb_internal(const EVP_CIPHER *cipher, uint32_t keySz, cons
 		ret = EVP_EncryptInit(ctx, enc[i], bench_key, bench_iv);
 		if (ret <= 0)
 		{
-			fprintf(stderr, "EVP_EncryptInit failed, ret = %d\n", ret);
+			fprintf(stderr, "EVP_EncryptInit failed: %s\n", ERR_reason_error_string(ERR_get_error()));
 			goto exit;
 		}
 	}
@@ -1037,7 +1035,7 @@ exit_aes_enc:
 		ret = EVP_DecryptInit(ctx, enc[i], bench_key, bench_iv);
 		if (ret <= 0)
 		{
-			fprintf(stderr, "EVP_DecryptInit failed, ret = %d\n", ret);
+			fprintf(stderr, "EVP_DecryptInit failed: %s\n", ERR_reason_error_string(ERR_get_error()));
 			goto exit;
 		}
 	}
@@ -1078,38 +1076,44 @@ static int bench_poly1305(void)
 {
 	int bench_ret = EXIT_SUCCESS;
 #if 0 /* not supported in openSSL 1.1 */
-	EVP_PKEY key;
+	EVP_PKEY *key;
 	uint8_t mac[16];
 	double start;
 	int ret = 1;
 	int i;
 	int count;
+	EVP_MD_CTX *md = EVP_MD_CTX_new();
+	unsigned int outl;
+	
+	key = EVP_PKEY_new_raw_private_key(EVP_PKEY_POLY1305, NULL, bench_key, 32);
+	if (key == NULL)
+	{
+		fprintf(stderr, "Poly1305SetKey failed: %s\n", ERR_reason_error_string(ERR_get_error()));
+		return EXIT_FAILURE;
+	}
+	ret = EVP_DigestInit(md, EVP_get_digestbynid(NID_poly1305));
+	if (ret <= 0)
+	{
+		fprintf(stderr, "DigestInit(poly1305) failed: %s\n", ERR_reason_error_string(ERR_get_error()));
+		return EXIT_FAILURE;
+	}
 
 	if (digest_stream)
 	{
-		const unsigned char *p = bench_key;
-		key = NULL;
-		key = d2i_PrivateKey(EVP_PKEY_POLY1305, &key, &p, 32);
-		if (key == NULL)
-		{
-			fprintf(stderr, "Poly1305SetKey failed: %s\n", ERR_reason_error_string(ERR_get_error()));
-			return EXIT_FAILURE;
-		}
-
 		bench_stats_start(&count, &start);
 		do
 		{
 			for (i = 0; i < numBlocks; i++)
 			{
-				ret = wc_Poly1305Update(&enc, bench_plain, BENCH_SIZE);
-				if (ret != 0)
+				ret = EVP_DigestUpdate(md, bench_plain, BENCH_SIZE);
+				if (ret <= 0)
 				{
-					fprintf(stderr, "Poly1305Update failed: %d\n", ret);
+					fprintf(stderr, "Poly1305Update failed: %s\n", ERR_reason_error_string(ERR_get_error()));
 					bench_ret = EXIT_FAILURE;
 					break;
 				}
 			}
-			wc_Poly1305Final(&enc, mac);
+			EVP_DigestFinal(md, mac, &outl);
 			count += i;
 		} while (bench_stats_sym_check(start));
 		bench_stats_sym_finish("POLY1305", count, bench_size, start, ret);
@@ -1120,21 +1124,23 @@ static int bench_poly1305(void)
 		{
 			for (i = 0; i < numBlocks; i++)
 			{
-				ret = wc_Poly1305SetKey(&enc, bench_key, 32);
-				if (ret != 0)
+#if 0
+				ret = wc_Poly1305SetKey(md, bench_key, 32);
+				if (ret <= 0)
 				{
-					fprintf(stderr, "Poly1305SetKey failed, ret = %d\n", ret);
-					bench_ret = EXIT_FAILURE;
-					return;
-				}
-				ret = wc_Poly1305Update(&enc, bench_plain, BENCH_SIZE);
-				if (ret != 0)
-				{
-					fprintf(stderr, "Poly1305Update failed: %d\n", ret);
+					fprintf(stderr, "Poly1305SetKey failed: %s\n", ERR_reason_error_string(ERR_get_error()));
 					bench_ret = EXIT_FAILURE;
 					break;
 				}
-				wc_Poly1305Final(&enc, mac);
+#endif
+				ret = EVP_DigestUpdate(md, bench_plain, BENCH_SIZE);
+				if (ret <= 0)
+				{
+					fprintf(stderr, "Poly1305Update failed: %s\n", ERR_reason_error_string(ERR_get_error()));
+					bench_ret = EXIT_FAILURE;
+					break;
+				}
+				EVP_DigestFinal(md, mac, &outl);
 			}
 			count += i;
 		} while (bench_stats_sym_check(start));
@@ -1175,7 +1181,7 @@ static int bench_encrypt(const EVP_CIPHER *cipher, const char *label)
 		ret = EVP_EncryptInit(ctx, enc[i], bench_key, bench_iv);
 		if (ret <= 0)
 		{
-			fprintf(stderr, "EVP_EncryptInit failed, ret = %d\n", ret);
+			fprintf(stderr, "EVP_EncryptInit failed: %s\n", ERR_reason_error_string(ERR_get_error()));
 			bench_ret = EXIT_FAILURE;
 			goto exit;
 		}
@@ -1267,7 +1273,7 @@ static int bench_digest(const EVP_MD *cipher, const char *label)
 				ret = EVP_DigestInit(ctx, enc[i]);
 				if (ret <= 0)
 				{
-					fprintf(stderr, "EVP_DigestInit failed, ret = %d\n", ret);
+					fprintf(stderr, "EVP_DigestInit failed: %s\n", ERR_reason_error_string(ERR_get_error()));
 					bench_ret = EXIT_FAILURE;
 					goto exit;
 				}
@@ -1417,7 +1423,7 @@ static int bench_hmac(const EVP_MD *md, unsigned int digestSz, uint8_t * key, ui
 		ret = HMAC_Init_ex(hmac[i], key, keySz, md, NULL);
 		if (ret == 0)
 		{
-			fprintf(stderr, "HMAC_Init_ex failed for %s, ret = %d\n", label, ret);
+			fprintf(stderr, "HMAC_Init_ex failed for %s: %s\n", label, ERR_reason_error_string(ERR_get_error()));
 			bench_ret = EXIT_FAILURE;
 			goto exit;
 		}
@@ -1792,25 +1798,23 @@ static int bench_rsa(void)
 #define BENCH_DH_KEY_SIZE  384			/* for 3072 bit */
 #define BENCH_DH_PRIV_SIZE (BENCH_DH_KEY_SIZE/8)
 
-static void bench_dh(void)
+static int bench_dh(void)
 {
+	int bench_ret = EXIT_SUCCESS;
 #if 0 /* not supported in openSSL 1.1 */
 	int ret = 1;
 	int i;
 	int count = 0;
 	int times;
 	double start = 0.0;
-	DhKey dhKey[BENCH_MAX_PENDING];
+	EVP_PKEY *dhKey[BENCH_MAX_PENDING];
 	int dhKeySz = BENCH_DH_KEY_SIZE * 8;	/* used in printf */
 	const char **desc = bench_desc_words[lng_index];
-	size_t bytes = 0;
-	uint32_t idx;
 	uint32_t pubSz[BENCH_MAX_PENDING];
 	uint32_t privSz[BENCH_MAX_PENDING];
 	uint32_t pubSz2 = BENCH_DH_KEY_SIZE;
 	uint32_t privSz2 = BENCH_DH_PRIV_SIZE;
 	uint32_t agreeSz[BENCH_MAX_PENDING];
-	const DhParams *params = NULL;
 
 	uint8_t pub[BENCH_MAX_PENDING][BENCH_DH_KEY_SIZE];
 	uint8_t pub2[BENCH_DH_KEY_SIZE];
@@ -1820,11 +1824,9 @@ static void bench_dh(void)
 
 	if (!use_ffdhe)
 	{
-		bytes = sizeof_dh_key_der_2048;
 		dhKeySz = 2048;
 	} else if (use_ffdhe == 2048)
 	{
-		params = wc_Dh_ffdhe2048_Get();
 		dhKeySz = 2048;
 	}
 
@@ -1834,23 +1836,18 @@ static void bench_dh(void)
 	/* init keys */
 	for (i = 0; i < BENCH_MAX_PENDING; i++)
 	{
-		/* setup an async context for each key */
-		ret = wc_InitDhKey_ex(&dhKey[i], HEAP_HINT, INVALID_DEVID);
-		if (ret != 0)
-			goto exit;
-
 		/* setup key */
+		dhKey[i] = EVP_PKEY_new();
 		if (!use_ffdhe)
 		{
-			idx = 0;
-			ret = wc_DhKeyDecode(dh_key_der_2048, &idx, &dhKey[i], (uint32_t) bytes);
-		} else if (params != NULL)
+			EVP_PKEY_set1_DH(dhKey[i], DH_get_2048_256());
+		} else
 		{
-			ret = wc_DhSetKey(&dhKey[i], params->p, params->p_len, params->g, params->g_len);
+			EVP_PKEY_set1_DH(dhKey[i], DH_new_by_nid(NID_ffdhe2048));
 		}
-		if (ret != 0)
+		if (ret <= 0)
 		{
-			fprintf(stderr, "DhKeyDecode failed %d, can't benchmark\n", ret);
+			fprintf(stderr, "DhKeyDecode failed %s:\n", ERR_reason_error_string(ERR_get_error()));
 			goto exit;
 		}
 	}
@@ -1905,14 +1902,15 @@ static void bench_dh(void)
 		count += times;
 	} while (bench_stats_sym_check(start));
   exit:
-	bench_stats_asym_finish("DH", dhKeySz, desc[3], count, start, ret);
+	bench_ret |= bench_stats_asym_finish("DH", dhKeySz, desc[3], count, start, ret);
 
 	/* cleanup */
 	for (i = 0; i < BENCH_MAX_PENDING; i++)
 	{
-		wc_FreeDhKey(&dhKey[i]);
+		EVP_PKEY_free(dhKey[i]);
 	}
 #endif
+	return bench_ret;
 }
 
 
